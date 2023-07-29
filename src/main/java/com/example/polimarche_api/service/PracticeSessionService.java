@@ -67,12 +67,7 @@ public class PracticeSessionService {
     }
 
     public List<PracticeSession> getSessionByEvent(String event) {
-        if (!practiceSessionRepository.findByEvento(event).isEmpty()){
-            return practiceSessionRepository.findByEvento(event);
-        }
-        else{
-            throw new NoSuchElementException("No session done for the event " + event);
-        }
+         return practiceSessionRepository.findByEvento(event);
     }
 
     public void modifySession(PracticeSessionRepository.NewPracticeSession request) {
