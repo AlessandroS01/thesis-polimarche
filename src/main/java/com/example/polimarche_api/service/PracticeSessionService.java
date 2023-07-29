@@ -48,6 +48,9 @@ public class PracticeSessionService {
 
     public void addSession(PracticeSessionRepository.NewPracticeSession request) {
         PracticeSession sessione = recordReader(request);
+        if (practiceSessionRepository.existsById(sessione.getId())){
+            throw new IllegalArgumentException("Session id already exists");
+        }
 
         practiceSessionRepository.save(sessione);
     }

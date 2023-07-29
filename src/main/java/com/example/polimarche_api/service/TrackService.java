@@ -33,6 +33,9 @@ public class TrackService {
 
     public void addTrack(TrackRepository.NewTrackRequest request) {
         Track track = recordReader(request);
+        if (trackRepository.existsById(track.getNome())){
+            throw new IllegalArgumentException("Track already exists");
+        }
 
         trackRepository.save(track);
     }
