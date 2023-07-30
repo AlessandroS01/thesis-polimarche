@@ -1,12 +1,10 @@
 package com.example.polimarche_api.service;
 
 import com.example.polimarche_api.model.Member;
-import com.example.polimarche_api.model.PracticeSession;
-import com.example.polimarche_api.model.Workshop;
 import com.example.polimarche_api.repository.MemberRepository;
-import com.example.polimarche_api.repository.PracticeSessionRepository;
-import com.example.polimarche_api.repository.WorkshopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,47 +16,30 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(
+            MemberRepository memberRepository
+    ) {
         this.memberRepository = memberRepository;
     }
 
-    public Member recordReader(MemberRepository.NewMember request){
-        return new Member(
-                request.matricola(),
-                request.password(),
-                request.nome(),
-                request.cognome(),
-                request.data_di_nascita(),
-                request.email(),
-                request.numero_telefono(),
-                request.ruolo(),
-                request.reparto()
-        );
-    }
+    // check the input values
+    public Member checkValues(MemberRepository.NewMember request){
+        Member member = new Member();
 
-    public List<Member> getAllMembers() {
-        return memberRepository.findAll();
-    }
-
-    public void addNewMember(MemberRepository.NewMember request) {
-        Member member = recordReader(request);
-
-        if (memberRepository.existsById(member.getMatricola())){
-            throw new IllegalArgumentException("Member already exists");
+        if(Objects.equals(request.ruolo(), "Manager")){
+            member = new Member(
+                    request.matricola(), request.password(), request.nome(), request.cognome(),
+                    request.data_di_nascita(), request.email(), request.numero_telefono(), request.ruolo()
+            );
         }
-        // check if the new member is enrolled as a Manager without a workshop area
-        if (Objects.equals(member.getRuolo(), "Manager") && member.getReparto() != null){
-            throw new IllegalArgumentException("A manager can't be part of a workshop area");
-        }
-        // check if the new member is enrolled as a Caporeparto without a workshop area
-        if (Objects.equals(member.getRuolo(), "Caporeparto") && member.getReparto() == null){
+        else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() == null){
             throw new IllegalArgumentException("A caporeparto should manage one workshop area");
         }
-        // check if the new member is enrolled as a Caporeparto with a workshop area
-        if (Objects.equals(member.getRuolo(), "Caporeparto") && member.getReparto() != null){
+        else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() != null){
+            System.out.println("We");
             // find the previous Caporeparto of the workshop area
             Optional<Member> optional = Optional.ofNullable(memberRepository.findByRepartoAndRuolo(
-                    member.getReparto(), "Caporeparto"
+                    request.reparto(), "Caporeparto"
             ));
             // change the role of the previous Caporeparto to Membro
             if(optional.isPresent()){
@@ -67,8 +48,56 @@ public class MemberService {
 
                 memberRepository.save(modifyMember);
             }
+            member = new Member(
+                    request.matricola(), request.password(), request.nome(), request.cognome(),
+                    request.data_di_nascita(), request.email(), request.numero_telefono(), request.ruolo(),
+                    request.reparto()
+            );
+        }
+        else if(Objects.equals(request.ruolo(), "Membro") && request.reparto().getReparto() == null){
+            throw new IllegalArgumentException("A membro should be part of one workshop area");
+        }
+        else {
+            member = new Member(
+                    request.matricola(), request.password(), request.nome(), request.cognome(),
+                    request.data_di_nascita(), request.email(), request.numero_telefono(), request.ruolo(),
+                    request.reparto()
+            );
+        }
+        return member;
+    }
+
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
+    }
+
+    public ResponseEntity<String> addNewMember(MemberRepository.NewMember request) {
+
+        // check if the member already exists
+        if (memberRepository.existsById(request.matricola())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("A member with this matricola already exists.");
         }
 
+        Member member = checkValues(request);
+
         memberRepository.save(member);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("User created");
+    }
+
+    public ResponseEntity<String> modifyMember(MemberRepository.NewMember request) {
+
+        // check if the member exists
+        if (!memberRepository.existsById(request.matricola())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("A member with this matricola doesn't exist.");
+        }
+        Member member = checkValues(request);
+
+        memberRepository.save(member);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body("User modified");
+
     }
 }

@@ -54,6 +54,17 @@ public class Member {
         this.ruolo = ruolo;
         this.reparto = reparto;
     }
+    public Member(Integer matricola, String password, String nome, String cognome, Date data_di_nascita, String email, String numero_telefono, String ruolo) {
+        this.matricola = matricola;
+        this.password = password;
+        this.nome = nome;
+        this.cognome = cognome;
+        this.data_di_nascita = data_di_nascita;
+        this.email = email;
+        this.numero_telefono = numero_telefono;
+        this.ruolo = ruolo;
+        this.reparto = null;
+    }
 
     public Integer getMatricola() {
         return matricola;
