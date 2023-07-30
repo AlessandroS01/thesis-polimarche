@@ -46,6 +46,11 @@ public class NotaController {
         notaService.addNewNote(request);
     }
 
+    @PutMapping
+    public void modifyNote(@RequestBody NotaRepository.NewNota request){
+        notaService.modifyNote(request);
+    }
+
 
 }
 

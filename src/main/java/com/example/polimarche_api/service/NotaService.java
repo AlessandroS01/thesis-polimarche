@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,5 +53,22 @@ public class NotaService {
         }
 
         notaRepository.save(nota);
+    }
+
+    public void modifyNote(NotaRepository.NewNota request) {
+        Optional<Nota> optional = notaRepository.findById(request.id());
+        if(optional.isPresent()){
+            Nota nota = optional.get();
+
+            nota.setData(request.data());
+            nota.setOra_inizio(request.ora_inizio());
+            nota.setOra_fine(request.ora_fine());
+            nota.setMembro(request.membro());
+            nota.setDescrizione(request.descrizione());
+
+            notaRepository.save(nota);
+
+        }
+        else throw new NoSuchElementException("Nota " + request.id() + " doesn't exist.");
     }
 }
