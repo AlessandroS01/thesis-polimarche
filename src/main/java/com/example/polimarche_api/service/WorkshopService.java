@@ -15,7 +15,6 @@ import java.util.Optional;
 public class WorkshopService {
     private final WorkshopRepository workshopRepository;
 
-    @Autowired
     public WorkshopService(WorkshopRepository workshopRepository) {
         this.workshopRepository = workshopRepository;
     }

@@ -4,12 +4,14 @@ import com.example.polimarche_api.repository.TrackRepository;
 import com.example.polimarche_api.service.TrackService;
 import com.example.polimarche_api.model.Track;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/track")
+@RequestMapping("/api/v1/track")
 public class TrackController {
     private final TrackService trackService;
 
@@ -32,17 +34,25 @@ public class TrackController {
      * @param request used to create a new record inside Track
      */
     @PostMapping
-    public void addTrack(@RequestBody TrackRepository.NewTrackRequest request){
-        trackService.addTrack(request);
+    public ResponseEntity<String> addTrack(@RequestBody TrackRepository.NewTrackRequest request){
+        Track track = trackService.addTrack(request);
+        return new ResponseEntity<>(track.getNome(), HttpStatus.CREATED);
     }
 
     /**
      *
-     * @param request used to modify the length of a track
+     * @param length
+     * @param name
+     * @return
      */
-    @PutMapping
-    public void modifyLengthTrack(@RequestBody TrackRepository.NewTrackRequest request){
-        trackService.modifyLength(request.name(), request.length());
+    @PutMapping("/{name}")
+    public ResponseEntity<String> modifyLengthTrack(
+            @RequestBody Double length,
+            @PathVariable String name
+    ){
+        System.out.println(length);
+        trackService.modifyLength(length, name);
+        return new ResponseEntity<>("Modified " + name, HttpStatus.ACCEPTED);
     }
 }
 

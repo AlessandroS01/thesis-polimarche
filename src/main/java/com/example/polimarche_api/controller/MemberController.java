@@ -3,18 +3,18 @@ package com.example.polimarche_api.controller;
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/api/v1/member")
 public class MemberController {
     private final MemberService memberService;
 
-    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
@@ -24,18 +24,19 @@ public class MemberController {
      * @return list of all the members
      */
     @GetMapping
-    public List<Member> getAllAreas(){
+    public List<Member> getAllMembers(){
         return memberService.getAllMembers();
     }
 
     /**
      *
-     * @param request
-     * @return a response containing a String indicating if the add was successfully or not
+     * @param request specify the attributes of the newest member
+     * @return ResponseEntity containing the matricola of the member created
      */
     @PostMapping
-    public ResponseEntity<String> addNewMember(@RequestBody MemberRepository.NewMember request){
-        return memberService.addNewMember(request);
+    public ResponseEntity<Integer> addNewMember(@RequestBody MemberRepository.NewMember request){
+        Integer matricola = memberService.addNewMember(request);
+        return new ResponseEntity<>(matricola, HttpStatus.CREATED);
     }
 
     /**
@@ -43,10 +44,20 @@ public class MemberController {
      * @param request
      * @return a response containing a String indicating if the modification was successfully or not
      */
-    @PutMapping
-    public ResponseEntity<String> modifyMember(@RequestBody MemberRepository.NewMember request){
-        return memberService.modifyMember(request);
+    @PutMapping("/{matricola}")
+    public ResponseEntity<Integer> modifyMember(
+            @RequestBody MemberRepository.NewMember request,
+            @PathVariable Integer matricola
+    ){
+        memberService.modifyMember(request, matricola);
+        return new ResponseEntity<>(matricola, HttpStatus.ACCEPTED);
     }
+
+/*
+    @PostMapping("/change-password/{matricola}")
+    public ResponseEntity<String> changePassword( @PathVariable String matricola ){
+    }
+ */
 
 }
 

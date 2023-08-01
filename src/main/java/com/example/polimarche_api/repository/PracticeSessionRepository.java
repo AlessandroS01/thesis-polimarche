@@ -15,7 +15,6 @@ public interface PracticeSessionRepository extends JpaRepository<PracticeSession
     List<PracticeSession> findByEvento(String event);
 
     record NewPracticeSession(
-            @JsonProperty("id") Integer id,
             @JsonProperty("evento") String evento,
             @JsonProperty("data") Date data,
             @JsonProperty("ora_inizio") Time ora_inizio,

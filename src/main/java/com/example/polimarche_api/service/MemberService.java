@@ -1,8 +1,8 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.repository.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,28 +15,29 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    @Autowired
     public MemberService(
             MemberRepository memberRepository
     ) {
         this.memberRepository = memberRepository;
     }
 
-    // check the input values
+    // Check the input values
     public Member checkValues(MemberRepository.NewMember request){
         Member member = new Member();
 
+        // Check if the new member is a Manager => his reparto will be set to null
         if(Objects.equals(request.ruolo(), "Manager")){
             member = new Member(
                     request.matricola(), request.password(), request.nome(), request.cognome(),
                     request.data_di_nascita(), request.email(), request.numero_telefono(), request.ruolo()
             );
         }
+        // Check if the new member is a Caporeparto and his reparto is set to null
         else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() == null){
             throw new IllegalArgumentException("A caporeparto should manage one workshop area");
         }
+        // Check if the new member is a Caporeparto and his reparto is set to null
         else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() != null){
-            System.out.println("We");
             // find the previous Caporeparto of the workshop area
             Optional<Member> optional = Optional.ofNullable(memberRepository.findByRepartoAndRuolo(
                     request.reparto(), "Caporeparto"
@@ -54,6 +55,7 @@ public class MemberService {
                     request.reparto()
             );
         }
+        // Check if the new member is a Membro and his reparto is set to null
         else if(Objects.equals(request.ruolo(), "Membro") && request.reparto().getReparto() == null){
             throw new IllegalArgumentException("A membro should be part of one workshop area");
         }
@@ -71,33 +73,18 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public ResponseEntity<String> addNewMember(MemberRepository.NewMember request) {
-
-        // check if the member already exists
-        if (memberRepository.existsById(request.matricola())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("A member with this matricola already exists.");
-        }
-
+    public Integer addNewMember(MemberRepository.NewMember request) {
         Member member = checkValues(request);
-
         memberRepository.save(member);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body("User created");
+        return member.getMatricola();
     }
 
-    public ResponseEntity<String> modifyMember(MemberRepository.NewMember request) {
+    public void modifyMember(MemberRepository.NewMember request, Integer matricola) {
 
-        // check if the member exists
-        if (!memberRepository.existsById(request.matricola())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("A member with this matricola doesn't exist.");
-        }
-        Member member = checkValues(request);
-
+        Member member = memberRepository.findById(matricola).orElseThrow( () ->
+                new ResourceNotFoundException("Member with matricola " + matricola + " not found.")
+        );
+        member = checkValues(request);
         memberRepository.save(member);
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body("User modified");
-
     }
 }

@@ -7,24 +7,25 @@ import com.example.polimarche_api.repository.NotaRepository;
 import com.example.polimarche_api.service.MemberService;
 import com.example.polimarche_api.service.NotaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/nota")
+@RequestMapping("/api/v1/note")
 public class NotaController {
     private final NotaService notaService;
 
-    @Autowired
     public NotaController(NotaService notaService) {
         this.notaService = notaService;
     }
 
     /**
      *
-     * @return list of all the members
+     * @return list of all the notes
      */
     @GetMapping
     public List<Nota> getAllNotes(){
@@ -36,19 +37,32 @@ public class NotaController {
      * @param matricola of the member to research his notes
      * @return List of notes for that member
      */
-    @GetMapping("/membro/{matricola}")
+    @GetMapping("/member/{matricola}")
     public List<Nota> getNotesByMatricola(@PathVariable Integer matricola){
         return notaService.getNotesByMatricola(matricola);
     }
 
+    /**
+     *
+     * @param request contains the new note in json
+     * @return the code of the note if created successfully
+     */
     @PostMapping
-    public void addNote(@RequestBody NotaRepository.NewNota request){
-        notaService.addNewNote(request);
+    public ResponseEntity<Integer> addNote(@RequestBody NotaRepository.NewNota request){
+        Integer note = notaService.addNewNote(request);
+        return new ResponseEntity<>(note, HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public void modifyNote(@RequestBody NotaRepository.NewNota request){
-        notaService.modifyNote(request);
+    /**
+     *
+     * @param request contains the note modified
+     * @param id represents the id of the note
+     * @return the id of the note if modified correctly
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<Integer> modifyNote(@RequestBody NotaRepository.NewNota request, @PathVariable Integer id){
+        notaService.modifyNote(request, id);
+        return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
     }
 
 

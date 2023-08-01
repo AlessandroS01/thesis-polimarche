@@ -1,15 +1,11 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.PracticeSession;
-import com.example.polimarche_api.model.Track;
 import com.example.polimarche_api.repository.PracticeSessionRepository;
-import com.example.polimarche_api.repository.TrackRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class PracticeSessionService {
@@ -22,19 +18,20 @@ public class PracticeSessionService {
 
     // read the record created with the parameters sent with the request
     public PracticeSession recordReader(PracticeSessionRepository.NewPracticeSession request){
-        return new PracticeSession(
-                request.id(),
-                request.evento(),
-                request.data(),
-                request.ora_inizio(),
-                request.ora_fine(),
-                request.tracciato(),
-                request.meteo(),
-                request.pressione_atmosferica(),
-                request.temperatura_aria(),
-                request.temperatura_tracciato(),
-                request.condizione_tracciato()
+        PracticeSession session = new PracticeSession();
+        session.setAll(
+            request.evento(),
+            request.data(),
+            request.ora_inizio(),
+            request.ora_fine(),
+            request.tracciato(),
+            request.meteo(),
+            request.pressione_atmosferica(),
+            request.temperatura_aria(),
+            request.temperatura_tracciato(),
+            request.condizione_tracciato()
         );
+        return session;
     }
 
     /**
@@ -46,52 +43,43 @@ public class PracticeSessionService {
     }
 
 
-    public void addSession(PracticeSessionRepository.NewPracticeSession request) {
-        PracticeSession sessione = recordReader(request);
-        if (practiceSessionRepository.existsById(sessione.getId())){
-            throw new IllegalArgumentException("Session id already exists");
-        }
-
-        practiceSessionRepository.save(sessione);
+    public Integer addSession(PracticeSessionRepository.NewPracticeSession request) {
+        PracticeSession session = recordReader(request);
+        practiceSessionRepository.save(session);
+        return session.getId();
     }
 
     public PracticeSession getSessionById(Integer id) {
-        Optional<PracticeSession> optional = practiceSessionRepository.findById(id);
-
-        if (optional.isPresent()){
-            return optional.get();
-        }
-        else{
-            throw new NoSuchElementException("Session " + id + " doesn't exist.");
-        }
+        return practiceSessionRepository.findById(id).orElseThrow( () ->
+                new ResourceNotFoundException("No session with id " + id + " found.")
+        );
     }
 
     public List<PracticeSession> getSessionByEvent(String event) {
-         return practiceSessionRepository.findByEvento(event);
+        List<PracticeSession> sessions = practiceSessionRepository.findByEvento(event);
+        if (sessions.isEmpty()) {
+            throw new ResourceNotFoundException("No session saved for event " + event);
+        }
+        return sessions;
     }
 
-    public void modifySession(PracticeSessionRepository.NewPracticeSession request) {
+    public void modifySession(PracticeSessionRepository.NewPracticeSession request, Integer id) {
+        PracticeSession session = practiceSessionRepository.findById(id).orElseThrow( () ->
+                new ResourceNotFoundException("No session with id " + id + " found.")
+        );
 
-        Optional<PracticeSession> optional = practiceSessionRepository.findById(request.id());
-        if(optional.isPresent()){
-            PracticeSession session = optional.get();
-
-            session.setAll(
-                    request.id(),
-                    request.evento(),
-                    request.data(),
-                    request.ora_inizio(),
-                    request.ora_fine(),
-                    request.tracciato(),
-                    request.meteo(),
-                    request.pressione_atmosferica(),
-                    request.temperatura_aria(),
-                    request.temperatura_tracciato(),
-                    request.condizione_tracciato()
-            );
-
-            practiceSessionRepository.save(session);
-        }
-        else throw new NoSuchElementException("Session " + request.id() + " doesn't exist.");
+        session.setAll(
+                request.evento(),
+                request.data(),
+                request.ora_inizio(),
+                request.ora_fine(),
+                request.tracciato(),
+                request.meteo(),
+                request.pressione_atmosferica(),
+                request.temperatura_aria(),
+                request.temperatura_tracciato(),
+                request.condizione_tracciato()
+        );
+        practiceSessionRepository.save(session);
     }
 }

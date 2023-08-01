@@ -1,9 +1,8 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Comment;
-import com.example.polimarche_api.model.Nota;
 import com.example.polimarche_api.repository.CommentRepository;
-import com.example.polimarche_api.repository.NotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +14,7 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    @Autowired
-    public CommentService(
-            CommentRepository commentRepository
-    ) {
-        this.commentRepository = commentRepository;
-    }
+    public CommentService(CommentRepository commentRepository) { this.commentRepository = commentRepository; }
 
     public Comment recordReader(CommentRepository.NewComment request){
         Comment comment = new Comment();
@@ -34,27 +28,35 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
+    /**
+     *
+     * @param id represents the id of the session reasearched
+     * @return list of comments having id param as session id
+     */
     public List<Comment> getCommentsBySession(Integer id) {
-        return commentRepository.findAllBySessioneId(id);
+        List<Comment> comments = commentRepository.findAllBySessioneId(id);
+        if (comments.isEmpty()) {
+            throw new ResourceNotFoundException("Comments not found for session ID: " + id);
+        }
+        return comments;
     }
 
-    public void addNewComment(CommentRepository.NewComment request) {
+
+    public Integer addNewComment(CommentRepository.NewComment request) {
         Comment comment = recordReader(request);
         commentRepository.save(comment);
+        return comment.getId();
     }
 
     public void modifyComment(CommentRepository.NewComment request, Integer id) {
 
-        Optional<Comment> optional = commentRepository.findById(id);
-        if(optional.isPresent()){
-            Comment comment = optional.get();
+        Comment comment = commentRepository.findById(id).orElseThrow( () ->
+                new ResourceNotFoundException("Comment " + id + " doesn't exist.")
+        );
 
-            comment.setDescrizione(request.descrizione());
-            comment.setFlag(request.flag());
-            comment.setSessione(request.sessione());
-            commentRepository.save(comment);
-
-        }
-        else throw new NoSuchElementException("Comment " + id + " doesn't exist.");
+        comment.setDescrizione(request.descrizione());
+        comment.setFlag(request.flag());
+        comment.setSessione(request.sessione());
+        commentRepository.save(comment);
     }
 }

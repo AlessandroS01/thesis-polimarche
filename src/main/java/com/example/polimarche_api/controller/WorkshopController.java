@@ -11,11 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/workshop")
+@RequestMapping("/api/v1/workshop")
 public class WorkshopController {
     private final WorkshopService workshopService;
 
-    @Autowired
     public WorkshopController(WorkshopService workshopService) {
         this.workshopService = workshopService;
     }

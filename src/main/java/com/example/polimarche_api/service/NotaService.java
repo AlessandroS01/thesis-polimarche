@@ -1,5 +1,6 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.model.Nota;
 import com.example.polimarche_api.model.PracticeSession;
@@ -28,14 +29,13 @@ public class NotaService {
     }
 
     public Nota recordReader(NotaRepository.NewNota request){
-        return new Nota(
-                request.id(),
-                request.data(),
-                request.ora_inizio(),
-                request.ora_fine(),
-                request.membro(),
-                request.descrizione()
-        );
+        Nota note = new Nota();
+        note.setData(request.data());
+        note.setOra_inizio(request.ora_inizio());
+        note.setOra_fine(request.ora_fine());
+        note.setMembro(request.membro());
+        note.setDescrizione(request.descrizione());
+        return note;
     }
 
     public List<Nota> getAllNotes() {
@@ -43,32 +43,30 @@ public class NotaService {
     }
 
     public List<Nota> getNotesByMatricola(Integer matricola) {
-        return notaRepository.findAllByMembroMatricola(matricola);
+        List<Nota> notes = notaRepository.findAllByMembroMatricola(matricola);
+        if(notes.isEmpty()){
+            throw new ResourceNotFoundException("No notes found for member: " + matricola);
+        }
+        return notes;
     }
 
-    public void addNewNote(NotaRepository.NewNota request) {
+    public Integer addNewNote(NotaRepository.NewNota request) {
         Nota nota = recordReader(request);
-        if (notaRepository.existsById(nota.getId())){
-            throw new IllegalArgumentException("Nota already exists");
-        }
-
         notaRepository.save(nota);
+        return nota.getId();
     }
 
-    public void modifyNote(NotaRepository.NewNota request) {
-        Optional<Nota> optional = notaRepository.findById(request.id());
-        if(optional.isPresent()){
-            Nota nota = optional.get();
+    public void modifyNote(NotaRepository.NewNota request, Integer id) {
+        Nota note = notaRepository.findById(id).orElseThrow( () ->
+            new ResourceNotFoundException("Note with id " + id + " not found")
+        );
 
-            nota.setData(request.data());
-            nota.setOra_inizio(request.ora_inizio());
-            nota.setOra_fine(request.ora_fine());
-            nota.setMembro(request.membro());
-            nota.setDescrizione(request.descrizione());
+        note.setData(request.data());
+        note.setOra_inizio(request.ora_inizio());
+        note.setOra_fine(request.ora_fine());
+        note.setMembro(request.membro());
+        note.setDescrizione(request.descrizione());
 
-            notaRepository.save(nota);
-
-        }
-        else throw new NoSuchElementException("Nota " + request.id() + " doesn't exist.");
+        notaRepository.save(note);
     }
 }

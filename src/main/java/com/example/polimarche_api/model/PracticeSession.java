@@ -154,8 +154,7 @@ public class PracticeSession {
         this.condizione_tracciato = condizione_tracciato;
     }
 
-    public void setAll(Integer id, String evento, Date data, Time ora_inizio, Time ora_fine, Track tracciato, String meteo, Double pressione_atmosferica, Double temperatura_aria, Double temperatura_tracciato, String condizione_tracciato){
-        this.id = id;
+    public void setAll(String evento, Date data, Time ora_inizio, Time ora_fine, Track tracciato, String meteo, Double pressione_atmosferica, Double temperatura_aria, Double temperatura_tracciato, String condizione_tracciato){
         this.evento = evento;
         this.data = data;
         this.ora_inizio = ora_inizio;

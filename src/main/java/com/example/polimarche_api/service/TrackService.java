@@ -1,5 +1,6 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Track;
 import com.example.polimarche_api.repository.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,31 +32,18 @@ public class TrackService {
     }
 
 
-    public void addTrack(TrackRepository.NewTrackRequest request) {
+    public Track addTrack(TrackRepository.NewTrackRequest request) {
         Track track = recordReader(request);
-        if (trackRepository.existsById(track.getNome())){
-            throw new IllegalArgumentException("Track already exists");
-        }
-
         trackRepository.save(track);
+        return track;
     }
 
-    /**
-     *
-     * @param nome is the nome of the track that should be modified
-     * @param lunghezza is the new length of the track
-     */
-    public void modifyLength(String nome, Double lunghezza){
-        Optional<Track> optionalTrack = trackRepository.findById(nome);
 
-        if (optionalTrack.isPresent()) {
-            Track track = optionalTrack.get();
-
-            track.setLunghezza(lunghezza);
-
-            trackRepository.save(track);
-        } else {
-            throw new NoSuchElementException("Track with nome " + nome + " not found.");
-        }
+    public void modifyLength(Double length, String name){
+        Track track = trackRepository.findById(name).orElseThrow( () ->
+                new ResourceNotFoundException("Track " + name + " not found")
+        );
+        track.setLunghezza(length);
+        trackRepository.save(track);
     }
 }

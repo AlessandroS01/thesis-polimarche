@@ -6,7 +6,12 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name="membro")
+@Table(name="membro",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "numero_telefono"),
+                @UniqueConstraint(columnNames = "email")
+        }
+)
 public class Member {
 
     @Id
