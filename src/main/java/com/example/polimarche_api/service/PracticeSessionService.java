@@ -2,6 +2,7 @@ package com.example.polimarche_api.service;
 
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.PracticeSession;
+import com.example.polimarche_api.model.records.NewPracticeSession;
 import com.example.polimarche_api.repository.PracticeSessionRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class PracticeSessionService {
     }
 
     // read the record created with the parameters sent with the request
-    public PracticeSession recordReader(PracticeSessionRepository.NewPracticeSession request){
+    public PracticeSession recordReader(NewPracticeSession request){
         PracticeSession session = new PracticeSession();
         session.setAll(
             request.evento(),
@@ -43,7 +44,7 @@ public class PracticeSessionService {
     }
 
 
-    public Integer addSession(PracticeSessionRepository.NewPracticeSession request) {
+    public Integer addSession(NewPracticeSession request) {
         PracticeSession session = recordReader(request);
         practiceSessionRepository.save(session);
         return session.getId();
@@ -63,7 +64,7 @@ public class PracticeSessionService {
         return sessions;
     }
 
-    public void modifySession(PracticeSessionRepository.NewPracticeSession request, Integer id) {
+    public void modifySession(NewPracticeSession request, Integer id) {
         PracticeSession session = practiceSessionRepository.findById(id).orElseThrow( () ->
                 new ResourceNotFoundException("No session with id " + id + " found.")
         );

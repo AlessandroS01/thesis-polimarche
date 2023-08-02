@@ -2,6 +2,7 @@ package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Comment;
 import com.example.polimarche_api.model.Nota;
+import com.example.polimarche_api.model.records.NewComment;
 import com.example.polimarche_api.repository.CommentRepository;
 import com.example.polimarche_api.repository.NotaRepository;
 import com.example.polimarche_api.service.CommentService;
@@ -47,7 +48,7 @@ public class CommentController {
      * @return the code of the new comment if it was successfully created
      */
     @PostMapping
-    public ResponseEntity<Integer> addComment(@RequestBody CommentRepository.NewComment request){
+    public ResponseEntity<Integer> addComment(@RequestBody NewComment request){
         Integer commentId = commentService.addNewComment(request);
         return new ResponseEntity<>(commentId, HttpStatus.CREATED);
     }
@@ -59,7 +60,7 @@ public class CommentController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Integer> modifyComment(
-            @RequestBody CommentRepository.NewComment request,
+            @RequestBody NewComment request,
             @PathVariable Integer id
     ){
         commentService.modifyComment(request, id);

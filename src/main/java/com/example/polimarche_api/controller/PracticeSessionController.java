@@ -1,6 +1,7 @@
 package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.PracticeSession;
+import com.example.polimarche_api.model.records.NewPracticeSession;
 import com.example.polimarche_api.repository.PracticeSessionRepository;
 import com.example.polimarche_api.repository.TrackRepository;
 import com.example.polimarche_api.service.PracticeSessionService;
@@ -55,7 +56,7 @@ public class PracticeSessionController {
      * @param request used to create a new record inside PracticeSession
      */
     @PostMapping
-    public ResponseEntity<Integer> addSession(@RequestBody PracticeSessionRepository.NewPracticeSession request){
+    public ResponseEntity<Integer> addSession(@RequestBody NewPracticeSession request){
         Integer id = practiceSessionService.addSession(request);
         return new ResponseEntity<>(id, HttpStatus.CREATED);
     }
@@ -68,7 +69,7 @@ public class PracticeSessionController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Integer> modifySession(
-            @RequestBody PracticeSessionRepository.NewPracticeSession request,
+            @RequestBody NewPracticeSession request,
             @PathVariable Integer id
     ){
         practiceSessionService.modifySession(request, id);

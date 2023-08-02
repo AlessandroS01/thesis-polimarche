@@ -2,6 +2,7 @@ package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.model.Nota;
+import com.example.polimarche_api.model.records.NewNota;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.repository.NotaRepository;
 import com.example.polimarche_api.service.MemberService;
@@ -48,7 +49,7 @@ public class NotaController {
      * @return the code of the note if created successfully
      */
     @PostMapping
-    public ResponseEntity<Integer> addNote(@RequestBody NotaRepository.NewNota request){
+    public ResponseEntity<Integer> addNote(@RequestBody NewNota request){
         Integer note = notaService.addNewNote(request);
         return new ResponseEntity<>(note, HttpStatus.CREATED);
     }
@@ -60,7 +61,7 @@ public class NotaController {
      * @return the id of the note if modified correctly
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Integer> modifyNote(@RequestBody NotaRepository.NewNota request, @PathVariable Integer id){
+    public ResponseEntity<Integer> modifyNote(@RequestBody NewNota request, @PathVariable Integer id){
         notaService.modifyNote(request, id);
         return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
     }

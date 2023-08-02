@@ -14,18 +14,4 @@ public interface PracticeSessionRepository extends JpaRepository<PracticeSession
 
     List<PracticeSession> findByEvento(String event);
 
-    record NewPracticeSession(
-            @JsonProperty("evento") String evento,
-            @JsonProperty("data") Date data,
-            @JsonProperty("ora_inizio") Time ora_inizio,
-            @JsonProperty("ora_fine") Time ora_fine,
-            @JsonProperty("tracciato") Track tracciato,
-            @JsonProperty("meteo") String meteo,
-            @JsonProperty("pressione_atmosferica") Double pressione_atmosferica,
-            @JsonProperty("temperatura_aria") Double temperatura_aria,
-            @JsonProperty("temperatura_tracciato") Double temperatura_tracciato,
-            @JsonProperty("condizione_tracciato") String condizione_tracciato
-    ){
-
-    }
 }

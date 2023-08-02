@@ -1,10 +1,11 @@
 package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.records.Login;
+import com.example.polimarche_api.model.records.NewMember;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.service.MemberService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,13 +29,18 @@ public class MemberController {
         return memberService.getAllMembers();
     }
 
+    @PostMapping("/login")
+    public Member loginMember(@RequestBody Login request){
+        return memberService.loginMember(request);
+    }
+
     /**
      *
      * @param request specify the attributes of the newest member
      * @return ResponseEntity containing the matricola of the member created
      */
     @PostMapping
-    public ResponseEntity<Integer> addNewMember(@RequestBody MemberRepository.NewMember request){
+    public ResponseEntity<Integer> addNewMember(@RequestBody NewMember request){
         Integer matricola = memberService.addNewMember(request);
         return new ResponseEntity<>(matricola, HttpStatus.CREATED);
     }
@@ -46,18 +52,14 @@ public class MemberController {
      */
     @PutMapping("/{matricola}")
     public ResponseEntity<Integer> modifyMember(
-            @RequestBody MemberRepository.NewMember request,
+            @RequestBody NewMember request,
             @PathVariable Integer matricola
     ){
         memberService.modifyMember(request, matricola);
         return new ResponseEntity<>(matricola, HttpStatus.ACCEPTED);
     }
 
-/*
-    @PostMapping("/change-password/{matricola}")
-    public ResponseEntity<String> changePassword( @PathVariable String matricola ){
-    }
- */
+
 
 }
 

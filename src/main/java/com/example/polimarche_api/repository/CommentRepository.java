@@ -18,16 +18,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     List<Comment> findAllBySessioneId(Integer id);
 
-    /*
-       Istanza di un record => classe immutabile utilizzata per contenere semplici dati
-            avente già metodi getter e setter creati automaticamente
-    */
-    record NewComment(
-            @JsonProperty("descrizione") String descrizione,
-            @JsonProperty("flag") String flag,
-            @JsonProperty("sessione") PracticeSession sessione
-    ){
-
-    }
 
 }

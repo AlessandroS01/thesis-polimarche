@@ -19,18 +19,5 @@ public interface NotaRepository extends JpaRepository<Nota, Integer> {
 
     List<Nota> findAllByMembroMatricola(Integer matricola);
 
-    /*
-        Istanza di un record => classe immutabile utilizzata per contenere semplici dati
-        avente già metodi getter e setter creati automaticamente
-    */
-    record NewNota(
-            @JsonProperty("data") Date data,
-            @JsonProperty("ora_inizio") Time ora_inizio,
-            @JsonProperty("ora_fine") Time ora_fine,
-            @JsonProperty("membro") Member membro,
-            @JsonProperty("descrizione") String descrizione
-    ){
-
-    }
 
 }

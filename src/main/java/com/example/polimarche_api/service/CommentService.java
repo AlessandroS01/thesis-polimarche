@@ -2,13 +2,11 @@ package com.example.polimarche_api.service;
 
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Comment;
+import com.example.polimarche_api.model.records.NewComment;
 import com.example.polimarche_api.repository.CommentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -16,7 +14,7 @@ public class CommentService {
 
     public CommentService(CommentRepository commentRepository) { this.commentRepository = commentRepository; }
 
-    public Comment recordReader(CommentRepository.NewComment request){
+    public Comment recordReader(NewComment request){
         Comment comment = new Comment();
         comment.setFlag(request.flag());
         comment.setDescrizione(request.descrizione());
@@ -42,13 +40,13 @@ public class CommentService {
     }
 
 
-    public Integer addNewComment(CommentRepository.NewComment request) {
+    public Integer addNewComment(NewComment request) {
         Comment comment = recordReader(request);
         commentRepository.save(comment);
         return comment.getId();
     }
 
-    public void modifyComment(CommentRepository.NewComment request, Integer id) {
+    public void modifyComment(NewComment request, Integer id) {
 
         Comment comment = commentRepository.findById(id).orElseThrow( () ->
                 new ResourceNotFoundException("Comment " + id + " doesn't exist.")

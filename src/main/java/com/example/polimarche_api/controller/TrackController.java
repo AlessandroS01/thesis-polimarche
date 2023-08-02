@@ -1,5 +1,7 @@
 package com.example.polimarche_api.controller;
 
+import com.example.polimarche_api.model.records.NewTrack;
+import com.example.polimarche_api.model.records.NewTrackLength;
 import com.example.polimarche_api.repository.TrackRepository;
 import com.example.polimarche_api.service.TrackService;
 import com.example.polimarche_api.model.Track;
@@ -34,7 +36,7 @@ public class TrackController {
      * @param request used to create a new record inside Track
      */
     @PostMapping
-    public ResponseEntity<String> addTrack(@RequestBody TrackRepository.NewTrackRequest request){
+    public ResponseEntity<String> addTrack(@RequestBody NewTrack request){
         Track track = trackService.addTrack(request);
         return new ResponseEntity<>(track.getNome(), HttpStatus.CREATED);
     }
@@ -47,11 +49,10 @@ public class TrackController {
      */
     @PutMapping("/{name}")
     public ResponseEntity<String> modifyLengthTrack(
-            @RequestBody Double length,
+            @RequestBody NewTrackLength request,
             @PathVariable String name
     ){
-        System.out.println(length);
-        trackService.modifyLength(length, name);
+        trackService.modifyLength(request, name);
         return new ResponseEntity<>("Modified " + name, HttpStatus.ACCEPTED);
     }
 }

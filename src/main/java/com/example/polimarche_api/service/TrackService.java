@@ -2,6 +2,8 @@ package com.example.polimarche_api.service;
 
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Track;
+import com.example.polimarche_api.model.records.NewTrack;
+import com.example.polimarche_api.model.records.NewTrackLength;
 import com.example.polimarche_api.repository.TrackRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class TrackService {
     }
 
     // read the record created with the parameters sent with the request
-    public Track recordReader(TrackRepository.NewTrackRequest request){
+    public Track recordReader(NewTrack request){
         String nome = request.name();
         Double lunghezza = request.length();
 
@@ -32,18 +34,18 @@ public class TrackService {
     }
 
 
-    public Track addTrack(TrackRepository.NewTrackRequest request) {
+    public Track addTrack(NewTrack request) {
         Track track = recordReader(request);
         trackRepository.save(track);
         return track;
     }
 
 
-    public void modifyLength(Double length, String name){
+    public void modifyLength(NewTrackLength request, String name){
         Track track = trackRepository.findById(name).orElseThrow( () ->
                 new ResourceNotFoundException("Track " + name + " not found")
         );
-        track.setLunghezza(length);
+        track.setLunghezza(request.lunghezza());
         trackRepository.save(track);
     }
 }

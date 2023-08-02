@@ -4,6 +4,7 @@ import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.model.Nota;
 import com.example.polimarche_api.model.PracticeSession;
+import com.example.polimarche_api.model.records.NewNota;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.repository.NotaRepository;
 import com.example.polimarche_api.repository.PracticeSessionRepository;
@@ -28,7 +29,7 @@ public class NotaService {
         this.notaRepository = notaRepository;
     }
 
-    public Nota recordReader(NotaRepository.NewNota request){
+    public Nota recordReader(NewNota request){
         Nota note = new Nota();
         note.setData(request.data());
         note.setOra_inizio(request.ora_inizio());
@@ -50,13 +51,13 @@ public class NotaService {
         return notes;
     }
 
-    public Integer addNewNote(NotaRepository.NewNota request) {
+    public Integer addNewNote(NewNota request) {
         Nota nota = recordReader(request);
         notaRepository.save(nota);
         return nota.getId();
     }
 
-    public void modifyNote(NotaRepository.NewNota request, Integer id) {
+    public void modifyNote(NewNota request, Integer id) {
         Nota note = notaRepository.findById(id).orElseThrow( () ->
             new ResourceNotFoundException("Note with id " + id + " not found")
         );

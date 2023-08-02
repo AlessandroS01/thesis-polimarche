@@ -1,10 +1,11 @@
 package com.example.polimarche_api.service;
 
+import com.example.polimarche_api.exception.LoginUnauthorizedException;
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.records.Login;
+import com.example.polimarche_api.model.records.NewMember;
 import com.example.polimarche_api.repository.MemberRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class MemberService {
     }
 
     // Check the input values
-    public Member checkValues(MemberRepository.NewMember request){
+    public Member checkValues(NewMember request){
         Member member = new Member();
 
         // Check if the new member is a Manager => his reparto will be set to null
@@ -73,18 +74,26 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    public Integer addNewMember(MemberRepository.NewMember request) {
+    public Integer addNewMember(NewMember request) {
         Member member = checkValues(request);
         memberRepository.save(member);
         return member.getMatricola();
     }
 
-    public void modifyMember(MemberRepository.NewMember request, Integer matricola) {
+    public void modifyMember(NewMember request, Integer matricola) {
 
         Member member = memberRepository.findById(matricola).orElseThrow( () ->
                 new ResourceNotFoundException("Member with matricola " + matricola + " not found.")
         );
         member = checkValues(request);
+        member.setMatricola(matricola);
         memberRepository.save(member);
+    }
+
+    public Member loginMember(Login request) {
+        if(memberRepository.findByMatricolaAndPassword(request.matricola(), request.password()).getMatricola() == null){
+            throw new LoginUnauthorizedException("No user found.");
+        }
+        return memberRepository.findByMatricolaAndPassword(request.matricola(), request.password());
     }
 }
