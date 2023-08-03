@@ -2,6 +2,7 @@ package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Driver;
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.dto.DriverDTO;
 import com.example.polimarche_api.model.records.Login;
 import com.example.polimarche_api.model.records.NewBioInfo;
 import com.example.polimarche_api.model.records.NewDriver;
@@ -28,7 +29,7 @@ public class DriverController {
      * @return list of all the drivers
      */
     @GetMapping
-    public List<Driver> getAllDrivers(){
+    public List<DriverDTO> getAllDrivers(){
         return driverService.getAllDrivers();
     }
 
@@ -38,7 +39,7 @@ public class DriverController {
      * @return Driver if matricola param matches with matricola of a driver
      */
     @GetMapping("/{matricola}")
-    public Driver getDriverByMatricola(@PathVariable Integer matricola){
+    public DriverDTO getDriverByMatricola(@PathVariable Integer matricola){
         return driverService.getDriverByMatricola(matricola);
     }
 

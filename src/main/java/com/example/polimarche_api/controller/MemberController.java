@@ -1,9 +1,9 @@
 package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.dto.MemberDTO;
 import com.example.polimarche_api.model.records.Login;
 import com.example.polimarche_api.model.records.NewMember;
-import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,12 @@ public class MemberController {
      * @return list of all the members
      */
     @GetMapping
-    public List<Member> getAllMembers(){
+    public List<MemberDTO> getAllMembers(){
         return memberService.getAllMembers();
     }
 
     @PostMapping("/login")
-    public Member loginMember(@RequestBody Login request){
+    public MemberDTO loginMember(@RequestBody Login request){
         return memberService.loginMember(request);
     }
 

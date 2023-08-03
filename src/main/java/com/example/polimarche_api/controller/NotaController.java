@@ -2,6 +2,7 @@ package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.model.Nota;
+import com.example.polimarche_api.model.dto.NotaDTO;
 import com.example.polimarche_api.model.records.NewNota;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.repository.NotaRepository;
@@ -29,7 +30,7 @@ public class NotaController {
      * @return list of all the notes
      */
     @GetMapping
-    public List<Nota> getAllNotes(){
+    public List<NotaDTO> getAllNotes(){
         return notaService.getAllNotes();
     }
 
@@ -39,7 +40,7 @@ public class NotaController {
      * @return List of notes for that member
      */
     @GetMapping("/member/{matricola}")
-    public List<Nota> getNotesByMatricola(@PathVariable Integer matricola){
+    public List<NotaDTO> getNotesByMatricola(@PathVariable Integer matricola){
         return notaService.getNotesByMatricola(matricola);
     }
 

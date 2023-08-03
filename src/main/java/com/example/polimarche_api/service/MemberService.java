@@ -3,6 +3,8 @@ package com.example.polimarche_api.service;
 import com.example.polimarche_api.exception.LoginUnauthorizedException;
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.dto.MemberDTO;
+import com.example.polimarche_api.model.dto.mapper.MemberDTOMapper;
 import com.example.polimarche_api.model.records.Login;
 import com.example.polimarche_api.model.records.NewMember;
 import com.example.polimarche_api.repository.MemberRepository;
@@ -11,10 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberDTOMapper memberDTOMapper = new MemberDTOMapper();
 
     public MemberService(
             MemberRepository memberRepository
@@ -70,8 +74,11 @@ public class MemberService {
         return member;
     }
 
-    public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+    public List<MemberDTO> getAllMembers() {
+        return memberRepository.findAll().
+                stream()
+                .map(memberDTOMapper)
+                .collect(Collectors.toList());
     }
 
     public Integer addNewMember(NewMember request) {
@@ -90,10 +97,11 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public Member loginMember(Login request) {
+    public MemberDTO loginMember(Login request) {
         if(memberRepository.findByMatricolaAndPassword(request.matricola(), request.password()).getMatricola() == null){
             throw new LoginUnauthorizedException("No user found.");
         }
-        return memberRepository.findByMatricolaAndPassword(request.matricola(), request.password());
+        Member member =  memberRepository.findByMatricolaAndPassword(request.matricola(), request.password());
+        return memberDTOMapper.apply(member);
     }
 }

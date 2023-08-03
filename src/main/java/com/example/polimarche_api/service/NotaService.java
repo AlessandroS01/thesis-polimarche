@@ -4,6 +4,8 @@ import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Member;
 import com.example.polimarche_api.model.Nota;
 import com.example.polimarche_api.model.PracticeSession;
+import com.example.polimarche_api.model.dto.NotaDTO;
+import com.example.polimarche_api.model.dto.mapper.NotaDTOMapper;
 import com.example.polimarche_api.model.records.NewNota;
 import com.example.polimarche_api.repository.MemberRepository;
 import com.example.polimarche_api.repository.NotaRepository;
@@ -17,10 +19,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class NotaService {
     private final NotaRepository notaRepository;
+    private final NotaDTOMapper notaDTOMapper = new NotaDTOMapper();
 
     @Autowired
     public NotaService(
@@ -39,16 +43,22 @@ public class NotaService {
         return note;
     }
 
-    public List<Nota> getAllNotes() {
-        return notaRepository.findAll();
+    public List<NotaDTO> getAllNotes() {
+        return notaRepository.findAll().
+                stream().
+                map(notaDTOMapper).
+                collect(Collectors.toList());
     }
 
-    public List<Nota> getNotesByMatricola(Integer matricola) {
+    public List<NotaDTO> getNotesByMatricola(Integer matricola) {
         List<Nota> notes = notaRepository.findAllByMembroMatricola(matricola);
         if(notes.isEmpty()){
             throw new ResourceNotFoundException("No notes found for member: " + matricola);
         }
-        return notes;
+        return notes.
+                stream().
+                map(notaDTOMapper).
+                collect(Collectors.toList());
     }
 
     public Integer addNewNote(NewNota request) {

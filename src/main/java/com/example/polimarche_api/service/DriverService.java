@@ -4,6 +4,8 @@ import com.example.polimarche_api.exception.LoginUnauthorizedException;
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Driver;
 import com.example.polimarche_api.model.Member;
+import com.example.polimarche_api.model.dto.DriverDTO;
+import com.example.polimarche_api.model.dto.mapper.DriverDTOMapper;
 import com.example.polimarche_api.model.records.Login;
 import com.example.polimarche_api.model.records.NewBioInfo;
 import com.example.polimarche_api.model.records.NewDriver;
@@ -15,10 +17,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DriverService {
     private final DriverRepository driverRepository;
+    private final DriverDTOMapper driverDTOMapper = new DriverDTOMapper();
 
     public DriverService(
             DriverRepository driverRepository
@@ -27,13 +31,17 @@ public class DriverService {
     }
 
 
-    public List<Driver> getAllDrivers() {
-        return driverRepository.findAll();
+    public List<DriverDTO> getAllDrivers() {
+        return driverRepository.findAll().
+                stream().
+                map(driverDTOMapper).
+                collect(Collectors.toList());
     }
 
-    public Driver getDriverByMatricola(Integer matricola) {
+    public DriverDTO getDriverByMatricola(Integer matricola) {
         if (driverRepository.existsByMembroMatricola(matricola)){
-            return driverRepository.findByMembroMatricola(matricola);
+            Driver driver = driverRepository.findByMembroMatricola(matricola);
+            return driverDTOMapper.apply(driver);
         }
         else throw new ResourceNotFoundException("Driver with matricola " + matricola + " not found");
     }
