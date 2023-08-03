@@ -14,7 +14,7 @@ public class Participation {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "pilota")
+    @JoinColumn(name = "colpa")
     private Driver pilota;
     @ManyToOne
     @JoinColumn(name = "sessione")
@@ -95,7 +95,7 @@ public class Participation {
     public String toString() {
         return "DriverJoinSession{" +
                 "id=" + id +
-                ", pilota=" + pilota +
+                ", colpa=" + pilota +
                 ", sessione=" + sessione +
                 ", ordine=" + ordine +
                 ", cambio_pilota=" + cambio_pilota +
