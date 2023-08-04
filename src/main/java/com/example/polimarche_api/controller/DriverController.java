@@ -61,7 +61,7 @@ public class DriverController {
         return new ResponseEntity<>(matricola, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{matricola}")
+    @DeleteMapping("/delete/{matricola}")
     public ResponseEntity<Integer> deleteDriver(@PathVariable Integer matricola){
         driverService.deleteDriver(matricola);
         return new ResponseEntity<>(matricola, HttpStatus.ACCEPTED);

@@ -1,9 +1,7 @@
 package com.example.polimarche_api.repository;
 
 
-import com.example.polimarche_api.model.Breakage;
 import com.example.polimarche_api.model.BreakageHappen;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +15,5 @@ public interface BreakageHappenRepository extends JpaRepository<BreakageHappen, 
 
     List<BreakageHappen> findBySessioneId(Integer id);
     List<BreakageHappen> findByRotturaId(Integer id);
-    List<BreakageHappen> findBreakageHappensByPilotaTrue();
+    List<BreakageHappen> findBreakageHappensByColpaPilotaTrue();
 }

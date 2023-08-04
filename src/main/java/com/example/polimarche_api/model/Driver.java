@@ -5,16 +5,14 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "colpa")
+@Table(name = "pilota")
 public class Driver {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private Double peso;
     private Integer altezza;
-
     @OneToOne
     @JoinColumn(name = "membro")
     private Member membro;

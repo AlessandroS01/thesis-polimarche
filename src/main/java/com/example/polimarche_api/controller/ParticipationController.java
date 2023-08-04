@@ -1,6 +1,7 @@
 package com.example.polimarche_api.controller;
 
 import com.example.polimarche_api.model.Participation;
+import com.example.polimarche_api.model.dto.ParticipationDTO;
 import com.example.polimarche_api.model.records.NewDriverParticipation;
 import com.example.polimarche_api.service.ParticipationService;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class ParticipationController {
      * @return list of all the participation's drivers who joined a session
      */
     @GetMapping
-    public List<Participation> getAllParticipation(){
+    public List<ParticipationDTO> getAllParticipation(){
         return participationService.getAllParticipation();
     }
 
@@ -34,7 +35,7 @@ public class ParticipationController {
      * @return a list of participation for that session
      */
     @GetMapping("/session/{session}")
-    public List<Participation> getParticipationBySession(@PathVariable Integer session){
+    public List<ParticipationDTO> getParticipationBySession(@PathVariable Integer session){
         return participationService.getParticipationBySession(session);
     }
 
@@ -44,7 +45,7 @@ public class ParticipationController {
      * @return a list of participation in which the driver tried the car
      */
     @GetMapping("/driver/{driver}")
-    public List<Participation> getParticipationByDriver(@PathVariable Integer driver){
+    public List<ParticipationDTO> getParticipationByDriver(@PathVariable Integer driver){
         return participationService.getParticipationByDriver(driver);
     }
 

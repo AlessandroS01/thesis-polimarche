@@ -8,7 +8,8 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "tracciato")
+@Table(name = "tracciato",
+        uniqueConstraints = @UniqueConstraint(columnNames = "nome"))
 public class Track {
 
     @Id

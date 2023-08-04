@@ -39,7 +39,7 @@ public class BreakageHappenService {
         breakageHappen.setSessione(request.sessione());
         breakageHappen.setRottura(request.rottura());
         breakageHappen.setDescrizione(request.descrizione());
-        breakageHappen.setPilota(request.colpa());
+        breakageHappen.setColpa(request.colpa());
         breakageHappenRepository.save(breakageHappen);
         return breakageHappen.getId();
     }
@@ -48,7 +48,7 @@ public class BreakageHappenService {
         BreakageHappen breakageHappen = breakageHappenRepository.findById(id).orElseThrow( () ->
                 new ResourceNotFoundException("No breakage happened having an id " + id)
         );
-        breakageHappen.setPilota(request.colpa());
+        breakageHappen.setColpa(request.colpa());
         breakageHappen.setRottura(request.rottura());
         breakageHappen.setDescrizione(request.descrizione());
         breakageHappen.setSessione(request.sessione());
@@ -56,6 +56,6 @@ public class BreakageHappenService {
     }
 
     public List<BreakageHappen> getAllBreakagesHappenedForDriverFault() {
-        return breakageHappenRepository.findBreakageHappensByPilotaTrue();
+        return breakageHappenRepository.findBreakageHappensByColpaPilotaTrue();
     }
 }

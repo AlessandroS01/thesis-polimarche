@@ -3,6 +3,8 @@ package com.example.polimarche_api.service;
 import com.example.polimarche_api.exception.ParsingTimeException;
 import com.example.polimarche_api.exception.ResourceNotFoundException;
 import com.example.polimarche_api.model.Participation;
+import com.example.polimarche_api.model.dto.ParticipationDTO;
+import com.example.polimarche_api.model.dto.mapper.ParticipationDTOMapper;
 import com.example.polimarche_api.model.records.NewDriverParticipation;
 import com.example.polimarche_api.repository.ParticipationRepository;
 import org.springframework.stereotype.Service;
@@ -12,17 +14,22 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ParticipationService {
     private final ParticipationRepository participationRepository;
+    private final ParticipationDTOMapper participationDTOMapper = new ParticipationDTOMapper();
 
     public ParticipationService(ParticipationRepository participationRepository) {
         this.participationRepository = participationRepository;
     }
 
-    public List<Participation> getAllParticipation() {
-        return participationRepository.findAll();
+    public List<ParticipationDTO> getAllParticipation() {
+        return participationRepository.findAll().
+                stream().
+                map(participationDTOMapper).
+                collect(Collectors.toList());
     }
 
     public Integer addNewParticipation(NewDriverParticipation request) {
@@ -59,16 +66,22 @@ public class ParticipationService {
         return participation.getId();
     }
 
-    public List<Participation> getParticipationBySession(Integer sessionId) {
+    public List<ParticipationDTO> getParticipationBySession(Integer sessionId) {
         if (participationRepository.existsBySessioneId(sessionId)){
-            return participationRepository.findBySessioneId(sessionId);
+            return participationRepository.findBySessioneId(sessionId).
+                    stream().
+                    map(participationDTOMapper).
+                    collect(Collectors.toList());
         }
         else throw new ResourceNotFoundException("No drivers participated on this session.");
     }
 
-    public List<Participation> getParticipationByDriver(Integer driver) {
+    public List<ParticipationDTO> getParticipationByDriver(Integer driver) {
         if (participationRepository.existsByPilotaId(driver)){
-            return participationRepository.findByPilotaId(driver);
+            return participationRepository.findByPilotaId(driver).
+                    stream().
+                    map(participationDTOMapper).
+                    collect(Collectors.toList());
         }
         else throw new ResourceNotFoundException("No session joined by the driver.");
 

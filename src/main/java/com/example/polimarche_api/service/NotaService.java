@@ -80,4 +80,11 @@ public class NotaService {
 
         notaRepository.save(note);
     }
+
+    public void deleteNote(Integer id) {
+        if (notaRepository.existsById(id)) {
+            notaRepository.deleteById(id);
+        }
+        else throw new ResourceNotFoundException("No note with id " + id);
+    }
 }

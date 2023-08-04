@@ -67,6 +67,12 @@ public class NotaController {
         return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Integer> deleteNote(@PathVariable Integer id){
+        notaService.deleteNote(id);
+        return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
+    }
+
 
 }
 

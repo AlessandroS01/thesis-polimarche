@@ -18,17 +18,17 @@ public class BreakageHappen {
     @JoinColumn(name = "rottura")
     private Breakage rottura;
     private String descrizione;
-    private Boolean pilota; // true if the breakage was driver fault
+    private Boolean colpaPilota; // true if the breakage was driver fault
 
     public BreakageHappen() {
     }
 
-    public BreakageHappen(Integer id, PracticeSession sessione, Breakage rottura, String descrizione, Boolean pilota) {
+    public BreakageHappen(Integer id, PracticeSession sessione, Breakage rottura, String descrizione, Boolean colpaPilota) {
         this.id = id;
         this.sessione = sessione;
         this.rottura = rottura;
         this.descrizione = descrizione;
-        this.pilota = pilota;
+        this.colpaPilota = colpaPilota;
     }
 
     public Integer getId() {
@@ -63,12 +63,12 @@ public class BreakageHappen {
         this.descrizione = descrizione;
     }
 
-    public Boolean getPilota() {
-        return pilota;
+    public Boolean getColpa() {
+        return colpaPilota;
     }
 
-    public void setPilota(Boolean pilota) {
-        this.pilota = pilota;
+    public void setColpa(Boolean colpa) {
+        this.colpaPilota = colpa;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BreakageHappen {
                 ", sessione=" + sessione +
                 ", rottura=" + rottura +
                 ", descrizione='" + descrizione + '\'' +
-                ", colpa=" + pilota +
+                ", colpa=" + colpaPilota +
                 '}';
     }
 
@@ -87,11 +87,11 @@ public class BreakageHappen {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BreakageHappen that = (BreakageHappen) o;
-        return Objects.equals(id, that.id) && Objects.equals(sessione, that.sessione) && Objects.equals(rottura, that.rottura) && Objects.equals(descrizione, that.descrizione) && Objects.equals(pilota, that.pilota);
+        return Objects.equals(id, that.id) && Objects.equals(sessione, that.sessione) && Objects.equals(rottura, that.rottura) && Objects.equals(descrizione, that.descrizione) && Objects.equals(colpaPilota, that.colpaPilota);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sessione, rottura, descrizione, pilota);
+        return Objects.hash(id, sessione, rottura, descrizione, colpaPilota);
     }
 }
