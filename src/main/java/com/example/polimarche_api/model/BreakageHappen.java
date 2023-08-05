@@ -18,6 +18,7 @@ public class BreakageHappen {
     @JoinColumn(name = "rottura")
     private Breakage rottura;
     private String descrizione;
+    @Column(name = "pilota")
     private Boolean colpaPilota; // true if the breakage was driver fault
 
     public BreakageHappen() {

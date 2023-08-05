@@ -43,10 +43,12 @@ public class SetupController {
         return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
     }
 
+    /*
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> deleteSetup(@PathVariable Integer id){
         setupService.deleteSetup(id);
         return new ResponseEntity<>(id, HttpStatus.ACCEPTED);
     }
+     */
 }
 
