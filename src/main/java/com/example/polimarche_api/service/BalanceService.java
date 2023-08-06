@@ -55,6 +55,6 @@ public class BalanceService {
         if (balanceRepository.existsById(id)) {
             balanceRepository.deleteById(id);
         }
-        else throw new ResourceNotFoundException("No balance's parameters saved with id " + id);
+        else throw new ResourceNotFoundException("No balance parameters saved with id " + id);
     }
 }

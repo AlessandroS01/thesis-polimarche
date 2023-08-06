@@ -14,5 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     Member findByRepartoAndRuolo(Workshop reparto, String ruolo);
     Member findByMatricolaAndPassword(Integer matricola, String password);
+    Boolean existsByMatricolaAndPassword(Integer matricola, String password);
 
 }

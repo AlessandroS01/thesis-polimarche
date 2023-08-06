@@ -38,11 +38,11 @@ public class MemberService {
             );
         }
         // Check if the new member is a Caporeparto and his reparto is set to null
-        else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() == null){
+        else if(Objects.equals(request.ruolo(), "Caporeparto") && Objects.isNull(request.reparto())){
             throw new IllegalArgumentException("A caporeparto should manage one workshop area");
         }
         // Check if the new member is a Caporeparto and his reparto is set to null
-        else if(Objects.equals(request.ruolo(), "Caporeparto") && request.reparto().getReparto() != null){
+        else if(Objects.equals(request.ruolo(), "Caporeparto") && Objects.nonNull(request.reparto())){
             // find the previous Caporeparto of the workshop area
             Optional<Member> optional = Optional.ofNullable(memberRepository.findByRepartoAndRuolo(
                     request.reparto(), "Caporeparto"
@@ -61,7 +61,7 @@ public class MemberService {
             );
         }
         // Check if the new member is a Membro and his reparto is set to null
-        else if(Objects.equals(request.ruolo(), "Membro") && request.reparto().getReparto() == null){
+        else if(Objects.equals(request.ruolo(), "Membro") && Objects.isNull(request.reparto())){
             throw new IllegalArgumentException("A membro should be part of one workshop area");
         }
         else {
@@ -98,10 +98,10 @@ public class MemberService {
     }
 
     public MemberDTO loginMember(Login request) {
-        if(memberRepository.findByMatricolaAndPassword(request.matricola(), request.password()).getMatricola() == null){
-            throw new LoginUnauthorizedException("No user found.");
+        if(memberRepository.existsByMatricolaAndPassword(request.matricola(), request.password())){
+            Member member =  memberRepository.findByMatricolaAndPassword(request.matricola(), request.password());
+            return memberDTOMapper.apply(member);
         }
-        Member member =  memberRepository.findByMatricolaAndPassword(request.matricola(), request.password());
-        return memberDTOMapper.apply(member);
+        throw new LoginUnauthorizedException("No user found.");
     }
 }

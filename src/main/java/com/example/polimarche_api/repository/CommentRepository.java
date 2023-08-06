@@ -16,6 +16,8 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
+    Boolean existsCommentBySessioneId(Integer id);
+
     List<Comment> findAllBySessioneId(Integer id);
 
 

@@ -34,6 +34,10 @@ public class BreakageHappenService {
         else throw new ResourceNotFoundException("No breakage happened for breakage " + id);
     }
 
+    public List<BreakageHappen> getAllBreakagesHappenedForDriverFault() {
+        return breakageHappenRepository.findBreakageHappensByColpaPilotaTrue();
+    }
+
     public Integer addBreakageHappened(NewBreakageHappen request) {
         BreakageHappen breakageHappen = new BreakageHappen();
         breakageHappen.setSessione(request.sessione());
@@ -55,7 +59,5 @@ public class BreakageHappenService {
         breakageHappenRepository.save(breakageHappen);
     }
 
-    public List<BreakageHappen> getAllBreakagesHappenedForDriverFault() {
-        return breakageHappenRepository.findBreakageHappensByColpaPilotaTrue();
-    }
+
 }

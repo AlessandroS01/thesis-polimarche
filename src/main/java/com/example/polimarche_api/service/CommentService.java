@@ -32,13 +32,12 @@ public class CommentService {
      * @return list of comments having id param as session id
      */
     public List<Comment> getCommentsBySession(Integer id) {
-        List<Comment> comments = commentRepository.findAllBySessioneId(id);
-        if (comments.isEmpty()) {
-            throw new ResourceNotFoundException("Comments not found for session ID: " + id);
+        if (commentRepository.existsCommentBySessioneId(id)) {
+            return commentRepository.findAllBySessioneId(id);
         }
-        return comments;
-    }
+        else throw new ResourceNotFoundException("Comments not found for session ID: " + id);
 
+    }
 
     public Integer addNewComment(NewComment request) {
         Comment comment = recordReader(request);

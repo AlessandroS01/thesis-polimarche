@@ -51,14 +51,13 @@ public class NotaService {
     }
 
     public List<NotaDTO> getNotesByMatricola(Integer matricola) {
-        List<Nota> notes = notaRepository.findAllByMembroMatricola(matricola);
-        if(notes.isEmpty()){
-            throw new ResourceNotFoundException("No notes found for member: " + matricola);
+        if(notaRepository.existsByMembroMatricola(matricola)){
+            return notaRepository.findAllByMembroMatricola(matricola)
+                    .stream()
+                    .map(notaDTOMapper)
+                    .collect(Collectors.toList());
         }
-        return notes.
-                stream().
-                map(notaDTOMapper).
-                collect(Collectors.toList());
+        else throw new ResourceNotFoundException("No notes found for member: " + matricola);
     }
 
     public Integer addNewNote(NewNota request) {
@@ -77,7 +76,6 @@ public class NotaService {
         note.setOra_fine(request.ora_fine());
         note.setMembro(request.membro());
         note.setDescrizione(request.descrizione());
-
         notaRepository.save(note);
     }
 

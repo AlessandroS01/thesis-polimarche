@@ -19,5 +19,7 @@ public interface NotaRepository extends JpaRepository<Nota, Integer> {
 
     List<Nota> findAllByMembroMatricola(Integer matricola);
 
+    Boolean existsByMembroMatricola(Integer matricola);
+
 
 }
