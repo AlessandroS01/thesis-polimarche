@@ -12,6 +12,5 @@ import java.util.List;
 @Repository
 @Transactional
 public interface BalanceRepository extends JpaRepository<Balance, Integer> {
-
     List<Balance> findBalanceByPosizione(String position);
 }
