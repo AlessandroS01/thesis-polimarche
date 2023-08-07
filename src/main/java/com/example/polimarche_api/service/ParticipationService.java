@@ -24,7 +24,10 @@ public class ParticipationService {
     private final DriverRepository driverRepository;
     private final ParticipationDTOMapper participationDTOMapper = new ParticipationDTOMapper();
 
-    public ParticipationService(ParticipationRepository participationRepository, DriverRepository driverRepository) {
+    public ParticipationService(
+            ParticipationRepository participationRepository,
+            DriverRepository driverRepository
+    ) {
         this.participationRepository = participationRepository;
         this.driverRepository = driverRepository;
     }
