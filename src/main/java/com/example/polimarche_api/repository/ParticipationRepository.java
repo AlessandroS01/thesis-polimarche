@@ -21,8 +21,11 @@ public interface ParticipationRepository extends JpaRepository<Participation, In
     List<Participation> findBySessioneId(Integer sessione);
     Boolean existsBySessioneId(Integer sessione);
 
-    List<Participation> findByPilotaId(Integer id);
-    Boolean existsByPilotaId(Integer id);
+    List<Participation> findByPilotaMembroMatricola(Integer id);
+    Boolean existsByPilotaMembroMatricola(Integer id);
+
+    List<Participation> findBySessioneIdAndPilotaMembroMatricola(Integer sessionId, Integer driverId);
+    Boolean existsBySessioneIdAndPilotaMembroMatricola(Integer sessionId, Integer driverId);
 
     List<Participation> findBySessioneIdAndOrdineGreaterThan(Integer sessione, Integer ordine);
     List<Participation> findBySessioneIdAndOrdineGreaterThanEqual(Integer sessione, Integer ordine);

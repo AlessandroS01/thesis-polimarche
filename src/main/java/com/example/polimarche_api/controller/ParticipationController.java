@@ -1,6 +1,5 @@
 package com.example.polimarche_api.controller;
 
-import com.example.polimarche_api.model.Participation;
 import com.example.polimarche_api.model.dto.ParticipationDTO;
 import com.example.polimarche_api.model.records.NewDriverParticipation;
 import com.example.polimarche_api.service.ParticipationService;
@@ -41,12 +40,21 @@ public class ParticipationController {
 
     /**
      *
-     * @param driver is the id of the driver researched
+     * @param matricola is the id of the driver researched
      * @return a list of participation in which the driver tried the car
      */
-    @GetMapping("/driver/{driver}")
-    public List<ParticipationDTO> getParticipationByDriver(@PathVariable Integer driver){
-        return participationService.getParticipationByDriver(driver);
+    @GetMapping("/driver/{matricola}")
+    public List<ParticipationDTO> getParticipationByDriverMatricola(@PathVariable Integer matricola){
+        return participationService.getParticipationByDriverMatricola(matricola);
+    }
+
+
+    @GetMapping("/driver-session")
+    public List<ParticipationDTO> getParticipationByDriverMatricolaAndSession(
+            @RequestParam(required = true) Integer matricola,
+            @RequestParam(required = true) Integer sessionId
+    ){
+        return participationService.getParticipationByDriverMatricolaAndSession(matricola, sessionId);
     }
 
     /**

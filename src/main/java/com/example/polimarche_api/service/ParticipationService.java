@@ -2,10 +2,12 @@ package com.example.polimarche_api.service;
 
 import com.example.polimarche_api.exception.ParsingTimeException;
 import com.example.polimarche_api.exception.ResourceNotFoundException;
+import com.example.polimarche_api.model.Driver;
 import com.example.polimarche_api.model.Participation;
 import com.example.polimarche_api.model.dto.ParticipationDTO;
 import com.example.polimarche_api.model.dto.mapper.ParticipationDTOMapper;
 import com.example.polimarche_api.model.records.NewDriverParticipation;
+import com.example.polimarche_api.repository.DriverRepository;
 import com.example.polimarche_api.repository.ParticipationRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,12 @@ import java.util.stream.Collectors;
 @Service
 public class ParticipationService {
     private final ParticipationRepository participationRepository;
+    private final DriverRepository driverRepository;
     private final ParticipationDTOMapper participationDTOMapper = new ParticipationDTOMapper();
 
-    public ParticipationService(ParticipationRepository participationRepository) {
+    public ParticipationService(ParticipationRepository participationRepository, DriverRepository driverRepository) {
         this.participationRepository = participationRepository;
+        this.driverRepository = driverRepository;
     }
 
     public List<ParticipationDTO> getAllParticipation() {
@@ -35,7 +39,15 @@ public class ParticipationService {
     public Integer addNewParticipation(NewDriverParticipation request) {
         Participation participation = new Participation();
 
-        participation.setPilota(request.pilota());
+        if(driverRepository.existsByMembroMatricola(request.pilota().getMembro().getMatricola())){
+            Driver driver = driverRepository.findByMembroMatricola(
+                    request.pilota().getMembro().getMatricola()
+            );
+            participation.setPilota(driver);
+        }
+        else throw new ResourceNotFoundException("Driver not found");
+
+
         participation.setSessione(request.sessione());
 
         // set ordine to the number of record having session id equals to the one put inside the request
@@ -76,9 +88,9 @@ public class ParticipationService {
         else throw new ResourceNotFoundException("No drivers participated on this session.");
     }
 
-    public List<ParticipationDTO> getParticipationByDriver(Integer driver) {
-        if (participationRepository.existsByPilotaId(driver)){
-            return participationRepository.findByPilotaId(driver).
+    public List<ParticipationDTO> getParticipationByDriverMatricola(Integer matricola) {
+        if (participationRepository.existsByPilotaMembroMatricola(matricola)){
+            return participationRepository.findByPilotaMembroMatricola(matricola).
                     stream().
                     map(participationDTOMapper).
                     collect(Collectors.toList());
@@ -87,15 +99,36 @@ public class ParticipationService {
 
     }
 
+    public List<ParticipationDTO> getParticipationByDriverMatricolaAndSession(Integer matricola, Integer sessionId) {
+        if(participationRepository.existsBySessioneIdAndPilotaMembroMatricola(sessionId, matricola)){
+            return participationRepository.findBySessioneIdAndPilotaMembroMatricola(sessionId, matricola)
+                    .stream()
+                    .map(participationDTOMapper)
+                    .collect(Collectors.toList());
+        }
+        else throw new ResourceNotFoundException(
+                "The driver with id " + matricola + " did not participate the session " + sessionId
+        );
+    }
+
     public void modifyParticipation(NewDriverParticipation request, Integer id) {
         // check if the participation exists
         Participation participation = participationRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("No participation found.")
         );
-        participation.setPilota(request.pilota());
 
-        // decrease the value of ordine in all the different participation's records having the same session of the
-        // participation the user wants to modify and ordine greater than the one saved inside
+        if(driverRepository.existsByMembroMatricola(request.pilota().getMembro().getMatricola())){
+            Driver driver = driverRepository.findByMembroMatricola(
+                    request.pilota().getMembro().getMatricola()
+            );
+            participation.setPilota(driver);
+        }
+        else throw new ResourceNotFoundException("Driver not found");
+
+
+        // decrease the value of ordine in all the different participation's records having the
+        // same session of the participation the user wants to modify and ordine greater
+        // than the one saved inside
         participationRepository.findBySessioneIdAndOrdineGreaterThan(
                 participation.getSessione().getId(),
                 participation.getOrdine()
@@ -149,4 +182,6 @@ public class ParticipationService {
 
         participationRepository.save(participation);
     }
+
+
 }
