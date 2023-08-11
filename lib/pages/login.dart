@@ -120,27 +120,20 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 50.0),
                 // Login Button
                 Listener(
-                      onPointerUp: (_) => setState( () {
-                          // TODO logic for loggin in
-                          // Perform login logic here, using _usernameController.text and _passwordController.text
-                          // For demo purposes, just print the values to the console.
-                          print('Username: ${_usernameController.text}');
-                          print('Password: ${_passwordController.text}');
-
-                          Navigator.popAndPushNamed(
-                              context,
-                              '/home'
-                          );
-                      }),
+                      onPointerUp: (_) async {
+                          await Future.delayed(const Duration(milliseconds: 500)); // Wait for animation
+                          setState(() => isLoginPressed = false); // Reset the state
+                          // TODO: Add your navigation logic here
+                          Navigator.popAndPushNamed(context, '/home');
+                        },
                       onPointerDown: (_) => setState(() => isLoginPressed = true),
                       child: AnimatedContainer(
-                        width: 130,
-                        duration: const Duration(milliseconds: 100),
-                        child: Center(child: Text("Login")),
-                        padding: EdgeInsets.all(30),
+                        width: 120,
+                        duration: const Duration(milliseconds: 500),
+                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -148,30 +141,34 @@ class _LoginState extends State<Login> {
                             //
                             BoxShadow(
                               color: Colors.grey.shade500,
-                              offset: Offset(18, 18),
+                              offset: const Offset(18, 18),
                               blurRadius: 30
                             ),
                             BoxShadow(
                               color: Colors.white,
-                              offset: -Offset(18, 18),
+                              offset: -const Offset(18, 18),
                               blurRadius: 30,
                             ),
 
 
                           ]
                         ),
+                        child: const Center(child: Text("Login")),
                       ),
                 ),
               ],
             )),
-            const Align(
+            Align(
               alignment: Alignment.bottomCenter,
-              child: Text(
-                '©Polimarche',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontFamily: 'aleo'
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                child: const Text(
+                  '©Polimarche',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontFamily: 'aleo'
+                  ),
                 ),
               ),
             )

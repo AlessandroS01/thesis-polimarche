@@ -73,13 +73,15 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Listener(
-                      onPointerUp: (_) => setState(() => isSessionPressed = false),
+                      onPointerUp: (_) async {
+                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                          setState(() => isSessionPressed = false); // Reset the state
+                      },
                       onPointerDown: (_) => setState(() => isSessionPressed = true),
                       child: AnimatedContainer(
                         width: 130,
-                        duration: const Duration(milliseconds: 100),
-                        child: Center(child: Text("Sessioni")),
-                        padding: EdgeInsets.all(30),
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.all(30),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -101,16 +103,19 @@ class _HomePageState extends State<HomePage> {
 
                           ]
                         ),
+                        child: const Center(child: Text("Sessioni")),
                       ),
                     ),
                     Listener(
-                      onPointerUp: (_) => setState(() => isProblemPressed = false),
+                      onPointerUp: (_) async {
+                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                          setState(() => isProblemPressed = false); // Reset the state
+                      },
                       onPointerDown: (_) => setState(() => isProblemPressed = true),
                       child: AnimatedContainer(
                         width: 130,
-                        duration: const Duration(milliseconds: 100),
-                        child: Center(child: Text("Problemi")),
-                        padding: EdgeInsets.all(30),
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.all(30),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -132,6 +137,7 @@ class _HomePageState extends State<HomePage> {
 
                           ]
                         ),
+                        child: const Center(child: Text("Problemi")),
                       ),
                     ),
                   ],
@@ -140,13 +146,15 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Listener(
-                      onPointerUp: (_) => setState(() => isTelemetryPressed = false),
+                      onPointerUp: (_) async {
+                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                          setState(() => isTelemetryPressed = false); // Reset the state
+                      },
                       onPointerDown: (_) => setState(() => isTelemetryPressed = true),
                       child: AnimatedContainer(
                         width: 130,
-                        duration: const Duration(milliseconds: 100),
-                        child: Center(child: Text("Telemetria")),
-                        padding: EdgeInsets.all(30),
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.all(30),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -168,16 +176,19 @@ class _HomePageState extends State<HomePage> {
 
                           ]
                         ),
+                        child: const Center(child: Text("Telemetria")),
                       ),
                     ),
                     Listener(
-                      onPointerUp: (_) => setState(() => isSetupPressed = false),
+                      onPointerUp: (_) async {
+                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                          setState(() => isSetupPressed = false); // Reset the state
+                      },
                       onPointerDown: (_) => setState(() => isSetupPressed = true),
                       child: AnimatedContainer(
                         width: 130,
-                        duration: const Duration(milliseconds: 100),
-                        child: Center(child: Text("Setup")),
-                        padding: EdgeInsets.all(30),
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.all(30),
                         decoration: BoxDecoration(
                           color: backgroundColor,
                           borderRadius: BorderRadius.circular(15),
@@ -199,6 +210,7 @@ class _HomePageState extends State<HomePage> {
 
                           ]
                         ),
+                        child: const Center(child: Text("Setup")),
                       ),
                     ),
                   ],
