@@ -59,7 +59,7 @@ class _LoadingState extends State<Loading> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: Center(
         child: ScaleTransition(
           scale: _animation,
