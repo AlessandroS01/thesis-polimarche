@@ -1,28 +1,32 @@
-
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:optional/optional_internal.dart';
+import 'package:polimarche/pages/home/team/detail_page_member.dart';
 
+import '../../../model/Driver.dart';
 import '../../../model/Member.dart';
 
-class CardMember extends StatefulWidget {
+class CardMemberListItem extends StatefulWidget {
   final Member member;
-  const CardMember({Key? key, required this.member}) : super(key: key);
+  final Optional<Driver> driver;
+  const CardMemberListItem({Key? key, required this.member, required this.driver}) : super(key: key);
 
   @override
-  State<CardMember> createState() => _CardMemberState();
+  State<CardMemberListItem> createState() => _CardMemberListItemState();
 }
 
-class _CardMemberState extends State<CardMember> {
-
+class _CardMemberListItemState extends State<CardMemberListItem> {
   bool isVisualizzaPressed = false;
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Colors.grey.shade300;
 
-    Offset distance = isVisualizzaPressed ? Offset(2, 2) : Offset(7, 7);
-    double blur = 20;
+    final backgroundColor = Colors.grey.shade300;
+    Offset distance = Offset(5, 5);
+    double blur = 10;
+
     final member = widget.member;
+    final driver = widget.driver;
 
 
     return Container(
@@ -36,15 +40,15 @@ class _CardMemberState extends State<CardMember> {
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: Colors.grey.shade500,
-            offset: Offset(10, 10),
-            blurRadius: 10,
-            inset: true
+            offset: Offset(5, 5),
+            blurRadius: 15,
+            inset: false
           ),
           BoxShadow(
             color: Colors.white,
             offset: Offset(-5, -5),
             blurRadius: 10,
-            inset: true
+            inset: false
           ),
         ],
       ),
@@ -80,54 +84,55 @@ class _CardMemberState extends State<CardMember> {
                       ),
                       Listener(
                         onPointerDown: (_) async {
-                        await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
                           setState(() => isVisualizzaPressed = true); // Reset the state
+                          await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
+
+                          // PASS THE DRIVER TO THE NEXT WIDGET
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DetailMember(
+                                    driver: driver,
+                                    member: member,
+                                  )
+                              )
+                          );
+                          setState(() => isVisualizzaPressed = false); // Reset the state,
                         },
                         child: AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
+                              padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+                              duration: Duration(milliseconds: 150),
                               decoration: BoxDecoration(
                                 color: backgroundColor,
                                 borderRadius: BorderRadius.circular(10),
-                                boxShadow: isVisualizzaPressed ? [] : [
+                                boxShadow: isVisualizzaPressed ? [
                                   BoxShadow(
                                     offset: distance,
                                     blurRadius: blur,
                                     color: Colors.grey.shade500,
-                                    inset: isVisualizzaPressed
+                                    inset: true
                                   ),
                                   BoxShadow(
                                     offset: -distance,
                                     blurRadius: blur,
                                     color: Colors.white,
-                                    inset: isVisualizzaPressed
+                                    inset: true
                                   ),
-                                ]
+                                ] : []
                               ),
-                          child: TextButton(
-                              style: ButtonStyle(
-                                overlayColor: MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) { {
-                                    return Colors.transparent;
-                                  }},
+                          child: Row(
+                              children: [
+                                Text(
+                                    "Visualizza",
+                                    style: TextStyle(
+                                      color: Colors.black
+                                    ),
                                 ),
-                              ),
-                              onPressed: () { },
-                              child: Container(
-                                child: Row(
-                                    children: [
-                                      Text(
-                                          "Visualizza",
-                                          style: TextStyle(
-                                            color: Colors.black
-                                          ),
-                                      ),
-                                      Icon(
-                                          Icons.person_2,
-                                          color: Colors.black,
-                                      )
-                                    ]
-                                ),
-                              )
+                                Icon(
+                                    Icons.person_2,
+                                    color: Colors.black,
+                                )
+                              ]
                           ),
                         ),
                       )

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/Driver.dart';
-import '../../model/Member.dart';
-import '../../model/Workshop.dart';
-import 'cards/member.dart';
+import '../../../model/Member.dart';
+import '../../../model/Workshop.dart';
+import '../cards/member_list_item_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:optional/optional.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -24,7 +25,7 @@ class _TeamPageState extends State<TeamPage> {
     Member(1097941, "Francesco", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Telaio")),
     Member(2, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop("")),
     Member(21, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")),
-    Member(5, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")),
+    Member(5, "M", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Membro", Workshop("Battery pack")),
     Member(789, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")),
     Member(15, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Marketing")),
   ];
@@ -38,7 +39,7 @@ class _TeamPageState extends State<TeamPage> {
   ];
   List<Driver> drivers = [
     Driver(1, Member(1097941, "Francesco", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Telaio")), 80, 180),
-    Driver(2, Member(2, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop("")), 80, 180)
+    Driver(4, Member(789, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")), 80, 180),
   ];
 
   // contains all the members and workshop areas
@@ -234,6 +235,7 @@ class _TeamPageState extends State<TeamPage> {
                 ),
               ),
             ),
+
             // LIST OF MEMBERS
             Expanded(
               flex: 5,
@@ -248,7 +250,6 @@ class _TeamPageState extends State<TeamPage> {
                       itemCount: _filteredTeamList.length,
                       itemBuilder: (context, index) {
                         final element = _filteredTeamList[index];
-
                         if(element is String){
                           return ListTile(
                             title: Center(
@@ -261,8 +262,20 @@ class _TeamPageState extends State<TeamPage> {
                             ),
                           );
                         }
+                        // CREATE A CARD FOR EACH MEMBER
                         if(element is Member){
-                          return CardMember(member: element);
+                          Optional<Driver> driver = Optional.ofNullable(null);
+                          _teamDrivers.asMap().forEach((index, item) {
+                            if(item is Member
+                                  && item.matricola == element.matricola
+                            ){
+                              driver = Optional.of(
+                                  // -1 because the first position is occupied by a string
+                                  drivers[index - 1] // define the driver
+                              );
+                            }
+                          });
+                          return CardMemberListItem(member: element, driver: driver);
                         }
                         if(element is Workshop){
                           return ListTile(
@@ -276,7 +289,9 @@ class _TeamPageState extends State<TeamPage> {
                             ),
                           );
                         }
+                        return null;
                       },
+
                   ),
                 ),
               )

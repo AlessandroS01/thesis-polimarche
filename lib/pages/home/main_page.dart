@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:polimarche/pages/main/agenda_item_page.dart';
-import 'package:polimarche/pages/main/home_item_page.dart';
-import 'package:polimarche/pages/main/team_item_page.dart';
+import 'package:polimarche/pages/home/team/team_main.dart';
+
+import 'agenda_page.dart';
+import 'home_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -27,15 +28,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       body: Container(
         decoration: BoxDecoration(
           color: Colors.grey.shade300
-          /*
-          image: DecorationImage(
-            image: AssetImage(
-              'assets/backgrounds/login.jpg'
-            ),
-            fit: BoxFit.fill
-          )
-
-           */
         ),
         child: pages[_currentIndex],
       ),

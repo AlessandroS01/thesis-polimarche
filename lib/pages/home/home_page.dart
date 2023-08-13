@@ -134,8 +134,6 @@ class _HomePageState extends State<HomePage> {
                               blurRadius: blurProblem,
                               inset: isProblemPressed
                             ),
-
-
                           ]
                         ),
                         child: const Center(child: Text("Problemi")),
