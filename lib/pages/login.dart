@@ -10,8 +10,10 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final TextEditingController _usernameController = TextEditingController();
+
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
   bool isLoginPressed = false;
 
   void _togglePasswordVisibility() {
@@ -26,7 +28,7 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       body: Container(
-        color: Colors.grey.shade300,
+        color: backgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -45,82 +47,95 @@ class _LoginState extends State<Login> {
                 ),
                 const SizedBox(height: 50),
                 // Username Field
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'aleo',
-                        letterSpacing: 1
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                    decoration: BoxDecoration(
+                      color: backgroundColor, // Light background color
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white,
+                          blurRadius: 10,
+                          offset: Offset(-5, -5),
+                        ),
+                        BoxShadow(
+                          color: Colors.grey.shade500,
+                          blurRadius: 10,
+                          offset: Offset(5, 5),
+                        ),
+                      ],
                     ),
-                    controller: _usernameController,
-                    cursorColor: Colors.black,
-                    decoration: const InputDecoration(
-                      suffixIcon: Icon(
-                        Icons.login_sharp,
-                        color: Colors.black,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1
+                        ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Matricola',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        suffixIcon: Icon(
+                          Icons.login_sharp,
+                          color: Colors.black,
+                        ),
                       ),
-                      labelText: 'Username',
-                      labelStyle: TextStyle(
-                          fontFamily: 'aleo',
-                          color: Colors.black
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.black
-                        )
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Colors.black
-                        )
-                      ),
-                    ),
+                      controller: _usernameController,
+                    )
                   ),
                 ),
                 const SizedBox(height: 20.0),
                 // Password Field
-                Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1
-                  ),
-                  controller: _passwordController,
-                  cursorColor: Colors.black,
-                  obscureText: !_isPasswordVisible, // Toggle visibility
-                  decoration: InputDecoration(
-                    labelStyle: const TextStyle(
-                          fontFamily: 'aleo',
-                          color: Colors.black
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                    decoration: BoxDecoration(
+                      color: backgroundColor, // Light background color
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white,
+                          blurRadius: 10,
+                          offset: Offset(-5, -5),
+                        ),
+                        BoxShadow(
+                          color: Colors.grey.shade500,
+                          blurRadius: 10,
+                          offset: Offset(5, 5),
+                        ),
+                      ],
                     ),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black
-                      )
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: Colors.black
-                      )
-                    ),
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.black,
+                    child: TextField(
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1
+                        ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Password',
+                        hintStyle: TextStyle(color: Colors.grey),
+                        suffixIcon: IconButton(
+                          onPressed: _togglePasswordVisibility,
+                          icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: Colors.black,
+                            ),
+                        ),
                       ),
-                      onPressed: _togglePasswordVisibility,
-                    ),
+                      controller: _passwordController,
+                      obscureText: !_isPasswordVisible, // Toggle visibility
+                    )
                   ),
-                ),
                 ),
                 const SizedBox(height: 50.0),
+
                 // Login Button
                 Listener(
                       onPointerUp: (_) async {
@@ -128,7 +143,7 @@ class _LoginState extends State<Login> {
                           setState(() => isLoginPressed = false); // Reset the state
                           // TODO: Add your navigation logic here
                           Navigator.popAndPushNamed(context, '/home');
-                        },
+                      },
                       onPointerDown: (_) => setState(() => isLoginPressed = true),
                       child: AnimatedContainer(
                         width: 120,

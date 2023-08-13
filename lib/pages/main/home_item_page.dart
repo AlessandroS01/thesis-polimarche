@@ -9,20 +9,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   bool isSessionPressed = false;
   bool isProblemPressed = false;
   bool isSetupPressed = false;
   bool isTelemetryPressed = false;
 
-
-
   @override
   Widget build(BuildContext context) {
     final backgroundColor = Colors.grey.shade300;
+
     Offset distanceSession = isSessionPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceProblem = isProblemPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceSetup = isSetupPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceTelemetry = isTelemetryPressed ? Offset(5, 5) : Offset(18, 18);
+
     double blurSession = isSessionPressed ? 5.0 : 30.0;
     double blurProblem = isProblemPressed ? 5.0 : 30.0;
     double blurSetup = isSetupPressed ? 5.0 : 30.0;
