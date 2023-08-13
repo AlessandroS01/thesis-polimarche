@@ -20,8 +20,8 @@ class _CardMemberState extends State<CardMember> {
   Widget build(BuildContext context) {
     final backgroundColor = Colors.grey.shade300;
 
-    Offset distance = isVisualizzaPressed ? Offset(5, 5) : Offset(8, 8);
-    double blur = 5;
+    Offset distance = isVisualizzaPressed ? Offset(2, 2) : Offset(7, 7);
+    double blur = 20;
     final member = widget.member;
 
 

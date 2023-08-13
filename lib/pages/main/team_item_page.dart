@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:polimarche/model/Driver.dart';
 import '../../model/Member.dart';
 import '../../model/Workshop.dart';
 import 'cards/member.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -13,6 +15,7 @@ class TeamPage extends StatefulWidget {
 
 class _TeamPageState extends State<TeamPage> {
   final backgroundColor = Colors.grey.shade300;
+  bool isDriverPressed = false;
 
   final TextEditingController _searchBarController = TextEditingController();
 
@@ -33,10 +36,16 @@ class _TeamPageState extends State<TeamPage> {
     Workshop("Elettronica"),
     Workshop("Dinamica"),
   ];
+  List<Driver> drivers = [
+    Driver(1, Member(1097941, "Francesco", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Telaio")), 80, 180),
+    Driver(2, Member(2, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop("")), 80, 180)
+  ];
 
   // contains all the members and workshop areas
-  List<dynamic> _team = [];
-  // display list
+  List<dynamic> _teamMembers = [];
+  // contains all the drivers
+  List<dynamic> _teamDrivers = [];
+  // list displayed inside the listView
   List<dynamic> _filteredTeamList = [];
 
   @override
@@ -44,7 +53,7 @@ class _TeamPageState extends State<TeamPage> {
     populateTeamList();
 
     setState(() {
-      _filteredTeamList = _team;
+      _filteredTeamList = _teamMembers;
     });
 
     super.initState();
@@ -57,40 +66,77 @@ class _TeamPageState extends State<TeamPage> {
     super.dispose();
   }
 
+  // populate _teamMembers and _teamDrivers
   void populateTeamList(){
-    _team.add("Managers");
-    _team.addAll(
+    _teamMembers.add("Managers");
+    _teamMembers.addAll(
       members.where((member) => member.ruolo == "Manager").toList()
     );
 
     workshops.forEach((area) {
-      _team.add(area);
+      _teamMembers.add(area);
 
-      _team.addAll(
+      _teamMembers.addAll(
           members.where((member) => member.reparto == area).toList()
       );
     });
+
+    _teamDrivers.add("Piloti");
+    List<int> driverMatricole = drivers.map((driver) => driver.membro.matricola).toList();
+    _teamDrivers.addAll(
+      members.where((member) =>
+        driverMatricole.contains(member.matricola)
+      )
+    );
+
   }
 
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
-      if(query.isNotEmpty){
+      if(query.isNotEmpty && !isDriverPressed){
          setState(() {
-           _filteredTeamList = _team.where((element) =>
+           _filteredTeamList = _teamMembers.where((element) =>
               element is String || element is Workshop
               || (element is Member && element.matricola.toString().contains(query))
            ).toList();
          });
       }
+      else if(query.isNotEmpty && isDriverPressed){
+         setState(() {
+           _filteredTeamList = _teamDrivers.where((element) =>
+              element is String
+              || (element is Member && element.matricola.toString().contains(query))
+           ).toList();
+         });
+      }
+      else if(query.isEmpty && isDriverPressed){
+         setState(() {
+           _filteredTeamList = _teamDrivers;
+         });
+      }
       else{
         setState(() {
-          _filteredTeamList = _team;
+          _filteredTeamList = _teamMembers;
         });
       }
   }
 
+  // called when the user clicks on driver icon
+  void toggleDisplayDrivers(){
+      isDriverPressed
+          ? setState(() {
+              filterListByQuery(_searchBarController.text);
+            })
+          : {
+            filterListByQuery(_searchBarController.text)
+          };
+  }
+
   @override
   Widget build(BuildContext context) {
+    Offset distance = isDriverPressed ? Offset(5, 5) : Offset(18, 18);
+    double blur = isDriverPressed ? 5.0 : 30.0;
+
     return SafeArea(
         child: Column(
           children: [
@@ -152,11 +198,47 @@ class _TeamPageState extends State<TeamPage> {
               ),
             ),
 
-            // LIST OF MEMEBERS
+            // DRIVER BUTTON
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Listener(
+                  onPointerDown: (_) async {
+                    setState(() => isDriverPressed = !isDriverPressed); // Toggle the state
+                    toggleDisplayDrivers();
+                  },
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 200),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: isDriverPressed ? [
+                          //
+                          BoxShadow(
+                              color: Colors.grey.shade500,
+                              offset: distance,
+                              blurRadius: blur,
+                              inset: isDriverPressed
+                          ),
+                          BoxShadow(
+                              color: Colors.white,
+                              offset: -distance,
+                              blurRadius: blur,
+                              inset: isDriverPressed
+                          ),
+                        ] : []
+                    ),
+                    child: SvgPicture.asset("assets/icon/driver.svg"),
+                  ),
+                ),
+              ),
+            ),
+            // LIST OF MEMBERS
             Expanded(
               flex: 5,
               child: Container(
-                margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: NotificationListener<OverscrollIndicatorNotification>(
                   onNotification: (OverscrollIndicatorNotification overscroll) {
                     overscroll.disallowIndicator(); // Disable the overscroll glow effect
