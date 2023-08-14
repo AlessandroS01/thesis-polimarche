@@ -46,131 +46,18 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 const SizedBox(height: 50),
+
                 // Username Field
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
-                    decoration: BoxDecoration(
-                      color: backgroundColor, // Light background color
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white,
-                          blurRadius: 10,
-                          offset: Offset(-5, -5),
-                        ),
-                        BoxShadow(
-                          color: Colors.grey.shade500,
-                          blurRadius: 10,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      keyboardType: TextInputType.number,
-                      cursorColor: Colors.black,
-                      style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'aleo',
-                            letterSpacing: 1
-                        ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Matricola',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        suffixIcon: Icon(
-                          Icons.login_sharp,
-                          color: Colors.black,
-                        ),
-                      ),
-                      controller: _usernameController,
-                    )
-                  ),
-                ),
+                _matricolaInput(backgroundColor),
+
                 const SizedBox(height: 20.0),
                 // Password Field
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30),
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
-                    decoration: BoxDecoration(
-                      color: backgroundColor, // Light background color
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white,
-                          blurRadius: 10,
-                          offset: Offset(-5, -5),
-                        ),
-                        BoxShadow(
-                          color: Colors.grey.shade500,
-                          blurRadius: 10,
-                          offset: Offset(5, 5),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      cursorColor: Colors.black,
-                      style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'aleo',
-                            letterSpacing: 1
-                        ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Password',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        suffixIcon: IconButton(
-                          onPressed: _togglePasswordVisibility,
-                          icon: Icon(
-                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: Colors.black,
-                            ),
-                        ),
-                      ),
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible, // Toggle visibility
-                    )
-                  ),
-                ),
+                _passwordInput(backgroundColor),
+
                 const SizedBox(height: 50.0),
 
                 // Login Button
-                Listener(
-                      onPointerUp: (_) async {
-                          await Future.delayed(const Duration(milliseconds: 500)); // Wait for animation
-                          setState(() => isLoginPressed = false); // Reset the state
-                          // TODO: Add your navigation logic here
-                          Navigator.popAndPushNamed(context, '/home');
-                      },
-                      onPointerDown: (_) => setState(() => isLoginPressed = true),
-                      child: AnimatedContainer(
-                        width: 120,
-                        duration: const Duration(milliseconds: 500),
-                        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: isLoginPressed ? [] : [
-                            //
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: const Offset(18, 18),
-                              blurRadius: 30
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: -const Offset(18, 18),
-                              blurRadius: 30,
-                            ),
-
-
-                          ]
-                        ),
-                        child: const Center(child: Text("Login")),
-                      ),
-                ),
+                _loginButton(context, backgroundColor),
               ],
             )),
             Align(
@@ -191,5 +78,133 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  Listener _loginButton(BuildContext context, Color backgroundColor) {
+    return Listener(
+                    onPointerUp: (_) async {
+                        await Future.delayed(const Duration(milliseconds: 500)); // Wait for animation
+                        setState(() => isLoginPressed = false); // Reset the state
+                        // TODO: Add your navigation logic here
+                        Navigator.popAndPushNamed(context, '/home');
+                    },
+                    onPointerDown: (_) => setState(() => isLoginPressed = true),
+                    child: AnimatedContainer(
+                      width: 120,
+                      duration: const Duration(milliseconds: 500),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: isLoginPressed ? [] : [
+                          //
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            offset: const Offset(18, 18),
+                            blurRadius: 30
+                          ),
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: -const Offset(18, 18),
+                            blurRadius: 30,
+                          ),
+
+
+                        ]
+                      ),
+                      child: const Center(child: Text("Login")),
+                    ),
+              );
+  }
+
+  Padding _passwordInput(Color backgroundColor) {
+    return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                  decoration: BoxDecoration(
+                    color: backgroundColor, // Light background color
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white,
+                        blurRadius: 10,
+                        offset: Offset(-5, -5),
+                      ),
+                      BoxShadow(
+                        color: Colors.grey.shade500,
+                        blurRadius: 10,
+                        offset: Offset(5, 5),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    cursorColor: Colors.black,
+                    style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'aleo',
+                          letterSpacing: 1
+                      ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Password',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      suffixIcon: IconButton(
+                        onPressed: _togglePasswordVisibility,
+                        icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.black,
+                          ),
+                      ),
+                    ),
+                    controller: _passwordController,
+                    obscureText: !_isPasswordVisible, // Toggle visibility
+                  )
+                ),
+              );
+  }
+
+  Padding _matricolaInput(Color backgroundColor) {
+    return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+                  decoration: BoxDecoration(
+                    color: backgroundColor, // Light background color
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white,
+                        blurRadius: 10,
+                        offset: Offset(-5, -5),
+                      ),
+                      BoxShadow(
+                        color: Colors.grey.shade500,
+                        blurRadius: 10,
+                        offset: Offset(5, 5),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    cursorColor: Colors.black,
+                    style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'aleo',
+                          letterSpacing: 1
+                      ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Matricola',
+                      hintStyle: TextStyle(color: Colors.grey),
+                      suffixIcon: Icon(
+                        Icons.login_sharp,
+                        color: Colors.black,
+                      ),
+                    ),
+                    controller: _usernameController,
+                  )
+                ),
+              );
   }
 }

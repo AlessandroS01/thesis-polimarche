@@ -41,6 +41,7 @@ dependencies:
   flutter_inset_box_shadow: ^1.0.8
   flutter_svg: ^0.22.0
   optional: ^6.1.0+1
+  fluttertoast: ^8.0.8
 
 dev_dependencies:
   flutter_test:

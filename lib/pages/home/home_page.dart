@@ -73,145 +73,17 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Listener(
-                      onPointerUp: (_) async {
-                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
-                          setState(() => isSessionPressed = false); // Reset the state
-                      },
-                      onPointerDown: (_) => setState(() => isSessionPressed = true),
-                      child: AnimatedContainer(
-                        width: 130,
-                        duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            //
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distanceSession,
-                              blurRadius: blurSession,
-                              inset: isSessionPressed
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: -distanceSession,
-                              blurRadius: blurSession,
-                              inset: isSessionPressed
-                            ),
+                    _sessionButton(backgroundColor, distanceSession, blurSession),
 
-
-                          ]
-                        ),
-                        child: const Center(child: Text("Sessioni")),
-                      ),
-                    ),
-                    Listener(
-                      onPointerUp: (_) async {
-                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
-                          setState(() => isProblemPressed = false); // Reset the state
-                      },
-                      onPointerDown: (_) => setState(() => isProblemPressed = true),
-                      child: AnimatedContainer(
-                        width: 130,
-                        duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            //
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distanceProblem,
-                              blurRadius: blurProblem,
-                              inset: isProblemPressed
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: -distanceProblem,
-                              blurRadius: blurProblem,
-                              inset: isProblemPressed
-                            ),
-                          ]
-                        ),
-                        child: const Center(child: Text("Problemi")),
-                      ),
-                    ),
+                    _problemButton(backgroundColor, distanceProblem, blurProblem),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Listener(
-                      onPointerUp: (_) async {
-                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
-                          setState(() => isTelemetryPressed = false); // Reset the state
-                      },
-                      onPointerDown: (_) => setState(() => isTelemetryPressed = true),
-                      child: AnimatedContainer(
-                        width: 130,
-                        duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            //
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distanceTelemetry,
-                              blurRadius: blurTelemetry,
-                              inset: isTelemetryPressed
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: -distanceTelemetry,
-                              blurRadius: blurTelemetry,
-                              inset: isTelemetryPressed
-                            ),
+                    _telemetryButton(backgroundColor, distanceTelemetry, blurTelemetry),
 
-
-                          ]
-                        ),
-                        child: const Center(child: Text("Telemetria")),
-                      ),
-                    ),
-                    Listener(
-                      onPointerUp: (_) async {
-                        await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
-                          setState(() => isSetupPressed = false); // Reset the state
-                      },
-                      onPointerDown: (_) => setState(() => isSetupPressed = true),
-                      child: AnimatedContainer(
-                        width: 130,
-                        duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            //
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distanceSetup,
-                              blurRadius: blurSetup,
-                              inset: isSetupPressed
-                            ),
-                            BoxShadow(
-                              color: Colors.white,
-                              offset: -distanceSetup,
-                              blurRadius: blurSetup,
-                              inset: isSetupPressed
-                            ),
-
-
-                          ]
-                        ),
-                        child: const Center(child: Text("Setup")),
-                      ),
-                    ),
+                    _setupButton(backgroundColor, distanceSetup, blurSetup),
                   ],
                 )
               ],
@@ -220,6 +92,152 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  Listener _setupButton(Color backgroundColor, Offset distanceSetup, double blurSetup) {
+    return Listener(
+                    onPointerUp: (_) async {
+                      await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                        setState(() => isSetupPressed = false); // Reset the state
+                    },
+                    onPointerDown: (_) => setState(() => isSetupPressed = true),
+                    child: AnimatedContainer(
+                      width: 130,
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.all(30),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          //
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            offset: distanceSetup,
+                            blurRadius: blurSetup,
+                            inset: isSetupPressed
+                          ),
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: -distanceSetup,
+                            blurRadius: blurSetup,
+                            inset: isSetupPressed
+                          ),
+
+
+                        ]
+                      ),
+                      child: const Center(child: Text("Setup")),
+                    ),
+                  );
+  }
+
+  Listener _telemetryButton(Color backgroundColor, Offset distanceTelemetry, double blurTelemetry) {
+    return Listener(
+                    onPointerUp: (_) async {
+                      await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                        setState(() => isTelemetryPressed = false); // Reset the state
+                    },
+                    onPointerDown: (_) => setState(() => isTelemetryPressed = true),
+                    child: AnimatedContainer(
+                      width: 130,
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.all(30),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          //
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            offset: distanceTelemetry,
+                            blurRadius: blurTelemetry,
+                            inset: isTelemetryPressed
+                          ),
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: -distanceTelemetry,
+                            blurRadius: blurTelemetry,
+                            inset: isTelemetryPressed
+                          ),
+
+
+                        ]
+                      ),
+                      child: const Center(child: Text("Telemetria")),
+                    ),
+                  );
+  }
+
+  Listener _problemButton(Color backgroundColor, Offset distanceProblem, double blurProblem) {
+    return Listener(
+                    onPointerUp: (_) async {
+                      await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                        setState(() => isProblemPressed = false); // Reset the state
+                    },
+                    onPointerDown: (_) => setState(() => isProblemPressed = true),
+                    child: AnimatedContainer(
+                      width: 130,
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.all(30),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          //
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            offset: distanceProblem,
+                            blurRadius: blurProblem,
+                            inset: isProblemPressed
+                          ),
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: -distanceProblem,
+                            blurRadius: blurProblem,
+                            inset: isProblemPressed
+                          ),
+                        ]
+                      ),
+                      child: const Center(child: Text("Problemi")),
+                    ),
+                  );
+  }
+
+  Listener _sessionButton(Color backgroundColor, Offset distanceSession, double blurSession) {
+    return Listener(
+                    onPointerUp: (_) async {
+                      await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
+                        setState(() => isSessionPressed = false); // Reset the state
+                    },
+                    onPointerDown: (_) => setState(() => isSessionPressed = true),
+                    child: AnimatedContainer(
+                      width: 130,
+                      duration: const Duration(milliseconds: 150),
+                      padding: const EdgeInsets.all(30),
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          //
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            offset: distanceSession,
+                            blurRadius: blurSession,
+                            inset: isSessionPressed
+                          ),
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: -distanceSession,
+                            blurRadius: blurSession,
+                            inset: isSessionPressed
+                          ),
+
+
+                        ]
+                      ),
+                      child: const Center(child: Text("Sessioni")),
+                    ),
+                  );
   }
 }
 

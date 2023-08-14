@@ -82,60 +82,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
                           )
                         ],
                       ),
-                      Listener(
-                        onPointerDown: (_) async {
-                          setState(() => isVisualizzaPressed = true); // Reset the state
-                          await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
-
-                          // PASS THE DRIVER TO THE NEXT WIDGET
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DetailMember(
-                                    driver: driver,
-                                    member: member,
-                                  )
-                              )
-                          );
-                          setState(() => isVisualizzaPressed = false); // Reset the state,
-                        },
-                        child: AnimatedContainer(
-                              padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
-                              duration: Duration(milliseconds: 150),
-                              decoration: BoxDecoration(
-                                color: backgroundColor,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: isVisualizzaPressed ? [
-                                  BoxShadow(
-                                    offset: distance,
-                                    blurRadius: blur,
-                                    color: Colors.grey.shade500,
-                                    inset: true
-                                  ),
-                                  BoxShadow(
-                                    offset: -distance,
-                                    blurRadius: blur,
-                                    color: Colors.white,
-                                    inset: true
-                                  ),
-                                ] : []
-                              ),
-                          child: Row(
-                              children: [
-                                Text(
-                                    "Visualizza",
-                                    style: TextStyle(
-                                      color: Colors.black
-                                    ),
-                                ),
-                                Icon(
-                                    Icons.person_2,
-                                    color: Colors.black,
-                                )
-                              ]
-                          ),
-                        ),
-                      )
+                      _visualizeMemberButton(context, driver, member, backgroundColor, distance, blur)
                     ]
                   ),
                 ),
@@ -144,6 +91,63 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
           )
       ),
     );
+  }
+
+  Listener _visualizeMemberButton(BuildContext context, Optional<Driver> driver, Member member, Color backgroundColor, Offset distance, double blur) {
+    return Listener(
+                      onPointerDown: (_) async {
+                        setState(() => isVisualizzaPressed = true); // Reset the state
+                        await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
+
+                        // PASS THE DRIVER TO THE NEXT WIDGET
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailMember(
+                                  driver: driver,
+                                  member: member,
+                                )
+                            )
+                        );
+                        setState(() => isVisualizzaPressed = false); // Reset the state,
+                      },
+                      child: AnimatedContainer(
+                            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+                            duration: Duration(milliseconds: 150),
+                            decoration: BoxDecoration(
+                              color: backgroundColor,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: isVisualizzaPressed ? [
+                                BoxShadow(
+                                  offset: distance,
+                                  blurRadius: blur,
+                                  color: Colors.grey.shade500,
+                                  inset: true
+                                ),
+                                BoxShadow(
+                                  offset: -distance,
+                                  blurRadius: blur,
+                                  color: Colors.white,
+                                  inset: true
+                                ),
+                              ] : []
+                            ),
+                        child: Row(
+                            children: [
+                              Text(
+                                  "Visualizza",
+                                  style: TextStyle(
+                                    color: Colors.black
+                                  ),
+                              ),
+                              Icon(
+                                  Icons.person_2,
+                                  color: Colors.black,
+                              )
+                            ]
+                        ),
+                      ),
+                    );
   }
 }
 
