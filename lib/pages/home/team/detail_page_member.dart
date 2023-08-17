@@ -27,6 +27,15 @@ class _DetailMemberState extends State<DetailMember> {
   bool setDriverPressed = false;
   bool isConfirmPressed = false;
 
+
+  @override
+  void dispose() {
+    _weightController.dispose();
+    _heightController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final driver = widget.driver;
