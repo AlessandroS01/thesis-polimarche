@@ -4,8 +4,9 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:optional/optional.dart';
 import 'package:polimarche/model/Member.dart';
-import 'package:polimarche/pages/home/cards/member_card.dart';
+import 'package:polimarche/pages/home/team/member_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polimarche/services/team_service.dart';
 
 import '../../../inherited_widgets/authorization_provider.dart';
 import '../../../model/Driver.dart';
@@ -15,11 +16,15 @@ class DetailMember extends StatefulWidget {
   final Optional<Driver> driver;
   final Member member;
   final Member loggedMember;
+  final VoidCallback updateState;
+  final TeamService teamService;
 
   const DetailMember({super.key,
     required this.driver,
     required this.member,
-    required this.loggedMember
+    required this.loggedMember,
+    required this.updateState,
+    required this.teamService
   });
 
   @override
@@ -46,6 +51,9 @@ class _DetailMemberState extends State<DetailMember> {
   @override
   Widget build(BuildContext context) {
     final loggedMember = widget.loggedMember;
+    final teamService = widget.teamService;
+
+    VoidCallback updateState = widget.updateState;
 
     final driver = widget.driver;
     final member = widget.member;
@@ -91,7 +99,12 @@ class _DetailMemberState extends State<DetailMember> {
                         // SET HEIGHT AND WEIGHT OF THE DRIVER
                         _inputBioValuesDriver(backgroundColor),
                         // ADD THE DRIVER
-                        _addDriverConfirm(backgroundColor)
+                        _addDriverConfirm(
+                            backgroundColor,
+                            updateState,
+                            teamService,
+                            member
+                        )
                       ],
                     ),
                   ),
@@ -105,7 +118,10 @@ class _DetailMemberState extends State<DetailMember> {
     );
   }
 
-  Expanded _addDriverConfirm(Color backgroundColor) {
+  Expanded _addDriverConfirm(Color backgroundColor,
+      VoidCallback updateState,
+      TeamService teamService,
+      Member member) {
     return Expanded(
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 100),
@@ -129,6 +145,15 @@ class _DetailMemberState extends State<DetailMember> {
                                       if (height > 0 && height < 250) { // check height boundaries
                                         if (weight > 40.0 && weight < 150.0) { // check weight boundaries
                                           showToast("Pilota aggiunto");
+
+                                          teamService.addNewDriver(
+                                            height,
+                                            weight,
+                                            member
+                                          );
+
+                                          updateState();
+
                                           Navigator.pop(context);
                                         } else {
                                           showToast("Il peso deve essere compreso tra 40 e 150");
@@ -141,6 +166,15 @@ class _DetailMemberState extends State<DetailMember> {
                                       if (height > 0 && height < 250) { // check height boundaries
                                         if (weight > 40.0 && weight < 150.0) { // check weight boundaries
                                           showToast("Pilota aggiunto");
+
+                                          teamService.addNewDriver(
+                                            height,
+                                            weight,
+                                            member
+                                          );
+
+                                          updateState();
+
                                           Navigator.pop(context);
                                         } else {
                                           showToast("Il peso deve essere compreso tra 40 e 150");

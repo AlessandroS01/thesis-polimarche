@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:polimarche/inherited_widgets/team_state.dart';
 import 'package:polimarche/model/Driver.dart';
+import 'package:polimarche/services/team_service.dart';
 import '../../../model/Member.dart';
 import '../../../model/Workshop.dart';
-import '../cards/member_list_item_card.dart';
+import 'member_list_item_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:optional/optional.dart';
 
@@ -21,27 +23,11 @@ class _TeamPageState extends State<TeamPage> {
 
   final TextEditingController _searchBarController = TextEditingController();
 
-  List<Member> members = [
-    Member(0, "Alessandro", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Aereodinamica")),
-    Member(1097941, "Francesco", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Telaio")),
-    Member(2, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop("")),
-    Member(21, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")),
-    Member(5, "M", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Membro", Workshop("Battery pack")),
-    Member(789, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")),
-    Member(15, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Marketing")),
-  ];
-  List<Workshop> workshops = [
-    Workshop("Aereodinamica"),
-    Workshop("Telaio"),
-    Workshop("Battery pack"),
-    Workshop("Marketing"),
-    Workshop("Elettronica"),
-    Workshop("Dinamica"),
-  ];
-  List<Driver> drivers = [
-    Driver(1, Member(1097941, "Francesco", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Telaio")), 80, 180),
-    Driver(4, Member(789, "Ponzio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop("Battery pack")), 80, 180),
-  ];
+  late final TeamService teamService;
+
+  late List<Member> members;
+  late List<Workshop> workshops;
+  late List<Driver> drivers;
 
   // contains all the members and workshop areas
   List<dynamic> _teamMembers = [];
@@ -52,11 +38,7 @@ class _TeamPageState extends State<TeamPage> {
 
   @override
   void initState() {
-    populateTeamList();
-
-    setState(() {
-      _filteredTeamList = _teamMembers;
-    });
+    teamService = TeamService();
 
     super.initState();
   }
@@ -70,6 +52,7 @@ class _TeamPageState extends State<TeamPage> {
 
   // populate _teamMembers and _teamDrivers
   void populateTeamList(){
+    _teamMembers.clear();
     _teamMembers.add("Managers");
     _teamMembers.addAll(
       members.where((member) => member.ruolo == "Manager").toList()
@@ -83,6 +66,7 @@ class _TeamPageState extends State<TeamPage> {
       );
     });
 
+    _teamDrivers.clear();
     _teamDrivers.add("Piloti");
     List<int> driverMatricole = drivers.map((driver) => driver.membro.matricola).toList();
     _teamDrivers.addAll(
@@ -134,41 +118,60 @@ class _TeamPageState extends State<TeamPage> {
           };
   }
 
+  void updateState() {
+    setState(() {
+      return;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
     Offset distance = isDriverPressed ? Offset(5, 5) : Offset(18, 18);
     double blur = isDriverPressed ? 5.0 : 30.0;
 
-    return SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: Text(
-                  "Team",
-                  style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 25,
-                        ),
-                  ),
+    members = teamService.members;
+    workshops = teamService.workshops;
+    drivers = teamService.drivers;
+
+    populateTeamList();
+
+    setState(() {
+      filterListByQuery(_searchBarController.text);
+    });
+
+    return TeamInheritedState(
+      teamService: teamService,
+      child: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "Team",
+                    style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 25,
+                          ),
+                    ),
+                ),
               ),
-            ),
 
-            // SEARCH BAR
-            _searchBar(),
+              // SEARCH BAR
+              _searchBar(),
 
-            // DRIVER BUTTON
-            _driverButton(distance, blur),
+              // DRIVER BUTTON
+              _driverButton(distance, blur),
 
-            // LIST OF MEMBERS
-            _listMember()
-          ],
-        )
+              // LIST OF MEMBERS
+              _listMember(updateState)
+            ],
+          )
+      ),
     );
   }
 
-  Expanded _listMember() {
+  Expanded _listMember(VoidCallback updateState) {
     return Expanded(
             flex: 5,
             child: Container(
@@ -207,7 +210,11 @@ class _TeamPageState extends State<TeamPage> {
                             );
                           }
                         });
-                        return CardMemberListItem(member: element, driver: driver);
+                        return CardMemberListItem(
+                            member: element,
+                            driver: driver,
+                            updateStateTeamPage: updateState,
+                        );
                       }
                       if(element is Workshop){
                         return ListTile(

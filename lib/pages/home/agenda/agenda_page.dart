@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Note.dart';
-import 'package:polimarche/pages/home/cards/note_list_item_card.dart';
+import 'package:polimarche/pages/home/agenda/note_list_item_card.dart';
 import 'package:polimarche/services/note_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../inherited_widgets/agenda_state.dart';
-import '../../inherited_widgets/authorization_provider.dart';
-import '../../model/Member.dart';
+import '../../../inherited_widgets/agenda_state.dart';
+import '../../../inherited_widgets/authorization_provider.dart';
+import '../../../model/Member.dart';
 
 
 class AgendaPage extends StatefulWidget {

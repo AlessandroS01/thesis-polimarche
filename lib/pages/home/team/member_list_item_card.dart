@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:optional/optional_internal.dart';
+import 'package:polimarche/inherited_widgets/team_state.dart';
 import 'package:polimarche/pages/home/team/detail_page_member.dart';
+import 'package:polimarche/services/team_service.dart';
 
 import '../../../inherited_widgets/authorization_provider.dart';
 import '../../../model/Driver.dart';
@@ -10,7 +12,13 @@ import '../../../model/Member.dart';
 class CardMemberListItem extends StatefulWidget {
   final Member member;
   final Optional<Driver> driver;
-  const CardMemberListItem({Key? key, required this.member, required this.driver}) : super(key: key);
+  final VoidCallback updateStateTeamPage;
+  const CardMemberListItem({
+    Key? key,
+    required this.member,
+    required this.driver,
+    required this.updateStateTeamPage
+  }) : super(key: key);
 
   @override
   State<CardMemberListItem> createState() => _CardMemberListItemState();
@@ -22,6 +30,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
 
   @override
   Widget build(BuildContext context) {
+    VoidCallback updateState = widget.updateStateTeamPage;
 
     final backgroundColor = Colors.grey.shade300;
     Offset distance = Offset(5, 5);
@@ -84,7 +93,14 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
                           )
                         ],
                       ),
-                      _visualizeMemberButton(driver, member, backgroundColor, distance, blur)
+                      _visualizeMemberButton(
+                          updateState,
+                          driver,
+                          member,
+                          backgroundColor,
+                          distance,
+                          blur
+                      )
                     ]
                   ),
                 ),
@@ -95,18 +111,29 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
     );
   }
 
-  Listener _visualizeMemberButton(Optional<Driver> driver, Member member, Color backgroundColor, Offset distance, double blur) {
+  Listener _visualizeMemberButton(
+      VoidCallback updateState,
+      Optional<Driver> driver,
+      Member member,
+      Color backgroundColor,
+      Offset distance,
+      double blur
+      ) {
     return Listener(
                       onPointerDown: (_) async {
                         setState(() => isVisualizzaPressed = true); // Reset the state
                         await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
                         final loggedMember = AuthorizationProvider.of(context)!.loggedMember;
 
+                        TeamService teamService = TeamInheritedState.of(context)!.teamService;
+
                         // PASS THE DRIVER TO THE NEXT WIDGET
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => DetailMember(
+                                  teamService: teamService,
+                                  updateState: updateState,
                                   driver: driver,
                                   member: member,
                                   loggedMember: loggedMember,
