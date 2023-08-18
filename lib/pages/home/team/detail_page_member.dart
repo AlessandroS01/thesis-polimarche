@@ -7,13 +7,20 @@ import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/pages/home/cards/member_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../inherited_widgets/authorization_provider.dart';
 import '../../../model/Driver.dart';
 
 
 class DetailMember extends StatefulWidget {
   final Optional<Driver> driver;
   final Member member;
-  const DetailMember({super.key, required this.driver, required this.member});
+  final Member loggedMember;
+
+  const DetailMember({super.key,
+    required this.driver,
+    required this.member,
+    required this.loggedMember
+  });
 
   @override
   State<DetailMember> createState() => _DetailMemberState();
@@ -38,6 +45,8 @@ class _DetailMemberState extends State<DetailMember> {
 
   @override
   Widget build(BuildContext context) {
+    final loggedMember = widget.loggedMember;
+
     final driver = widget.driver;
     final member = widget.member;
 
@@ -51,6 +60,7 @@ class _DetailMemberState extends State<DetailMember> {
     CardMember memberCard = CardMember(driver: driver, member: member);
 
     return Scaffold(
+
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -69,7 +79,7 @@ class _DetailMemberState extends State<DetailMember> {
                 // MEMBER CARD
                 memberCard,
 
-                !driver.isPresent
+                !driver.isPresent && loggedMember.ruolo == "Manager"
                     ? _addDriverButton(backgroundColor, distanceDriver, blurDriver)
                     : SizedBox(height: 0),
 

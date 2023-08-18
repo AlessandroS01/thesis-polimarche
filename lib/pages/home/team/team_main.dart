@@ -136,6 +136,7 @@ class _TeamPageState extends State<TeamPage> {
 
   @override
   Widget build(BuildContext context) {
+
     Offset distance = isDriverPressed ? Offset(5, 5) : Offset(18, 18);
     double blur = isDriverPressed ? 5.0 : 30.0;
 

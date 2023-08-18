@@ -9,9 +9,11 @@ import 'package:polimarche/services/note_service.dart';
 
 class CardNoteListItem extends StatefulWidget {
   final Note note;
+  final VoidCallback updateStateAgendaPage;
 
   const CardNoteListItem({
-    required this.note
+    required this.note,
+    required this.updateStateAgendaPage
   });
 
   @override
@@ -26,7 +28,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   Widget build(BuildContext context) {
 
     NoteService noteService = AgendaInheritedState.of(context)!.noteService;
-    AgendaInheritedState agendaInheritedState = AgendaInheritedState.of(context)!;
+    VoidCallback updateStateAgendaPage = widget.updateStateAgendaPage;
 
 
     TextEditingController _textFieldController = TextEditingController();
@@ -89,9 +91,9 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _modificaButton(noteService, note, backgroundColor, distanceModifica, blurModifica, _textFieldController),
+              _modificaButton(updateStateAgendaPage, noteService, note, backgroundColor, distanceModifica, blurModifica, _textFieldController),
 
-              _cancellaButton(noteService, note, backgroundColor, distanceCancella, blurCancella),
+              _cancellaButton(updateStateAgendaPage, noteService, note, backgroundColor, distanceCancella, blurCancella),
             ],
           )
         ],
@@ -100,6 +102,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   }
 
   Listener _cancellaButton(
+      VoidCallback updateStateAgendaPage,
       NoteService noteService,
       Note note,
       Color backgroundColor,
@@ -128,6 +131,9 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
                           child: Text("Conferma"),
                           onPressed:  () {
                             noteService.deleteNote(note);
+
+                            updateStateAgendaPage();
+
                             Navigator.pop(context);
                           },
                         ),
@@ -176,6 +182,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   }
 
   Listener _modificaButton(
+      VoidCallback updateStateAgendaPage,
       NoteService noteService,
       Note note,
       Color backgroundColor,
@@ -242,6 +249,9 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
                                      oraFine,
                                      _textFieldController.text
                                    );
+
+                                  updateStateAgendaPage();
+
                                   Navigator.pop(context);
                                 },
                               ),

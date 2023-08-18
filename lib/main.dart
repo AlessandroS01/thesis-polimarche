@@ -3,6 +3,8 @@ import 'package:polimarche/pages/home/main_page.dart';
 import 'package:polimarche/pages/loading.dart';
 import 'package:polimarche/pages/login.dart';
 
+import 'model/Member.dart';
+
 void main() {
   runApp(MyApp()); // Replace with the name of your app's root widget
 }
@@ -20,7 +22,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const Loading(),
         '/login': (context) => const Login(),
-        '/home': (context) => const MainPage(),
+        '/home': (context) {
+          final Member loggedMember = ModalRoute.of(context)?.settings.arguments as Member;
+          return MainPage(member: loggedMember);
+        },
       },
     );
   }

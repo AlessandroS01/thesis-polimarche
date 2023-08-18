@@ -91,6 +91,7 @@ class NoteService {
   }
 
   void createNote(
+      Member member,
       DateTime newDate,
       TimeOfDay oraInizio,
       TimeOfDay oraFine,
@@ -105,15 +106,18 @@ class NoteService {
     DateTime newOraFine = DateTime(
         newDate.year, newDate.month, newDate.day,
         oraFine.hour, oraFine.minute);
-    /*
-    Note note = new Note(0,
+
+    Note note = new Note(
+        0,
         newDate,
         newOraInizio,
         newOraFine,
-        Member(),
+        member,
         descrizione);
 
-     */
+    listNotes.add(note);
+
+
   }
 
 

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../model/Member.dart';
+import '../model/Workshop.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -10,6 +14,8 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
 
   final TextEditingController _usernameController = TextEditingController();
+
+  late final Member loggedMember;
 
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
@@ -85,8 +91,22 @@ class _LoginState extends State<Login> {
                     onPointerUp: (_) async {
                         await Future.delayed(const Duration(milliseconds: 500)); // Wait for animation
                         setState(() => isLoginPressed = false); // Reset the state
-                        // TODO: Add your navigation logic here
-                        Navigator.popAndPushNamed(context, '/home');
+                        String password = "a";
+                        int matricola = 1;
+
+                        if (_usernameController.text == matricola.toString() &&
+                            _passwordController.text == password) {
+                          loggedMember =
+                            Member(matricola, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop(""));
+                          // TODO: Add your navigation logic here
+                          Navigator.popAndPushNamed(
+                              context,
+                              '/home',
+                              arguments: loggedMember);
+                        } else {
+                          showToast("Username e/o password errati");
+                        }
+
                     },
                     onPointerDown: (_) => setState(() => isLoginPressed = true),
                     child: AnimatedContainer(
@@ -206,5 +226,16 @@ class _LoginState extends State<Login> {
                   )
                 ),
               );
+  }
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT, // Duration for which the toast will be displayed
+      gravity: ToastGravity.BOTTOM, // Position of the toast on the screen
+      backgroundColor: Colors.grey[600], // Background color of the toast
+      textColor: Colors.white, // Text color of the toast message
+      fontSize: 16.0, // Font size of the toast message
+    );
   }
 }

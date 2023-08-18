@@ -3,6 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:optional/optional_internal.dart';
 import 'package:polimarche/pages/home/team/detail_page_member.dart';
 
+import '../../../inherited_widgets/authorization_provider.dart';
 import '../../../model/Driver.dart';
 import '../../../model/Member.dart';
 
@@ -17,6 +18,7 @@ class CardMemberListItem extends StatefulWidget {
 
 class _CardMemberListItemState extends State<CardMemberListItem> {
   bool isVisualizzaPressed = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +84,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
                           )
                         ],
                       ),
-                      _visualizeMemberButton(context, driver, member, backgroundColor, distance, blur)
+                      _visualizeMemberButton(driver, member, backgroundColor, distance, blur)
                     ]
                   ),
                 ),
@@ -93,11 +95,12 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
     );
   }
 
-  Listener _visualizeMemberButton(BuildContext context, Optional<Driver> driver, Member member, Color backgroundColor, Offset distance, double blur) {
+  Listener _visualizeMemberButton(Optional<Driver> driver, Member member, Color backgroundColor, Offset distance, double blur) {
     return Listener(
                       onPointerDown: (_) async {
                         setState(() => isVisualizzaPressed = true); // Reset the state
                         await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
+                        final loggedMember = AuthorizationProvider.of(context)!.loggedMember;
 
                         // PASS THE DRIVER TO THE NEXT WIDGET
                         Navigator.push(
@@ -106,6 +109,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
                                 builder: (context) => DetailMember(
                                   driver: driver,
                                   member: member,
+                                  loggedMember: loggedMember,
                                 )
                             )
                         );

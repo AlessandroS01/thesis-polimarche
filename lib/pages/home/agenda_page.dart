@@ -6,6 +6,8 @@ import 'package:polimarche/services/note_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../inherited_widgets/agenda_state.dart';
+import '../../inherited_widgets/authorization_provider.dart';
+import '../../model/Member.dart';
 
 
 class AgendaPage extends StatefulWidget {
@@ -18,6 +20,8 @@ class AgendaPage extends StatefulWidget {
 
 class _AgendaPageState extends State<AgendaPage> {
 
+  late Member loggedMember;
+
   bool isAddPressed = false;
 
   late final NoteService noteService;
@@ -27,11 +31,21 @@ class _AgendaPageState extends State<AgendaPage> {
   DateTime selectedDay = DateTime.now();
 
 
-
   // return all the different events by date
   List<Note> _getEventsByDate(DateTime day) {
-    return noteService.getNotesByMemberMatricolaDuringDay(21, day);
+    return noteService.getNotesByMemberMatricolaDuringDay(
+        loggedMember.matricola,
+        day
+    );
   }
+
+  void updateState() {
+    setState(() {
+      return;
+    });
+  }
+
+
 
   // called whenever the user change the focused day
   void changeDateSelected(selectDay, focusedDay){
@@ -40,21 +54,32 @@ class _AgendaPageState extends State<AgendaPage> {
       today = focusedDay;
 
       _notesForSelectedDay =
-          noteService.getNotesByMemberMatricolaDuringDay(21, today);
+          noteService.getNotesByMemberMatricolaDuringDay(
+              loggedMember.matricola,
+              today
+          );
     });
   }
 
   @override
   void initState() {
     noteService = NoteService();
-    _notesForSelectedDay =
-        noteService.getNotesByMemberMatricolaDuringDay(21, selectedDay);
     super.initState();
   }
 
 
+
   @override
   Widget build(BuildContext context) {
+
+    loggedMember = AuthorizationProvider.of(context)!.loggedMember;
+
+    _notesForSelectedDay =
+        noteService.getNotesByMemberMatricolaDuringDay(
+            loggedMember.matricola,
+            selectedDay
+        );
+
 
     final backgroundColor = Colors.grey.shade300;
     Offset distanceAdd = Offset(5, 5);
@@ -95,7 +120,7 @@ class _AgendaPageState extends State<AgendaPage> {
                         itemCount: _notesForSelectedDay.length,
                         itemBuilder: (context, index) {
                           final element = _notesForSelectedDay[index];
-                          return CardNoteListItem(note: element);
+                          return CardNoteListItem(note: element, updateStateAgendaPage: updateState);
                         }
                     ),
                   ),
@@ -171,11 +196,15 @@ class _AgendaPageState extends State<AgendaPage> {
                                             child: Text("Conferma"),
                                             onPressed: () {
                                               noteService.createNote(
+                                                  loggedMember,
                                                   newDate,
                                                   oraInizio,
                                                   oraFine,
                                                   _textFieldController.text
                                               );
+
+                                              updateState();
+
                                               Navigator.pop(context);
                                             },
                                           ),

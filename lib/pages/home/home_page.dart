@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 
+import '../../inherited_widgets/authorization_provider.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -17,6 +19,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loggedMember = AuthorizationProvider.of(context)!.loggedMember;
+
     final backgroundColor = Colors.grey.shade300;
 
     Offset distanceSession = isSessionPressed ? Offset(5, 5) : Offset(18, 18);
@@ -33,7 +37,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Expanded(
+          Expanded(
             flex: 1,
             child: Align(
               alignment: Alignment.topCenter,
@@ -48,14 +52,14 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Text(
-                    "Nome & Cognome",
+                    "${loggedMember.nome} ${loggedMember.cognome} ",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
                     ),
                   ),
                   Text(
-                    "Ruolo",
+                    "${loggedMember.ruolo}",
                     style: TextStyle(
                         color: Colors.black,
                         fontSize: 13,
