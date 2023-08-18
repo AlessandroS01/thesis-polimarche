@@ -91,19 +91,43 @@ class _LoginState extends State<Login> {
                     onPointerUp: (_) async {
                         await Future.delayed(const Duration(milliseconds: 500)); // Wait for animation
                         setState(() => isLoginPressed = false); // Reset the state
-                        String password = "a";
-                        int matricola = 1;
+                        String passwordManager = "ma";
+                        int matricolaManager = 1;
+                        String passwordCaporeparto = "c";
+                        int matricolaCaporeparto = 1;
+                        String passwordMembro = "me";
+                        int matricolaMembro = 1;
 
-                        if (_usernameController.text == matricola.toString() &&
-                            _passwordController.text == password) {
+                        if (_usernameController.text == matricolaManager.toString() &&
+                            _passwordController.text == passwordManager) {
                           loggedMember =
-                            Member(matricola, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop(""));
+                            Member(matricolaManager, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Manager", Workshop(""));
                           // TODO: Add your navigation logic here
                           Navigator.popAndPushNamed(
                               context,
                               '/home',
                               arguments: loggedMember);
-                        } else {
+                        } else if (_usernameController.text == matricolaCaporeparto.toString() &&
+                            _passwordController.text == passwordCaporeparto) {
+                          loggedMember =
+                            Member(matricolaManager, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Caporeparto", Workshop(""));
+                          // TODO: Add your navigation logic here
+                          Navigator.popAndPushNamed(
+                              context,
+                              '/home',
+                              arguments: loggedMember);
+
+                        } else if (_usernameController.text == matricolaMembro.toString() &&
+                            _passwordController.text == passwordMembro) {
+                          loggedMember =
+                            Member(matricolaManager, "Antonio", "AA", DateTime(2001, 10, 10, 0, 0, 0), "S1097941@univpm.it", "3927602953", "Membro", Workshop(""));
+                          // TODO: Add your navigation logic here
+                          Navigator.popAndPushNamed(
+                              context,
+                              '/home',
+                              arguments: loggedMember);
+
+                        }else {
                           showToast("Username e/o password errati");
                         }
 
