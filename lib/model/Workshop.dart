@@ -3,6 +3,12 @@ class Workshop {
 
   Workshop(this.reparto);
 
+  Map<String, dynamic> toJson() {
+    return {
+      'reparto': reparto
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

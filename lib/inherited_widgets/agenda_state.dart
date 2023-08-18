@@ -8,13 +8,12 @@ class AgendaInheritedState extends InheritedWidget {
 
   AgendaInheritedState({
     required Widget child,
-    required this.noteService,
+    required this.noteService
   }) : super(child: child);
 
 
-  static NoteService? of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<AgendaInheritedState>()
-      ?.noteService;
+  static AgendaInheritedState? of(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<AgendaInheritedState>();
 
 
   @override

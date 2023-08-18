@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/inherited_widgets/agenda_state.dart';
 import 'package:polimarche/model/Note.dart';
 import 'package:intl/intl.dart';
+import 'package:polimarche/services/note_service.dart';
 
 
 class CardNoteListItem extends StatefulWidget {
   final Note note;
 
   const CardNoteListItem({
-    required this.note,
-    super.key
+    required this.note
   });
 
   @override
@@ -23,8 +24,15 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
 
   @override
   Widget build(BuildContext context) {
+
+    NoteService noteService = AgendaInheritedState.of(context)!.noteService;
+    AgendaInheritedState agendaInheritedState = AgendaInheritedState.of(context)!;
+
+
+    TextEditingController _textFieldController = TextEditingController();
+
     final note = widget.note;
-    final noteService = AgendaInheritedState.of(context)!;
+    _textFieldController.text = note.descrizione;
 
     final backgroundColor = Colors.grey.shade300;
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -35,7 +43,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
 
 
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(25),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(
@@ -81,9 +89,9 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _modificaButton(backgroundColor, distanceModifica, blurModifica),
+              _modificaButton(noteService, note, backgroundColor, distanceModifica, blurModifica, _textFieldController),
 
-              _cancellaButton(backgroundColor, distanceCancella, blurCancella),
+              _cancellaButton(noteService, note, backgroundColor, distanceCancella, blurCancella),
             ],
           )
         ],
@@ -91,13 +99,42 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     );
   }
 
-  Listener _cancellaButton(Color backgroundColor, Offset distanceCancella, double blurCancella) {
+  Listener _cancellaButton(
+      NoteService noteService,
+      Note note,
+      Color backgroundColor,
+      Offset distanceCancella,
+      double blurCancella) {
     return Listener(
               onPointerDown: (_) async {
                 setState(() => isCancellaPressed = true); // Reset the state
                 await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
-
                 setState(() => isCancellaPressed = false); // Reset the state,
+
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+
+                      title: const Text("Conferma eliminazione"),
+                      content: const Text("Sei sicuro di voler eliminare la nota?"),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text("Cancella"),
+                          onPressed:  () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        TextButton(
+                          child: Text("Conferma"),
+                          onPressed:  () {
+                            noteService.deleteNote(note);
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                      ],
+                    ),
+                );
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
@@ -138,13 +175,86 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
             );
   }
 
-  Listener _modificaButton(Color backgroundColor, Offset distanceModifica, double blurModifica) {
+  Listener _modificaButton(
+      NoteService noteService,
+      Note note,
+      Color backgroundColor,
+      Offset distanceModifica,
+      double blurModifica,
+      TextEditingController _textFieldController) {
     return Listener(
               onPointerDown: (_) async {
                 setState(() => isModificaPressed = true); // Reset the state
                 await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
-
                 setState(() => isModificaPressed = false); // Reset the state,
+
+                DateTime? newDate = await showDatePicker(
+                    context: context,
+                    initialDate: note.data,
+                    firstDate: DateTime(note.data.year),
+                    lastDate: DateTime(note.data.year + 3)
+                );
+
+                if (newDate != null) {
+                  TimeOfDay? oraInizio = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay(
+                          hour: note.ora_inizio.hour,
+                          minute: note.ora_inizio.minute
+                      )
+                  );
+
+                  if (oraInizio != null) {
+                    TimeOfDay? oraFine = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay(
+                          hour: note.ora_fine.hour,
+                          minute: note.ora_fine.minute
+                      )
+                    );
+
+                    if (oraFine != null) {
+
+                      if (isTimeOfDayEarlier(oraInizio, oraFine)) {
+
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+
+                            title: const Text("Nuova descrizione"),
+                            content: TextField(
+                              controller: _textFieldController,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text("Cancella"),
+                                onPressed:  () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              TextButton(
+                                child: Text("Conferma"),
+                                onPressed:  () {
+                                  noteService.modifyNote(
+                                     note,
+                                     newDate,
+                                     oraInizio,
+                                     oraFine,
+                                     _textFieldController.text
+                                   );
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        showToast("L'ora di inizio deve essere precedente all'ora di fine.");
+                      }
+                    }
+                  } else return;
+                } else return;
+
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
@@ -184,4 +294,31 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
               ),
             );
   }
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT, // Duration for which the toast will be displayed
+      gravity: ToastGravity.BOTTOM, // Position of the toast on the screen
+      backgroundColor: Colors.grey[600], // Background color of the toast
+      textColor: Colors.white, // Text color of the toast message
+      fontSize: 16.0, // Font size of the toast message
+    );
+  }
+
+  bool isTimeOfDayEarlier(TimeOfDay time1, TimeOfDay time2) {
+    if (time1.hour < time2.hour) {
+      return true;
+    } else if (time1.hour == time2.hour) {
+      return time1.minute < time2.minute;
+    } else {
+      return false;
+    }
+  }
+
+
+
+
+
 }
+

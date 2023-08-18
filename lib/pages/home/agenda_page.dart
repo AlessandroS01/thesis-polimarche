@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Note.dart';
 import 'package:polimarche/pages/home/cards/note_list_item_card.dart';
 import 'package:polimarche/services/note_service.dart';
@@ -30,7 +30,7 @@ class _AgendaPageState extends State<AgendaPage> {
 
   // return all the different events by date
   List<Note> _getEventsByDate(DateTime day) {
-    return noteService.getNotesByMemberMatricolaDuringDay(21, day) ?? [];
+    return noteService.getNotesByMemberMatricolaDuringDay(21, day);
   }
 
   // called whenever the user change the focused day
@@ -47,18 +47,18 @@ class _AgendaPageState extends State<AgendaPage> {
   @override
   void initState() {
     noteService = NoteService();
+    _notesForSelectedDay =
+        noteService.getNotesByMemberMatricolaDuringDay(21, selectedDay);
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    _notesForSelectedDay =
-        noteService.getNotesByMemberMatricolaDuringDay(21, selectedDay);
 
     final backgroundColor = Colors.grey.shade300;
-    Offset distanceAdd = isAddPressed ? Offset(5, 5) : Offset(6, 6);
-    double blurAdd = isAddPressed ? 5 : 8;
+    Offset distanceAdd = Offset(5, 5);
+    double blurAdd = 12;
 
     return AgendaInheritedState(
       noteService: noteService,// extends an inherited widget
@@ -111,6 +111,7 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   Align _newNoteButton(Color backgroundColor, Offset distanceAdd, double blurAdd) {
+    TextEditingController _textFieldController = TextEditingController();
     return Align(
                 alignment:Alignment.bottomRight,
                 child: Padding(
@@ -118,9 +119,78 @@ class _AgendaPageState extends State<AgendaPage> {
                     child: Listener(
                       onPointerDown: (_) async {
                         setState(() => isAddPressed = true); // Reset the state
-                        await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
+                        await Future.delayed(const Duration(
+                            milliseconds: 200)); // Wait for animation
+                        setState(() =>
+                        isAddPressed = false); // Reset the state,
 
-                        setState(() => isAddPressed = false); // Reset the state,
+                        DateTime? newDate = await showDatePicker(
+                            context: context,
+                            initialDate: today,
+                            firstDate: DateTime(today.year),
+                            lastDate: DateTime(today.year + 3)
+                        );
+
+                        if (newDate != null) {
+                          TimeOfDay? oraInizio = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay(
+                                  hour: 0,
+                                  minute: 0
+                              )
+                          );
+
+                          if (oraInizio != null) {
+                            TimeOfDay? oraFine = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay(
+                                    hour: 0,
+                                    minute: 0
+                                )
+                            );
+
+                            if (oraFine != null) {
+                              if (isTimeOfDayEarlier(oraInizio, oraFine)) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      AlertDialog(
+
+                                        title: const Text("Descrizione"),
+                                        content: TextField(
+                                          controller: _textFieldController,
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text("Cancella"),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: Text("Conferma"),
+                                            onPressed: () {
+                                              noteService.createNote(
+                                                  newDate,
+                                                  oraInizio,
+                                                  oraFine,
+                                                  _textFieldController.text
+                                              );
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                );
+                              } else {
+                                showToast(
+                                    "L'ora di inizio deve essere precedente all'ora di fine.");
+                              }
+                            } else
+                              return;
+                          } else
+                            return;
+                        }
                       },
                       child: AnimatedContainer(
                         padding: EdgeInsets.all(10),
@@ -128,18 +198,16 @@ class _AgendaPageState extends State<AgendaPage> {
                         decoration: BoxDecoration(
                             color: backgroundColor,
                             shape: BoxShape.circle,
-                            boxShadow: [
+                            boxShadow: isAddPressed ? [] : [
                               BoxShadow(
                                   offset: distanceAdd,
                                   blurRadius: blurAdd,
-                                  color: Colors.grey.shade500,
-                                  inset: isAddPressed
+                                  color: Colors.grey.shade500
                               ),
                               BoxShadow(
                                   offset: -distanceAdd,
                                   blurRadius: blurAdd,
-                                  color: Colors.white,
-                                  inset: isAddPressed
+                                  color: Colors.white
                               ),
                             ]
                         ),
@@ -179,22 +247,21 @@ class _AgendaPageState extends State<AgendaPage> {
                 todayTextStyle: TextStyle(
                   color: Colors.black
                 ),
-                /*
+
                 todayDecoration: BoxDecoration(
                   color: Colors.grey.shade400,
                   shape: BoxShape.circle
                 ),
-                */
+
                 selectedTextStyle: TextStyle(
                   color: Colors.white
                 ),
-                /*
+
                 selectedDecoration: BoxDecoration(
                   color: Colors.grey.shade600,
                   shape: BoxShape.circle
                 ),
 
-                 */
                 markerSize: 5,
                 markersMaxCount: 5,
                 markersAlignment: Alignment.center
@@ -203,6 +270,27 @@ class _AgendaPageState extends State<AgendaPage> {
 
             ),
           );
+  }
+
+  void showToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT, // Duration for which the toast will be displayed
+      gravity: ToastGravity.BOTTOM, // Position of the toast on the screen
+      backgroundColor: Colors.grey[600], // Background color of the toast
+      textColor: Colors.white, // Text color of the toast message
+      fontSize: 16.0, // Font size of the toast message
+    );
+  }
+
+  bool isTimeOfDayEarlier(TimeOfDay time1, TimeOfDay time2) {
+    if (time1.hour < time2.hour) {
+      return true;
+    } else if (time1.hour == time2.hour) {
+      return time1.minute < time2.minute;
+    } else {
+      return false;
+    }
   }
 }
 

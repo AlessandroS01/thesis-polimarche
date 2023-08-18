@@ -1,3 +1,5 @@
+import 'package:flutter/src/material/time.dart';
+
 import '../model/Member.dart';
 import '../model/Note.dart';
 import '../model/Workshop.dart';
@@ -54,6 +56,66 @@ class NoteService {
       },
     ).toList();
   }
+
+
+  void modifyNote(
+      Note note,
+      DateTime newDate,
+      TimeOfDay oraInizio,
+      TimeOfDay oraFine,
+      String descrizione) {
+
+    DateTime newOraInizio = DateTime(
+        newDate.year, newDate.month, newDate.day,
+        oraInizio.hour, oraInizio.minute);
+
+    DateTime newOraFine = DateTime(
+        newDate.year, newDate.month, newDate.day,
+        oraFine.hour, oraFine.minute);
+
+    Note oldNote = listNotes.where((element) => element.id == note.id).first;
+
+    oldNote.data = newDate;
+    oldNote.ora_inizio = newOraInizio;
+    oldNote.ora_fine = newOraFine;
+    oldNote.descrizione = descrizione;
+
+
+    //TODO FARE L'UPDATE DELLA NOTA
+  }
+
+  void deleteNote(Note note) {
+    listNotes.removeWhere((element) => note.id == element.id);
+
+    // TODO FARE L'ELIMINAZIONE DELLA NOTA
+  }
+
+  void createNote(
+      DateTime newDate,
+      TimeOfDay oraInizio,
+      TimeOfDay oraFine,
+      String descrizione) {
+
+    // TODO FARE LA CREAZIONE DELLA NOTA
+
+    DateTime newOraInizio = DateTime(
+        newDate.year, newDate.month, newDate.day,
+        oraInizio.hour, oraInizio.minute);
+
+    DateTime newOraFine = DateTime(
+        newDate.year, newDate.month, newDate.day,
+        oraFine.hour, oraFine.minute);
+    /*
+    Note note = new Note(0,
+        newDate,
+        newOraInizio,
+        newOraFine,
+        Member(),
+        descrizione);
+
+     */
+  }
+
 
 
 }
