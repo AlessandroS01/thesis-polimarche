@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
+import 'package:polimarche/model/Member.dart';
+import 'package:polimarche/pages/session/session_page.dart';
 
 import '../../inherited_widgets/authorization_provider.dart';
 
@@ -11,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
 
   bool isSessionPressed = false;
   bool isProblemPressed = false;
@@ -33,67 +36,70 @@ class _HomePageState extends State<HomePage> {
     double blurSetup = isSetupPressed ? 5.0 : 30.0;
     double blurTelemetry = isTelemetryPressed ? 5.0 : 30.0;
 
-    return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Align(
-              alignment: Alignment.topCenter,
+    return AuthorizationProvider(
+      loggedMember: loggedMember,
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Benvenuto",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 25,
+                      ),
+                    ),
+                    Text(
+                      "${loggedMember.nome} ${loggedMember.cognome} ",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      "${loggedMember.ruolo}",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 13,
+                      ),
+                    ),
+                  ]
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    "Benvenuto",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 25,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _sessionButton(loggedMember, backgroundColor, distanceSession, blurSession),
+
+                      _problemButton(backgroundColor, distanceProblem, blurProblem),
+                    ],
                   ),
-                  Text(
-                    "${loggedMember.nome} ${loggedMember.cognome} ",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                    ),
-                  ),
-                  Text(
-                    "${loggedMember.ruolo}",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 13,
-                    ),
-                  ),
-                ]
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _telemetryButton(backgroundColor, distanceTelemetry, blurTelemetry),
+
+                      _setupButton(backgroundColor, distanceSetup, blurSetup),
+                    ],
+                  )
+                ],
               ),
             ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _sessionButton(backgroundColor, distanceSession, blurSession),
-
-                    _problemButton(backgroundColor, distanceProblem, blurProblem),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _telemetryButton(backgroundColor, distanceTelemetry, blurTelemetry),
-
-                    _setupButton(backgroundColor, distanceSetup, blurSetup),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -207,13 +213,24 @@ class _HomePageState extends State<HomePage> {
                   );
   }
 
-  Listener _sessionButton(Color backgroundColor, Offset distanceSession, double blurSession) {
+  Listener _sessionButton(
+      Member loggedMember,
+      Color backgroundColor,
+      Offset distanceSession,
+      double blurSession) {
     return Listener(
-                    onPointerUp: (_) async {
-                      await Future.delayed(const Duration(milliseconds: 150)); // Wait for animation
-                        setState(() => isSessionPressed = false); // Reset the state
+                    onPointerDown: (_) async {
+                      setState(() => isSessionPressed = true);
+
+                      await Future.delayed(const Duration(milliseconds: 170)); // Wait for animation
+
+                      Navigator.pushNamed(
+                          context,
+                          '/session',
+                          arguments: loggedMember
+                      );
+                      setState(() => isSessionPressed = false);
                     },
-                    onPointerDown: (_) => setState(() => isSessionPressed = true),
                     child: AnimatedContainer(
                       width: 130,
                       duration: const Duration(milliseconds: 150),
@@ -224,22 +241,20 @@ class _HomePageState extends State<HomePage> {
                         boxShadow: [
                           //
                           BoxShadow(
-                            color: Colors.grey.shade500,
-                            offset: distanceSession,
-                            blurRadius: blurSession,
-                            inset: isSessionPressed
+                          color: Colors.grey.shade500,
+                          offset: distanceSession,
+                          blurRadius: blurSession,
+                          inset: isSessionPressed
                           ),
                           BoxShadow(
-                            color: Colors.white,
-                            offset: -distanceSession,
-                            blurRadius: blurSession,
-                            inset: isSessionPressed
+                          color: Colors.white,
+                          offset: -distanceSession,
+                          blurRadius: blurSession,
+                          inset: isSessionPressed
                           ),
-
-
                         ]
                       ),
-                      child: const Center(child: Text("Sessioni")),
+                        child: const Center(child: Text("Sessioni")),
                     ),
                   );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:polimarche/pages/home/main_page.dart';
 import 'package:polimarche/pages/loading.dart';
 import 'package:polimarche/pages/login.dart';
+import 'package:polimarche/pages/session/session_page.dart';
 
 import 'model/Member.dart';
 
@@ -25,6 +26,10 @@ class MyApp extends StatelessWidget {
         '/home': (context) {
           final Member loggedMember = ModalRoute.of(context)?.settings.arguments as Member;
           return MainPage(member: loggedMember);
+        },
+        '/session': (context) {
+          final Member loggedMember = ModalRoute.of(context)?.settings.arguments as Member;
+          return SessionPage(loggedMember: loggedMember);
         },
       },
     );

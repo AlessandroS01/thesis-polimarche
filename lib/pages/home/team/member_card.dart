@@ -46,7 +46,7 @@ class CardMember extends StatelessWidget {
           ),
           Center(
             child: Text(
-              "S${member.matricola}",
+              "S${member.matricola} - ${member.nome}, ${member.cognome}",
               style: TextStyle(
                   fontSize: 20,
                   color: Colors.black
