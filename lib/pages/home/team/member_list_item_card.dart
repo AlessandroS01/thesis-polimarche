@@ -41,7 +41,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
 
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+      margin: EdgeInsets.fromLTRB(50, 0, 50, 25),
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(

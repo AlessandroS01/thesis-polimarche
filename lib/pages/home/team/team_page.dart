@@ -165,7 +165,6 @@ class _TeamPageState extends State<TeamPage> {
     return Expanded(
             flex: 5,
             child: Container(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: NotificationListener<OverscrollIndicatorNotification>(
                 onNotification: (OverscrollIndicatorNotification overscroll) {
                   overscroll.disallowIndicator(); // Disable the overscroll glow effect
@@ -238,7 +237,7 @@ class _TeamPageState extends State<TeamPage> {
                 },
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 200),
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
                       color: backgroundColor,
                       borderRadius: BorderRadius.circular(15),
