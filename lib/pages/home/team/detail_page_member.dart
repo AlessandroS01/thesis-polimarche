@@ -87,7 +87,7 @@ class _DetailMemberState extends State<DetailMember> {
 
               !driver.isPresent && loggedMember.ruolo == "Manager"
                   ? Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Container(
                       margin: EdgeInsets.only(top: 15),
                       child: NotificationListener<OverscrollIndicatorNotification>(
