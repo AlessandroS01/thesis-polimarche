@@ -40,6 +40,32 @@ class SessionService {
           30.0,
           "Dry"
       ),
+      Session(
+          3,
+          "Autocross",
+          DateTime(2023, 8, 20, 10, 0),
+          DateTime(2023, 8, 20, 10, 30),
+          DateTime(2023, 8, 20, 11, 30),
+          listTracks[2],
+          "Sunny",
+          1013.25,
+          25.0,
+          30.0,
+          "Dry"
+      ),
+      Session(
+          4,
+          "Skidpad",
+          DateTime(2023, 8, 20, 10, 0),
+          DateTime(2023, 8, 20, 10, 30),
+          DateTime(2023, 8, 20, 11, 30),
+          listTracks[2],
+          "Sunny",
+          1013.25,
+          25.0,
+          30.0,
+          "Dry"
+      ),
     ];
 
   }

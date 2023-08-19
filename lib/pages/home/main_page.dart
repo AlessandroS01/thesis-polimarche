@@ -34,6 +34,34 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return AuthorizationProvider(
       loggedMember: widget.member,
       child: Scaffold(
+        appBar: AppBar(
+          title: _currentIndex == 0
+              ? Text(
+                "Benvenuto",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25
+                ),
+              )
+              : _currentIndex == 1
+                ? Text(
+                  "Team",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25
+                  ),
+                )
+                : Text(
+                    "Agenda",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 25
+                    ),
+                ),
+          centerTitle: true,
+          backgroundColor: Colors.grey.shade300,
+          elevation: 0,
+        ),
         body: Container(
           decoration: BoxDecoration(
             color: Colors.grey.shade300

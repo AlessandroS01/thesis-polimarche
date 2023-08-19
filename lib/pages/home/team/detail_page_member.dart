@@ -68,175 +68,210 @@ class _DetailMemberState extends State<DetailMember> {
     CardMember memberCard = CardMember(driver: driver, member: member);
 
     return Scaffold(
-
-      resizeToAvoidBottomInset: true,
+      appBar: _appBar(backgroundColor),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height, // Set a finite height constraint
-            decoration: BoxDecoration(
-              color: backgroundColor
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // BACK BUTTON
-                _backButton(context, backgroundColor, distance, blur),
+        child: Container(
+          height: MediaQuery.of(context).size.height, // Set a finite height constraint
+          decoration: BoxDecoration(
+            color: backgroundColor
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // BACK BUTTON
+              //_backButton(context, backgroundColor, distance, blur),
 
-                // MEMBER CARD
-                memberCard,
+              // MEMBER CARD
+              memberCard,
 
-                !driver.isPresent && loggedMember.ruolo == "Manager"
-                    ? _addDriverButton(backgroundColor, distanceDriver, blurDriver)
-                    : SizedBox(height: 0),
+              !driver.isPresent && loggedMember.ruolo == "Manager"
+                  ? Expanded(
+                    flex: 3,
+                    child: Container(
+                      margin: EdgeInsets.only(top: 15),
+                      child: NotificationListener<OverscrollIndicatorNotification>(
+                        onNotification: (OverscrollIndicatorNotification overscroll) {
+                          overscroll.disallowIndicator(); // Disable the overscroll glow effect
+                          return false;
+                        },
+                        child: SingleChildScrollView(
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _addDriverButton(
+                                  backgroundColor,
+                                  distanceDriver,
+                                  blurDriver
+                                ),
+                                setDriverPressed ? Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20),
+                                  child: Column(
+                                    children: [
+                                      // SET HEIGHT AND WEIGHT OF THE DRIVER
+                                      _inputBioValuesDriver(backgroundColor),
+                                      // ADD THE DRIVER
+                                      _addDriverConfirm(
+                                          backgroundColor,
+                                          updateState,
+                                          teamService,
+                                          member
+                                      )
+                                    ],
+                                  ),
+                                )
+                                    : SizedBox(height: 0)
+                              ]
+                          ),
+                        ),
+                      ),
+                    )
+                  )
+                  : Expanded(flex:2, child: Container()),
 
-                setDriverPressed ? Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      children: [
-                        // SET HEIGHT AND WEIGHT OF THE DRIVER
-                        _inputBioValuesDriver(backgroundColor),
-                        // ADD THE DRIVER
-                        _addDriverConfirm(
-                            backgroundColor,
-                            updateState,
-                            teamService,
-                            member
-                        )
-                      ],
-                    ),
-                  ),
-                )
-                    : SizedBox(height: 0)
-              ],
-            ),
+
+            ],
           ),
         ),
       ),
     );
   }
 
-  Expanded _addDriverConfirm(Color backgroundColor,
+  AppBar _appBar(Color backgroundColor) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: backgroundColor,
+      iconTheme: IconThemeData(
+        color: Colors.black
+      ),
+      title: Text(
+        "Dettagli membro",
+        style: TextStyle(
+          color: Colors.black
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Container _addDriverConfirm(Color backgroundColor,
       VoidCallback updateState,
       TeamService teamService,
       Member member) {
-    return Expanded(
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 100),
-                          child: Center(
-                            child: Listener(
-                              onPointerDown: (_) async {
-                                setState(() => isConfirmPressed = true); // Reset the state
-                                await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 100),
+      child: Center(
+        child: Listener(
+          onPointerDown: (_) async {
+            setState(() => isConfirmPressed = true); // Reset the state
+            await Future.delayed(const Duration(milliseconds: 200)); // Wait for animation
 
-                                String heightText = _heightController.text;
-                                String weightText = _weightController.text;
+            String heightText = _heightController.text;
+            String weightText = _weightController.text;
 
-                                double weight = 0.0 ;
-                                int height = 0;
+            double weight = 0.0 ;
+            int height = 0;
 
-                                if (checkInputText(heightText) && checkInputText(weightText)) { //check num values
-                                  if (convertHeight(heightText)) { // check if height is an int
-                                    height = int.parse(heightText);
-                                    if (convertWeight(weightText)) { // check if weight is a double
-                                      weight = double.parse(weightText);
-                                      if (height > 0 && height < 250) { // check height boundaries
-                                        if (weight > 40.0 && weight < 150.0) { // check weight boundaries
-                                          showToast("Pilota aggiunto");
+            if (checkInputText(heightText) && checkInputText(weightText)) { //check num values
+              if (convertHeight(heightText)) { // check if height is an int
+                height = int.parse(heightText);
+                if (convertWeight(weightText)) { // check if weight is a double
+                  weight = double.parse(weightText);
+                  if (height > 0 && height < 250) { // check height boundaries
+                    if (weight > 40.0 && weight < 150.0) { // check weight boundaries
+                      showToast("Pilota aggiunto");
 
-                                          teamService.addNewDriver(
-                                            height,
-                                            weight,
-                                            member
-                                          );
+                      teamService.addNewDriver(
+                        height,
+                        weight,
+                        member
+                      );
 
-                                          updateState();
+                      updateState();
 
-                                          Navigator.pop(context);
-                                        } else {
-                                          showToast("Il peso deve essere compreso tra 40 e 150");
-                                        }
-                                      } else {
-                                        showToast("Altezza deve essere compreso tra 0 e 250");
-                                      }
-                                    } else if (int.tryParse(weightText) != null) { // check if weight is an int
-                                      weight = int.parse(weightText).toDouble();
-                                      if (height > 0 && height < 250) { // check height boundaries
-                                        if (weight > 40.0 && weight < 150.0) { // check weight boundaries
-                                          showToast("Pilota aggiunto");
+                      Navigator.pop(context);
+                    } else {
+                      showToast("Il peso deve essere compreso tra 40 e 150");
+                    }
+                  } else {
+                    showToast("Altezza deve essere compreso tra 0 e 250");
+                  }
+                } else if (int.tryParse(weightText) != null) { // check if weight is an int
+                  weight = int.parse(weightText).toDouble();
+                  if (height > 0 && height < 250) { // check height boundaries
+                    if (weight > 40.0 && weight < 150.0) { // check weight boundaries
+                      showToast("Pilota aggiunto");
 
-                                          teamService.addNewDriver(
-                                            height,
-                                            weight,
-                                            member
-                                          );
+                      teamService.addNewDriver(
+                        height,
+                        weight,
+                        member
+                      );
 
-                                          updateState();
+                      updateState();
 
-                                          Navigator.pop(context);
-                                        } else {
-                                          showToast("Il peso deve essere compreso tra 40 e 150");
-                                        }
-                                      } else {
-                                        showToast("Altezza deve essere compreso tra 0 e 250");
-                                      }
-                                    } else {
-                                      showToast("Il campo relativo al peso deve contenere un intero o un decimale.");
-                                    }
-                                  } else {
-                                    showToast("Il campo relativo all'altezza deve contenere un intero.");
-                                  }
-                                } else {
-                                  showToast("I campi devono essere numerici.");
-                                }
+                      Navigator.pop(context);
+                    } else {
+                      showToast("Il peso deve essere compreso tra 40 e 150");
+                    }
+                  } else {
+                    showToast("Altezza deve essere compreso tra 0 e 250");
+                  }
+                } else {
+                  showToast("Il campo relativo al peso deve contenere un intero o un decimale.");
+                }
+              } else {
+                showToast("Il campo relativo all'altezza deve contenere un intero.");
+              }
+            } else {
+              showToast("I campi devono essere numerici.");
+            }
 
 
-                                setState(() => isConfirmPressed = false); // Reset the state,
-                              },
-                              child: AnimatedContainer(
-                                  margin: EdgeInsets.only(top: 20),
-                                  padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
-                                  duration: Duration(milliseconds: 150),
-                                  decoration: BoxDecoration(
-                                    color: backgroundColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: isConfirmPressed ? [
-                                      BoxShadow(
-                                        offset: Offset(5, 5),
-                                        blurRadius: 15,
-                                        color: Colors.grey.shade500,
-                                        inset: true
-                                      ),
-                                      BoxShadow(
-                                        offset: -Offset(5, 5),
-                                        blurRadius: 15,
-                                        color: Colors.white,
-                                        inset: true
-                                      ),
-                                    ] : []
-                                  ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        "Aggiungi",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black
-                                        ),
-                                    ),
-                                    Icon(
-                                        Icons.add_circle_outline_sharp,
-                                        color: Colors.black,
-                                    )
-                                  ]
-                              ),
-                            ),
-                           ),
-                          ),
-                        ),
+            setState(() => isConfirmPressed = false); // Reset the state,
+          },
+          child: AnimatedContainer(
+              margin: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+              duration: Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: isConfirmPressed ? [
+                  BoxShadow(
+                    offset: Offset(5, 5),
+                    blurRadius: 15,
+                    color: Colors.grey.shade500,
+                    inset: true
+                  ),
+                  BoxShadow(
+                    offset: -Offset(5, 5),
+                    blurRadius: 15,
+                    color: Colors.white,
+                    inset: true
+                  ),
+                ] : []
+              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                    "Aggiungi",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black
+                    ),
+                ),
+                Icon(
+                    Icons.add_circle_outline_sharp,
+                    color: Colors.black,
+                )
+              ]
+          ),
+        ),
+       ),
+      ),
     );
   }
 
@@ -337,7 +372,7 @@ class _DetailMemberState extends State<DetailMember> {
 
                   },
                   child: AnimatedContainer(
-                    margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     duration: Duration(milliseconds: 150),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(

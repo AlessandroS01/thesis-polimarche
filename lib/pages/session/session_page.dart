@@ -3,6 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polimarche/inherited_widgets/session_state.dart';
 import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/pages/session/session_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
 import '../../model/Member.dart';
@@ -36,18 +37,65 @@ class _SessionPageState extends State<SessionPage> {
 
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
-      if(query.isNotEmpty){
-         setState(() {
-           _filteredSessionList = sessionList.where(
-                   (element) => element.id.toString().contains(query.toString())
+
+      List<bool> buttonPressed = [
+        isAccelerationPressed,
+        isSkidpadPressed,
+        isEndurancePressed,
+        isAutocrossPressed
+      ];
+
+      List<String> events = [
+        "Acceleration",
+        "Skidpad",
+        "Endurance",
+        "Autocross"
+      ];
+
+      int indexOfTrue = buttonPressed.indexWhere((element) => element);
+
+      if (indexOfTrue != -1 && query.isNotEmpty) { // event and query
+        setState(() {
+          _filteredSessionList = sessionList.where(
+                   (element) =>
+                       element.id.toString().contains(query.toString())
+                       &&
+                       element.evento == events[indexOfTrue]
            ).toList();
-         });
-      }
-      else{
+        });
+      } else if (indexOfTrue != -1 && query.isEmpty) { // event and !query
+        setState(() {
+          _filteredSessionList = sessionList.where(
+                   (element) =>
+                       element.evento == events[indexOfTrue]
+           ).toList();
+        });
+      } else if (indexOfTrue == -1 && query.isNotEmpty) { // !event and query
+        setState(() {
+          _filteredSessionList = sessionList.where(
+                   (element) =>
+                       element.id.toString().contains(query.toString())
+           ).toList();
+        });
+      } else { // !event and !query
         setState(() {
           _filteredSessionList = sessionList;
         });
       }
+  }
+
+  // called from other widget the rebuild the list
+  void updateStateSession() {
+    setState(() {
+      return;
+    });
+  }
+
+  // called whenever a button is clicked
+  void changeEventButtonPressed(){
+      setState(() {
+        filterListByQuery(_searchBarController.text);
+      });
   }
 
   @override
@@ -73,6 +121,10 @@ class _SessionPageState extends State<SessionPage> {
     Offset distanceAutocross = isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAutocross = isAutocrossPressed ? 5.0 : 30.0;
 
+    setState(() {
+      filterListByQuery(_searchBarController.text);
+    });
+
     return Scaffold(
       appBar: _appBar(),
       drawer: _drawer(),
@@ -89,6 +141,7 @@ class _SessionPageState extends State<SessionPage> {
               // SEARCH BAR
               _searchBar(),
 
+              // BUTTONS FOR EVENT TYPE
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -97,9 +150,29 @@ class _SessionPageState extends State<SessionPage> {
                   _skidpadButton(distanceSkidpad, blurSkidpad),
                   _autocrossButton(distanceAutocross, blurAutocross),
                 ],
+              ),
+
+              Expanded(
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification: (OverscrollIndicatorNotification overscroll) {
+                      overscroll.disallowIndicator(); // Disable the overscroll glow effect
+                      return false;
+                    },
+                    child: ListView.builder(
+                        itemCount: _filteredSessionList.length,
+                        itemBuilder: (context, index) {
+                          final element = _filteredSessionList[index];
+                          return CardSessionListItem(
+                              session: element,
+                              updateStateSessionPage: updateStateSession,
+                              loggedMember: loggedMember
+                          );
+                        },
+                    ),
+                  ),
+                ),
               )
-
-
             ],
           ),
         ),
@@ -181,8 +254,14 @@ class _SessionPageState extends State<SessionPage> {
               child: Center(
                 child: Listener(
                   onPointerDown: (_) async {
-                    setState(() => isAccelerationPressed = !isAccelerationPressed); // Toggle the state
-                    //toggleDisplayDrivers();
+                    setState(() {
+                      isAccelerationPressed = !isAccelerationPressed; // Toggle the state
+                      isSkidpadPressed = false;
+                      isEndurancePressed = false;
+                      isAutocrossPressed = false;
+                    });
+
+                    changeEventButtonPressed();
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 200),
@@ -232,8 +311,14 @@ class _SessionPageState extends State<SessionPage> {
               child: Center(
                 child: Listener(
                   onPointerDown: (_) async {
-                    setState(() => isEndurancePressed = !isEndurancePressed); // Toggle the state
-                    //toggleDisplayDrivers();
+                    setState(() {
+                      isEndurancePressed = !isEndurancePressed; // Toggle the state
+                      isSkidpadPressed = false;
+                      isAccelerationPressed = false;
+                      isAutocrossPressed = false;
+                    });
+
+                    changeEventButtonPressed();
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 200),
@@ -283,8 +368,14 @@ class _SessionPageState extends State<SessionPage> {
               child: Center(
                 child: Listener(
                   onPointerDown: (_) async {
-                    setState(() => isSkidpadPressed = !isSkidpadPressed); // Toggle the state
-                    //toggleDisplayDrivers();
+                    setState(() {
+                      isSkidpadPressed = !isSkidpadPressed; // Toggle the state
+                      isAccelerationPressed = false;
+                      isEndurancePressed = false;
+                      isAutocrossPressed = false;
+                    });
+
+                    changeEventButtonPressed();
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 200),
@@ -334,8 +425,14 @@ class _SessionPageState extends State<SessionPage> {
               child: Center(
                 child: Listener(
                   onPointerDown: (_) async {
-                    setState(() => isAutocrossPressed = !isAutocrossPressed); // Toggle the state
-                    //toggleDisplayDrivers();
+                    setState(() {
+                      isAutocrossPressed = !isAutocrossPressed; // Toggle the state
+                      isAccelerationPressed = false;
+                      isEndurancePressed = false;
+                      isSkidpadPressed = false;
+                    });
+
+                    changeEventButtonPressed();
                   },
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 200),
@@ -360,7 +457,7 @@ class _SessionPageState extends State<SessionPage> {
                         ] : []
                     ),
                     child: Column(
-                     children: [
+                      children: [
                        Image.asset("assets/icon/autocross.png"),
                        SizedBox(height: 5),
                        Text(

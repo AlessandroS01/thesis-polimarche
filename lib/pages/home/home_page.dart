@@ -42,36 +42,28 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      "Benvenuto",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 25,
-                      ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(height: 10),
+                  Text(
+                    "${loggedMember.nome} ${loggedMember.cognome} ",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
                     ),
-                    Text(
-                      "${loggedMember.nome} ${loggedMember.cognome} ",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                      ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    "${loggedMember.ruolo}",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
                     ),
-                    Text(
-                      "${loggedMember.ruolo}",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 13,
-                      ),
-                    ),
-                  ]
-                ),
+                  ),
+                ]
               ),
             ),
             Expanded(

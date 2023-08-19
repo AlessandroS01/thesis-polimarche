@@ -93,13 +93,6 @@ class _AgendaPageState extends State<AgendaPage> {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              Text(
-                  "Agenda",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                  ),
-              ),
               SizedBox(height: 10),
 
               // CALENDAR

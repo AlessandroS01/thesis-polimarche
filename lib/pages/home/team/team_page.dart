@@ -145,17 +145,7 @@ class _TeamPageState extends State<TeamPage> {
       child: SafeArea(
           child: Column(
             children: [
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "Team",
-                    style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 25,
-                          ),
-                    ),
-                ),
-              ),
+              SizedBox(height: 35),
 
               // SEARCH BAR
               _searchBar(),
