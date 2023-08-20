@@ -23,6 +23,8 @@ class _AgendaPageState extends State<AgendaPage> {
   late Member loggedMember;
 
   bool isAddPressed = false;
+  Offset distanceAdd = Offset(5, 5);
+  double blurAdd = 12;
 
   late final NoteService noteService;
   late List<Note> _notesForSelectedDay = [];
@@ -82,8 +84,6 @@ class _AgendaPageState extends State<AgendaPage> {
 
 
     final backgroundColor = Colors.grey.shade300;
-    Offset distanceAdd = Offset(5, 5);
-    double blurAdd = 12;
 
     return AgendaInheritedState(
       noteService: noteService,// extends an inherited widget

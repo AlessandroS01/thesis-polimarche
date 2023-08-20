@@ -24,19 +24,27 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   bool isModificaPressed = false;
   bool isCancellaPressed = false;
 
+  late final Note note;
+  late final VoidCallback updateStateAgendaPage;
+
+  final backgroundColor = Colors.grey.shade300;
+
+  @override
+  void initState() {
+    note = widget.note;
+    updateStateAgendaPage = widget.updateStateAgendaPage;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
     NoteService noteService = AgendaInheritedState.of(context)!.noteService;
-    VoidCallback updateStateAgendaPage = widget.updateStateAgendaPage;
-
 
     TextEditingController _textFieldController = TextEditingController();
 
-    final note = widget.note;
     _textFieldController.text = note.descrizione;
 
-    final backgroundColor = Colors.grey.shade300;
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
     double blurModifica = isModificaPressed ? 5 : 10;
     Offset distanceCancella = isCancellaPressed ? Offset(5, 5) : Offset(8, 8);

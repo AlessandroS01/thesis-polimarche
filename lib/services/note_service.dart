@@ -108,7 +108,7 @@ class NoteService {
         oraFine.hour, oraFine.minute);
 
     Note note = new Note(
-        0,
+        listNotes.last.id + 1,
         newDate,
         newOraInizio,
         newOraFine,
