@@ -294,9 +294,7 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySessionPage(
-                session: session,
-                sessionService: sessionService
-            ),
+                session: session, sessionService: sessionService),
           ),
         );
 

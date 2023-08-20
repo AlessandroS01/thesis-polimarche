@@ -83,13 +83,11 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
   }
 
   void _setNewTime() async {
-    TimeOfDay? oraInizio = await showTimePicker(
-        context: context, initialTime: newStartingTime
-    );
+    TimeOfDay? oraInizio =
+        await showTimePicker(context: context, initialTime: newStartingTime);
     if (oraInizio != null) {
-      TimeOfDay? oraFine = await showTimePicker(
-        context: context, initialTime: newEndingTime
-      );
+      TimeOfDay? oraFine =
+          await showTimePicker(context: context, initialTime: newEndingTime);
       if (oraFine != null && isTimeOfDayEarlier(oraInizio, oraFine)) {
         setState(() {
           newStartingTime = oraInizio;
@@ -123,8 +121,6 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
       return false;
     }
   }
-
-
 
   @override
   void initState() {
@@ -261,7 +257,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
                   ],
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 40,
                 ),
                 Text(
                   "Data",
@@ -269,7 +265,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
                 ),
                 _dateButton(backgroundColor, distanceDate, blurDate),
                 SizedBox(
-                  height: 10,
+                  height: 40,
                 ),
                 Text(
                   "Ora",
@@ -283,7 +279,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
       );
 
   /*
-  --------------------FIRST STEP--------------------
+  -------------------- FIRST STEP--------------------
    */
 
   // EVENTS
@@ -585,10 +581,16 @@ class _ModifySessionPageState extends State<ModifySessionPage> {
     );
   }
 
+  /*
+  -------------------- SECOND STEP--------------------
+   */
   Expanded _secondStep() => Expanded(
         child: Text("Second"),
       );
 
+  /*
+  -------------------- THIRD STEP--------------------
+   */
   Expanded _thirdStep() => Expanded(
         child: Text("Third"),
       );
