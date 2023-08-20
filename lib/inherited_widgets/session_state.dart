@@ -6,14 +6,11 @@ import '../services/session_service.dart';
 class SessionInheritedState extends InheritedWidget {
   final SessionService sessionService;
 
-  SessionInheritedState({
-    required Widget child,
-    required this.sessionService
-  }) : super(child: child);
+  SessionInheritedState({required Widget child, required this.sessionService})
+      : super(child: child);
 
-  static SessionInheritedState? of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<SessionInheritedState>();
-
+  static SessionInheritedState? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SessionInheritedState>();
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) =>

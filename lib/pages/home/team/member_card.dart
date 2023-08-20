@@ -26,18 +26,16 @@ class CardMember extends StatelessWidget {
                     BoxShadow(
                         offset: Offset(8, 8),
                         blurRadius: 15,
-                        color: Colors.grey.shade500
-                    ),
+                        color: Colors.grey.shade500),
                     BoxShadow(
                         offset: -Offset(8, 8),
                         blurRadius: 15,
-                        color: Colors.white
-                    ),
-                  ]
-              ),
+                        color: Colors.white),
+                  ]),
               child: NotificationListener<OverscrollIndicatorNotification>(
                 onNotification: (OverscrollIndicatorNotification overscroll) {
-                  overscroll.disallowIndicator(); // Disable the overscroll glow effect
+                  overscroll
+                      .disallowIndicator(); // Disable the overscroll glow effect
                   return false;
                 },
                 child: SingleChildScrollView(
@@ -50,65 +48,47 @@ class CardMember extends StatelessWidget {
                             Icons.person_3,
                             size: 80,
                             color: Colors.black,
-                          )
-                      ),
+                          )),
                       Center(
                         child: Text(
                           "S${member.matricola} - ${member.nome}, ${member.cognome}",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black
-                          ),
+                          style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
                       Center(
                         child: Text(
-                          member.ruolo=="Manager"
+                          member.ruolo == "Manager"
                               ? "${member.ruolo}"
-                              : "${member.ruolo} in ${member.reparto.reparto}" ,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black
-                          ),
+                              : "${member.ruolo} in ${member.reparto.reparto}",
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                       Center(
                         child: Text(
                           "${member.dob.year}-${member.dob.month}-${member.dob.day}",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                       Center(
                         child: Container(
                           padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                          child: Column(
-                            children: [
-                              Text(
+                          child: Column(children: [
+                            Text(
                               "Pilota",
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black
-                                ),
-                              ),
-                              Text(
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.black),
+                            ),
+                            Text(
                               "Altezza ${driver.value.altezza} cm",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black
-                                ),
-                              ),
-                              Text(
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                            ),
+                            Text(
                               "Peso ${driver.value.peso} kg",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black
-                                ),
-                              ),
-                            ]
-                          ),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                            ),
+                          ]),
                         ),
                       ),
                       SizedBox(height: 20),
@@ -117,10 +97,12 @@ class CardMember extends StatelessWidget {
                         children: [
                           TextButton(
                             style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                                      return Colors.transparent; // Remove the overlay color
-                                    },
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return Colors
+                                      .transparent; // Remove the overlay color
+                                },
                               ),
                             ),
                             onPressed: () {},
@@ -129,9 +111,7 @@ class CardMember extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          Text(
-                              "${member.email}"
-                          ),
+                          Text("${member.email}"),
                         ],
                       ),
                       Row(
@@ -139,10 +119,12 @@ class CardMember extends StatelessWidget {
                         children: [
                           TextButton(
                             style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                                      return Colors.transparent; // Remove the overlay color
-                                    },
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return Colors
+                                      .transparent; // Remove the overlay color
+                                },
                               ),
                             ),
                             onPressed: () {},
@@ -151,9 +133,7 @@ class CardMember extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          Text(
-                              "${member.telefono}"
-                          ),
+                          Text("${member.telefono}"),
                         ],
                       ),
                     ],
@@ -173,18 +153,16 @@ class CardMember extends StatelessWidget {
                     BoxShadow(
                         offset: Offset(8, 8),
                         blurRadius: 15,
-                        color: Colors.grey.shade500
-                    ),
+                        color: Colors.grey.shade500),
                     BoxShadow(
                         offset: -Offset(8, 8),
                         blurRadius: 15,
-                        color: Colors.white
-                    ),
-                  ]
-              ),
+                        color: Colors.white),
+                  ]),
               child: NotificationListener<OverscrollIndicatorNotification>(
                 onNotification: (OverscrollIndicatorNotification overscroll) {
-                  overscroll.disallowIndicator(); // Disable the overscroll glow effect
+                  overscroll
+                      .disallowIndicator(); // Disable the overscroll glow effect
                   return false;
                 },
                 child: SingleChildScrollView(
@@ -197,35 +175,25 @@ class CardMember extends StatelessWidget {
                             Icons.person_3,
                             size: 80,
                             color: Colors.black,
-                          )
-                      ),
+                          )),
                       Center(
                         child: Text(
                           "S${member.matricola} - ${member.nome}, ${member.cognome}",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black
-                          ),
+                          style: TextStyle(fontSize: 18, color: Colors.black),
                         ),
                       ),
                       Center(
                         child: Text(
-                          member.ruolo=="Manager"
+                          member.ruolo == "Manager"
                               ? "${member.ruolo}"
-                              : "${member.ruolo} in ${member.reparto.reparto}" ,
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black
-                          ),
+                              : "${member.ruolo} in ${member.reparto.reparto}",
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                       Center(
                         child: Text(
                           "${member.dob.year}-${member.dob.month}-${member.dob.day}",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black
-                          ),
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
                       Container(),
@@ -235,10 +203,12 @@ class CardMember extends StatelessWidget {
                         children: [
                           TextButton(
                             style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                                      return Colors.transparent; // Remove the overlay color
-                                    },
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return Colors
+                                      .transparent; // Remove the overlay color
+                                },
                               ),
                             ),
                             onPressed: () {},
@@ -247,9 +217,7 @@ class CardMember extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          Text(
-                              "${member.email}"
-                          ),
+                          Text("${member.email}"),
                         ],
                       ),
                       Row(
@@ -257,10 +225,12 @@ class CardMember extends StatelessWidget {
                         children: [
                           TextButton(
                             style: ButtonStyle(
-                              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                                    (Set<MaterialState> states) {
-                                      return Colors.transparent; // Remove the overlay color
-                                    },
+                              overlayColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  return Colors
+                                      .transparent; // Remove the overlay color
+                                },
                               ),
                             ),
                             onPressed: () {},
@@ -269,9 +239,7 @@ class CardMember extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          Text(
-                              "${member.telefono}"
-                          ),
+                          Text("${member.telefono}"),
                         ],
                       ),
                     ],
@@ -280,8 +248,5 @@ class CardMember extends StatelessWidget {
               ),
             ),
           );
-
-
   }
 }
-

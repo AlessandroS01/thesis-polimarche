@@ -1,5 +1,4 @@
 class Breakage {
-
   int id;
   String descrizione;
 

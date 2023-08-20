@@ -4,7 +4,6 @@ import 'package:polimarche/model/Session.dart';
 import '../model/Breakage.dart';
 
 class BreakageService {
-
   late List<Breakage> listBreakages;
   late List<BreakageHappen> listBreakagesHappened;
 
@@ -15,9 +14,10 @@ class BreakageService {
       Breakage(3, "ammortizzatori"),
     ];
 
-    listBreakagesHappened  = [
+    listBreakagesHappened = [
       BreakageHappen(1, "tutto", listSessions[0], listBreakages[0], true),
-      BreakageHappen(2, "prova rottura avvenuta", listSessions[0], listBreakages[1], false),
+      BreakageHappen(2, "prova rottura avvenuta", listSessions[0],
+          listBreakages[1], false),
     ];
   }
 }

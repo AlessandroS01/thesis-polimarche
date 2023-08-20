@@ -4,8 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/services/session_service.dart';
-
-import 'card_list_item_card.dart';
+import 'comment_list_item_card.dart';
 
 class CommentSessionPage extends StatefulWidget {
   final Session session;
@@ -161,7 +160,8 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                     const Duration(milliseconds: 200)); // Wait for animation
                 setState(() => isAddPressed = false); // Reset the state,
 
-                _addCommentDialog(_textFieldController, _textFieldControllerFlag);
+                _addCommentDialog(
+                    _textFieldController, _textFieldControllerFlag);
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.all(10),
@@ -190,76 +190,74 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
             )));
   }
 
-  Future<dynamic> _addCommentDialog(TextEditingController _textFieldController, TextEditingController _textFieldControllerFlag) {
+  Future<dynamic> _addCommentDialog(TextEditingController _textFieldController,
+      TextEditingController _textFieldControllerFlag) {
     return showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Nuova descrizione"),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Text("Descrizione"),
-                          Expanded(child: Container()),
-                          Expanded(
-                            flex: 2,
-                            child: TextField(
-                              controller: _textFieldController,
-                            ),
-                          )
-                        ],
-                      ),
-
-                      SizedBox(
-                          height:
-                              10), // Add some spacing between the text field and radio buttons
-
-                      Row(
-                        children: [
-                          Text("Flag"),
-                          Expanded(child: Container()),
-                          Expanded(
-                            flex: 2,
-                            child: TextField(
-                              controller: _textFieldControllerFlag,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Nuova descrizione"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Text("Descrizione"),
+                Expanded(child: Container()),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _textFieldController,
                   ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text("Cancella"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    TextButton(
-                      child: Text("Conferma"),
-                      onPressed: () {
-                        if (_textFieldControllerFlag.text.toLowerCase() ==
-                                "Team".toLowerCase() ||
-                            _textFieldControllerFlag.text.toLowerCase() ==
-                                "Pilota".toLowerCase()) {
-                          sessionService.addComment(
-                              _textFieldController.text,
-                              _textFieldControllerFlag.text,
-                              session
-                          );
+                )
+              ],
+            ),
 
-                          updateState();
+            SizedBox(
+                height:
+                    10), // Add some spacing between the text field and radio buttons
 
-                          Navigator.pop(context);
-                        } else {
-                          showToast("Immettere team o pilota come flag.");
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              );
+            Row(
+              children: [
+                Text("Flag"),
+                Expanded(child: Container()),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _textFieldControllerFlag,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text("Cancella"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          TextButton(
+            child: Text("Conferma"),
+            onPressed: () {
+              if (_textFieldControllerFlag.text.toLowerCase() ==
+                      "Team".toLowerCase() ||
+                  _textFieldControllerFlag.text.toLowerCase() ==
+                      "Pilota".toLowerCase()) {
+                sessionService.addComment(_textFieldController.text,
+                    _textFieldControllerFlag.text, session);
+
+                updateState();
+
+                Navigator.pop(context);
+              } else {
+                showToast("Immettere team o pilota come flag.");
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   void showToast(String message) {

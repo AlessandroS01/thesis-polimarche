@@ -11,10 +11,7 @@ import '../../model/Member.dart';
 class SessionPage extends StatefulWidget {
   final Member loggedMember;
 
-  const SessionPage({
-    super.key,
-    required this.loggedMember
-  });
+  const SessionPage({super.key, required this.loggedMember});
 
   @override
   State<SessionPage> createState() => _SessionPageState();
@@ -37,51 +34,47 @@ class _SessionPageState extends State<SessionPage> {
 
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
+    List<bool> buttonPressed = [
+      isAccelerationPressed,
+      isSkidpadPressed,
+      isEndurancePressed,
+      isAutocrossPressed
+    ];
 
-      List<bool> buttonPressed = [
-        isAccelerationPressed,
-        isSkidpadPressed,
-        isEndurancePressed,
-        isAutocrossPressed
-      ];
+    List<String> events = ["Acceleration", "Skidpad", "Endurance", "Autocross"];
 
-      List<String> events = [
-        "Acceleration",
-        "Skidpad",
-        "Endurance",
-        "Autocross"
-      ];
+    int indexOfTrue = buttonPressed.indexWhere((element) => element);
 
-      int indexOfTrue = buttonPressed.indexWhere((element) => element);
-
-      if (indexOfTrue != -1 && query.isNotEmpty) { // event and query
-        setState(() {
-          _filteredSessionList = sessionList.where(
-                   (element) =>
-                       element.id.toString().contains(query.toString())
-                       &&
-                       element.evento == events[indexOfTrue]
-           ).toList();
-        });
-      } else if (indexOfTrue != -1 && query.isEmpty) { // event and !query
-        setState(() {
-          _filteredSessionList = sessionList.where(
-                   (element) =>
-                       element.evento == events[indexOfTrue]
-           ).toList();
-        });
-      } else if (indexOfTrue == -1 && query.isNotEmpty) { // !event and query
-        setState(() {
-          _filteredSessionList = sessionList.where(
-                   (element) =>
-                       element.id.toString().contains(query.toString())
-           ).toList();
-        });
-      } else { // !event and !query
-        setState(() {
-          _filteredSessionList = sessionList;
-        });
-      }
+    if (indexOfTrue != -1 && query.isNotEmpty) {
+      // event and query
+      setState(() {
+        _filteredSessionList = sessionList
+            .where((element) =>
+                element.id.toString().contains(query.toString()) &&
+                element.evento == events[indexOfTrue])
+            .toList();
+      });
+    } else if (indexOfTrue != -1 && query.isEmpty) {
+      // event and !query
+      setState(() {
+        _filteredSessionList = sessionList
+            .where((element) => element.evento == events[indexOfTrue])
+            .toList();
+      });
+    } else if (indexOfTrue == -1 && query.isNotEmpty) {
+      // !event and query
+      setState(() {
+        _filteredSessionList = sessionList
+            .where(
+                (element) => element.id.toString().contains(query.toString()))
+            .toList();
+      });
+    } else {
+      // !event and !query
+      setState(() {
+        _filteredSessionList = sessionList;
+      });
+    }
   }
 
   // called from other widget the rebuild the list
@@ -92,10 +85,10 @@ class _SessionPageState extends State<SessionPage> {
   }
 
   // called whenever a button is clicked
-  void changeEventButtonPressed(){
-      setState(() {
-        filterListByQuery(_searchBarController.text);
-      });
+  void changeEventButtonPressed() {
+    setState(() {
+      filterListByQuery(_searchBarController.text);
+    });
   }
 
   @override
@@ -109,16 +102,19 @@ class _SessionPageState extends State<SessionPage> {
     loggedMember = widget.loggedMember;
     sessionList = sessionService.listSessions;
 
-    Offset distanceAcceleration = isAccelerationPressed ? Offset(5, 5) : Offset(18, 18);
+    Offset distanceAcceleration =
+        isAccelerationPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAcceleration = isAccelerationPressed ? 5.0 : 30.0;
 
     Offset distanceSkidpad = isSkidpadPressed ? Offset(5, 5) : Offset(18, 18);
     double blurSkidpad = isSkidpadPressed ? 5.0 : 30.0;
 
-    Offset distanceEndurance = isEndurancePressed ? Offset(5, 5) : Offset(18, 18);
+    Offset distanceEndurance =
+        isEndurancePressed ? Offset(5, 5) : Offset(18, 18);
     double blurEndurance = isEndurancePressed ? 5.0 : 30.0;
 
-    Offset distanceAutocross = isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
+    Offset distanceAutocross =
+        isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAutocross = isAutocrossPressed ? 5.0 : 30.0;
 
     setState(() {
@@ -131,12 +127,9 @@ class _SessionPageState extends State<SessionPage> {
       body: SessionInheritedState(
         sessionService: sessionService,
         child: Container(
-          decoration: BoxDecoration(
-            color: backgroundColor
-          ),
+          decoration: BoxDecoration(color: backgroundColor),
           child: Column(
             children: [
-
               SizedBox(height: 30),
               // SEARCH BAR
               _searchBar(),
@@ -155,20 +148,21 @@ class _SessionPageState extends State<SessionPage> {
               Expanded(
                 child: Container(
                   child: NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification: (OverscrollIndicatorNotification overscroll) {
-                      overscroll.disallowIndicator(); // Disable the overscroll glow effect
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
+                      overscroll
+                          .disallowIndicator(); // Disable the overscroll glow effect
                       return false;
                     },
                     child: ListView.builder(
-                        itemCount: _filteredSessionList.length,
-                        itemBuilder: (context, index) {
-                          final element = _filteredSessionList[index];
-                          return CardSessionListItem(
-                              session: element,
-                              updateStateSessionPage: updateStateSession,
-                              loggedMember: loggedMember
-                          );
-                        },
+                      itemCount: _filteredSessionList.length,
+                      itemBuilder: (context, index) {
+                        final element = _filteredSessionList[index];
+                        return CardSessionListItem(
+                            session: element,
+                            updateStateSessionPage: updateStateSession,
+                            loggedMember: loggedMember);
+                      },
                     ),
                   ),
                 ),
@@ -181,8 +175,8 @@ class _SessionPageState extends State<SessionPage> {
   }
 
   Drawer _drawer() => Drawer(
-    backgroundColor: backgroundColor,
-  );
+        backgroundColor: backgroundColor,
+      );
 
   AppBar _appBar() {
     return AppBar(
@@ -190,10 +184,7 @@ class _SessionPageState extends State<SessionPage> {
       backgroundColor: backgroundColor,
       title: Text(
         "Sessioni",
-        style: TextStyle(
-          fontSize: 25,
-          color: Colors.black
-        ),
+        style: TextStyle(fontSize: 25, color: Colors.black),
       ),
       centerTitle: true,
       iconTheme: IconThemeData(color: Colors.black),
@@ -202,278 +193,257 @@ class _SessionPageState extends State<SessionPage> {
 
   Padding _searchBar() {
     return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30),
-            child: Container(
-              padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
-              decoration: BoxDecoration(
-                color: backgroundColor, // Light background color
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 10,
-                    offset: Offset(-5, -5),
-                  ),
-                  BoxShadow(
-                    color: Colors.grey.shade500,
-                    blurRadius: 10,
-                    offset: Offset(5, 5),
-                  ),
-                ],
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Container(
+          padding: EdgeInsets.fromLTRB(20, 5, 5, 5),
+          decoration: BoxDecoration(
+            color: backgroundColor, // Light background color
+            borderRadius: BorderRadius.circular(25),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white,
+                blurRadius: 10,
+                offset: Offset(-5, -5),
               ),
-              child: TextField(
-                keyboardType: TextInputType.number,
-                controller: _searchBarController,
-                onChanged: (query) {
-                    filterListByQuery(query);
-                },
-                cursorColor: Colors.black,
-                style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1
-                  ),
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Id sessione',
-                  hintStyle: TextStyle(color: Colors.grey),
-                  suffixIcon: Icon(
-                      Icons.search,
-                      color: Colors.black,
-                  ),
-                ),
-              )
+              BoxShadow(
+                color: Colors.grey.shade500,
+                blurRadius: 10,
+                offset: Offset(5, 5),
+              ),
+            ],
+          ),
+          child: TextField(
+            keyboardType: TextInputType.number,
+            controller: _searchBarController,
+            onChanged: (query) {
+              filterListByQuery(query);
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(
+                color: Colors.black, fontFamily: 'aleo', letterSpacing: 1),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Id sessione',
+              hintStyle: TextStyle(color: Colors.grey),
+              suffixIcon: Icon(
+                Icons.search,
+                color: Colors.black,
+              ),
             ),
-          );
+          )),
+    );
   }
 
   Expanded _accelerationButton(Offset distance, double blur) {
     return Expanded(
       child: Container(
-              margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
-              child: Center(
-                child: Listener(
-                  onPointerDown: (_) async {
-                    setState(() {
-                      isAccelerationPressed = !isAccelerationPressed; // Toggle the state
-                      isSkidpadPressed = false;
-                      isEndurancePressed = false;
-                      isAutocrossPressed = false;
-                    });
+        margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) async {
+              setState(() {
+                isAccelerationPressed =
+                    !isAccelerationPressed; // Toggle the state
+                isSkidpadPressed = false;
+                isEndurancePressed = false;
+                isAutocrossPressed = false;
+              });
 
-                    changeEventButtonPressed();
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: isAccelerationPressed ? [
-                          //
-                          BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distance,
-                              blurRadius: blur,
-                              inset: isAccelerationPressed
-                          ),
-                          BoxShadow(
-                              color: Colors.white,
-                              offset: -distance,
-                              blurRadius: blur,
-                              inset: isAccelerationPressed
-                          ),
-                        ] : []
-                    ),
-                    child: Column(
-                      children: [
-                       Image.asset("assets/icon/acceleration.png"),
-                       SizedBox(height: 5),
-                       Text(
-                         "Acceleration",
-                         style: TextStyle(
-                           fontSize: 10
-                         ),
-                       )
-                     ],
-                   )
-                  ),
-                ),
-              ),
-            ),
+              changeEventButtonPressed();
+            },
+            child: AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isAccelerationPressed
+                        ? [
+                            //
+                            BoxShadow(
+                                color: Colors.grey.shade500,
+                                offset: distance,
+                                blurRadius: blur,
+                                inset: isAccelerationPressed),
+                            BoxShadow(
+                                color: Colors.white,
+                                offset: -distance,
+                                blurRadius: blur,
+                                inset: isAccelerationPressed),
+                          ]
+                        : []),
+                child: Column(
+                  children: [
+                    Image.asset("assets/icon/acceleration.png"),
+                    SizedBox(height: 5),
+                    Text(
+                      "Acceleration",
+                      style: TextStyle(fontSize: 10),
+                    )
+                  ],
+                )),
+          ),
+        ),
+      ),
     );
   }
 
   Expanded _enduranceButton(Offset distance, double blur) {
     return Expanded(
       child: Container(
-              margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
-              child: Center(
-                child: Listener(
-                  onPointerDown: (_) async {
-                    setState(() {
-                      isEndurancePressed = !isEndurancePressed; // Toggle the state
-                      isSkidpadPressed = false;
-                      isAccelerationPressed = false;
-                      isAutocrossPressed = false;
-                    });
+        margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) async {
+              setState(() {
+                isEndurancePressed = !isEndurancePressed; // Toggle the state
+                isSkidpadPressed = false;
+                isAccelerationPressed = false;
+                isAutocrossPressed = false;
+              });
 
-                    changeEventButtonPressed();
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: isEndurancePressed ? [
-                          //
-                          BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distance,
-                              blurRadius: blur,
-                              inset: isEndurancePressed
-                          ),
-                          BoxShadow(
-                              color: Colors.white,
-                              offset: -distance,
-                              blurRadius: blur,
-                              inset: isEndurancePressed
-                          ),
-                        ] : []
-                    ),
-                    child: Column(
-                      children: [
-                        Image.asset("assets/icon/endurance.png"),
-                        SizedBox(height: 5),
-                        Text(
-                          "Endurance",
-                          style: TextStyle(
-                            fontSize: 10
-                          ),
-                        )
-                      ],
+              changeEventButtonPressed();
+            },
+            child: AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isEndurancePressed
+                        ? [
+                            //
+                            BoxShadow(
+                                color: Colors.grey.shade500,
+                                offset: distance,
+                                blurRadius: blur,
+                                inset: isEndurancePressed),
+                            BoxShadow(
+                                color: Colors.white,
+                                offset: -distance,
+                                blurRadius: blur,
+                                inset: isEndurancePressed),
+                          ]
+                        : []),
+                child: Column(
+                  children: [
+                    Image.asset("assets/icon/endurance.png"),
+                    SizedBox(height: 5),
+                    Text(
+                      "Endurance",
+                      style: TextStyle(fontSize: 10),
                     )
-                  ),
-                ),
-              ),
-            ),
+                  ],
+                )),
+          ),
+        ),
+      ),
     );
   }
 
   Expanded _skidpadButton(Offset distance, double blur) {
     return Expanded(
       child: Container(
-              margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
-              child: Center(
-                child: Listener(
-                  onPointerDown: (_) async {
-                    setState(() {
-                      isSkidpadPressed = !isSkidpadPressed; // Toggle the state
-                      isAccelerationPressed = false;
-                      isEndurancePressed = false;
-                      isAutocrossPressed = false;
-                    });
+        margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) async {
+              setState(() {
+                isSkidpadPressed = !isSkidpadPressed; // Toggle the state
+                isAccelerationPressed = false;
+                isEndurancePressed = false;
+                isAutocrossPressed = false;
+              });
 
-                    changeEventButtonPressed();
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: isSkidpadPressed ? [
-                          //
-                          BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distance,
-                              blurRadius: blur,
-                              inset: isSkidpadPressed
-                          ),
-                          BoxShadow(
-                              color: Colors.white,
-                              offset: -distance,
-                              blurRadius: blur,
-                              inset: isSkidpadPressed
-                          ),
-                        ] : []
-                    ),
-                    child: Column(
-                      children: [
-                        Image.asset("assets/icon/skidpad.png"),
-                        SizedBox(height: 5),
-                        Text(
-                          "Skidpad",
-                          style: TextStyle(
-                            fontSize: 10
-                          ),
-                        )
-                      ],
+              changeEventButtonPressed();
+            },
+            child: AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isSkidpadPressed
+                        ? [
+                            //
+                            BoxShadow(
+                                color: Colors.grey.shade500,
+                                offset: distance,
+                                blurRadius: blur,
+                                inset: isSkidpadPressed),
+                            BoxShadow(
+                                color: Colors.white,
+                                offset: -distance,
+                                blurRadius: blur,
+                                inset: isSkidpadPressed),
+                          ]
+                        : []),
+                child: Column(
+                  children: [
+                    Image.asset("assets/icon/skidpad.png"),
+                    SizedBox(height: 5),
+                    Text(
+                      "Skidpad",
+                      style: TextStyle(fontSize: 10),
                     )
-                  ),
-                ),
-              ),
-            ),
+                  ],
+                )),
+          ),
+        ),
+      ),
     );
   }
 
   Expanded _autocrossButton(Offset distance, double blur) {
     return Expanded(
       child: Container(
-              margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
-              child: Center(
-                child: Listener(
-                  onPointerDown: (_) async {
-                    setState(() {
-                      isAutocrossPressed = !isAutocrossPressed; // Toggle the state
-                      isAccelerationPressed = false;
-                      isEndurancePressed = false;
-                      isSkidpadPressed = false;
-                    });
+        margin: EdgeInsets.fromLTRB(5, 18, 5, 10),
+        child: Center(
+          child: Listener(
+            onPointerDown: (_) async {
+              setState(() {
+                isAutocrossPressed = !isAutocrossPressed; // Toggle the state
+                isAccelerationPressed = false;
+                isEndurancePressed = false;
+                isSkidpadPressed = false;
+              });
 
-                    changeEventButtonPressed();
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: isAutocrossPressed ? [
-                          //
-                          BoxShadow(
-                              color: Colors.grey.shade500,
-                              offset: distance,
-                              blurRadius: blur,
-                              inset: isAutocrossPressed
-                          ),
-                          BoxShadow(
-                              color: Colors.white,
-                              offset: -distance,
-                              blurRadius: blur,
-                              inset: isAutocrossPressed
-                          ),
-                        ] : []
-                    ),
-                    child: Column(
-                      children: [
-                       Image.asset("assets/icon/autocross.png"),
-                       SizedBox(height: 5),
-                       Text(
-                         "Autocross",
-                         style: TextStyle(
-                           fontSize: 10
-                         ),
-                       )
-                     ],
-                   )
-                  ),
-                ),
-              ),
-            ),
+              changeEventButtonPressed();
+            },
+            child: AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: isAutocrossPressed
+                        ? [
+                            //
+                            BoxShadow(
+                                color: Colors.grey.shade500,
+                                offset: distance,
+                                blurRadius: blur,
+                                inset: isAutocrossPressed),
+                            BoxShadow(
+                                color: Colors.white,
+                                offset: -distance,
+                                blurRadius: blur,
+                                inset: isAutocrossPressed),
+                          ]
+                        : []),
+                child: Column(
+                  children: [
+                    Image.asset("assets/icon/autocross.png"),
+                    SizedBox(height: 5),
+                    Text(
+                      "Autocross",
+                      style: TextStyle(fontSize: 10),
+                    )
+                  ],
+                )),
+          ),
+        ),
+      ),
     );
   }
-
-
 }

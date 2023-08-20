@@ -2,7 +2,6 @@ import 'package:polimarche/model/Breakage.dart';
 import 'package:polimarche/model/Session.dart';
 
 class BreakageHappen {
-
   int id;
   String descrizione;
   Session sessione;
@@ -10,9 +9,5 @@ class BreakageHappen {
   bool colpaPilota;
 
   BreakageHappen(
-      this.id,
-      this.descrizione,
-      this.sessione,
-      this.rottura,
-      this.colpaPilota);
+      this.id, this.descrizione, this.sessione, this.rottura, this.colpaPilota);
 }

@@ -1,7 +1,6 @@
 import 'Track.dart';
 
 class Session {
-
   int id;
   String evento;
   DateTime data;

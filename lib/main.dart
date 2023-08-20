@@ -24,11 +24,13 @@ class MyApp extends StatelessWidget {
         '/': (context) => const Loading(),
         '/login': (context) => const Login(),
         '/home': (context) {
-          final Member loggedMember = ModalRoute.of(context)?.settings.arguments as Member;
+          final Member loggedMember =
+              ModalRoute.of(context)?.settings.arguments as Member;
           return MainPage(member: loggedMember);
         },
         '/session': (context) {
-          final Member loggedMember = ModalRoute.of(context)?.settings.arguments as Member;
+          final Member loggedMember =
+              ModalRoute.of(context)?.settings.arguments as Member;
           return SessionPage(loggedMember: loggedMember);
         },
       },

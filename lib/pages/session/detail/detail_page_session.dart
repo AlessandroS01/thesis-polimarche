@@ -3,8 +3,9 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/model/Session.dart';
-import 'package:polimarche/pages/session/comments_page.dart';
-import 'package:polimarche/pages/session/session_card.dart';
+import 'package:polimarche/pages/session/detail/comments/comments_page.dart';
+import 'package:polimarche/pages/session/detail/modify/modify_session_page.dart';
+import 'package:polimarche/pages/session/detail/session_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
 class DetailSession extends StatefulWidget {
@@ -98,49 +99,96 @@ class _DetailSessionState extends State<DetailSession> {
             // SESSION CARD
             cardSession,
 
-            Expanded(
-                flex: 2,
-                child: Container(
-                  margin: EdgeInsets.all(40),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Center(
-                          child: _commentsButton(
-                              loggedMember,
-                              backgroundColor,
-                              distanceComment,
-                              blurComment,
-                              sessionService,
-                              session),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+            loggedMember.ruolo == "Manager" ||
+                    loggedMember.ruolo == "Caporeparto"
+                ? Expanded(
+                    flex: 2,
+                    child: Container(
+                      margin: EdgeInsets.all(40),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _modifyButton(backgroundColor, distanceModify,
-                                blurModify, sessionService, updateState),
-                            _brekageButton(backgroundColor, distanceBreakages,
-                                blurBreakages, sessionService),
+                            Center(
+                              child: _commentsButton(
+                                  loggedMember,
+                                  backgroundColor,
+                                  distanceComment,
+                                  blurComment,
+                                  sessionService,
+                                  session),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _modifyButton(backgroundColor, distanceModify,
+                                    blurModify, sessionService, updateState),
+                                _brekageButton(
+                                    backgroundColor,
+                                    distanceBreakages,
+                                    blurBreakages,
+                                    sessionService),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _setupButton(backgroundColor, distanceSetup,
+                                    blurSetup, sessionService),
+                                _participationButton(
+                                    backgroundColor,
+                                    distanceParticipation,
+                                    blurParticipation,
+                                    sessionService),
+                              ],
+                            ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      ),
+                    ))
+                : Expanded(
+                    flex: 2,
+                    child: Container(
+                      margin: EdgeInsets.all(40),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            _setupButton(backgroundColor, distanceSetup,
-                                blurSetup, sessionService),
-                            _participationButton(
-                                backgroundColor,
-                                distanceParticipation,
-                                blurParticipation,
-                                sessionService),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _commentsButton(
+                                    loggedMember,
+                                    backgroundColor,
+                                    distanceComment,
+                                    blurComment,
+                                    sessionService,
+                                    session),
+                                _brekageButton(
+                                    backgroundColor,
+                                    distanceBreakages,
+                                    blurBreakages,
+                                    sessionService),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _setupButton(backgroundColor, distanceSetup,
+                                    blurSetup, sessionService),
+                                _participationButton(
+                                    backgroundColor,
+                                    distanceParticipation,
+                                    blurParticipation,
+                                    sessionService),
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ))
+                      ),
+                    ))
           ],
         ),
       ),
@@ -242,14 +290,16 @@ class _DetailSessionState extends State<DetailSession> {
         await Future.delayed(
             const Duration(milliseconds: 170)); // Wait for animation
 
-        /*
-                      Navigator.pushNamed(
-                          context,
-                          '/session',
-                          arguments: loggedMember
-                      );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => ModifySessionPage(
+                session: session,
+                sessionService: sessionService
+            ),
+          ),
+        );
 
-                       */
         setState(() => isModifyButtonPressed = false);
       },
       child: AnimatedContainer(

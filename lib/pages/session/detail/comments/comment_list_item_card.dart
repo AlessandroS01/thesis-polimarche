@@ -25,16 +25,12 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
   bool isModificaPressed = false;
   bool isCancellaPressed = false;
 
-
   late final Comment comment;
   late final SessionService sessionService;
   late final VoidCallback updateStateCommentPage;
   late final Member loggedMember;
 
   final backgroundColors = Colors.grey.shade300;
-
-
-
 
   @override
   void initState() {
@@ -48,7 +44,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
 
   @override
   Widget build(BuildContext context) {
-
     TextEditingController _textFieldController = TextEditingController();
     TextEditingController _textFieldControllerFlag = TextEditingController();
     _textFieldController.text = comment.descrizione;
@@ -198,8 +193,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
       Offset distanceModifica,
       double blurModifica,
       TextEditingController _textFieldController,
-      TextEditingController _textFieldControllerFlag
-      ) {
+      TextEditingController _textFieldControllerFlag) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isModificaPressed = true); // Reset the state
@@ -215,9 +209,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
               children: [
                 Row(
                   children: [
-                    Text(
-                      "Descrizione"
-                    ),
+                    Text("Descrizione"),
                     Expanded(child: Container()),
                     Expanded(
                       flex: 2,
@@ -234,9 +226,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
 
                 Row(
                   children: [
-                    Text(
-                      "Flag"
-                    ),
+                    Text("Flag"),
                     Expanded(child: Container()),
                     Expanded(
                       flex: 2,
@@ -258,16 +248,14 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
               TextButton(
                 child: Text("Conferma"),
                 onPressed: () {
-                  if (
-                      _textFieldControllerFlag.text.toLowerCase() == "Team".toLowerCase()
-                      ||
-                      _textFieldControllerFlag.text.toLowerCase() == "Pilota".toLowerCase()
-                  ) {
+                  if (_textFieldControllerFlag.text.toLowerCase() ==
+                          "Team".toLowerCase() ||
+                      _textFieldControllerFlag.text.toLowerCase() ==
+                          "Pilota".toLowerCase()) {
                     sessionService.modifyComment(
-                      comment,
-                      _textFieldController.text,
-                      _textFieldControllerFlag.text
-                    );
+                        comment,
+                        _textFieldController.text,
+                        _textFieldControllerFlag.text);
 
                     updateStateCommentPage();
 
@@ -275,7 +263,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                   } else {
                     showToast("Immettere team o pilota come flag.");
                   }
-
                 },
               ),
             ],
@@ -317,7 +304,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
       ),
     );
   }
-
 
   void showToast(String message) {
     Fluttertoast.showToast(

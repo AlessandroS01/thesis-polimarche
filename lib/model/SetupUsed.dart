@@ -1,3 +1,1 @@
-class SetupUsed {
-
-}
+class SetupUsed {}

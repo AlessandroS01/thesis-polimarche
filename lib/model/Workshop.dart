@@ -4,9 +4,7 @@ class Workshop {
   Workshop(this.reparto);
 
   Map<String, dynamic> toJson() {
-    return {
-      'reparto': reparto
-    };
+    return {'reparto': reparto};
   }
 
   @override
