@@ -22,24 +22,26 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   bool isCancellaPressed = false;
 
   late final Note note;
+  late final NoteService noteService;
   late final VoidCallback updateStateAgendaPage;
 
   final backgroundColor = Colors.grey.shade300;
 
+  TextEditingController _textFieldController = TextEditingController();
+
   @override
   void initState() {
+    super.initState();
+
     note = widget.note;
     updateStateAgendaPage = widget.updateStateAgendaPage;
-    super.initState();
+
+    _textFieldController.text = note.descrizione;
   }
 
   @override
   Widget build(BuildContext context) {
-    NoteService noteService = AgendaInheritedState.of(context)!.noteService;
-
-    TextEditingController _textFieldController = TextEditingController();
-
-    _textFieldController.text = note.descrizione;
+    noteService = AgendaInheritedState.of(context)!.noteService;
 
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
     double blurModifica = isModificaPressed ? 5 : 10;
@@ -47,7 +49,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     double blurCancella = isCancellaPressed ? 5 : 10;
 
     return Container(
-      margin: EdgeInsets.all(25),
+      margin: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(
@@ -85,16 +87,8 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _modificaButton(
-                  updateStateAgendaPage,
-                  noteService,
-                  note,
-                  backgroundColor,
-                  distanceModifica,
-                  blurModifica,
-                  _textFieldController),
-              _cancellaButton(updateStateAgendaPage, noteService, note,
-                  backgroundColor, distanceCancella, blurCancella),
+              _modificaButton(distanceModifica, blurModifica),
+              _cancellaButton(distanceCancella, blurCancella),
             ],
           )
         ],
@@ -102,13 +96,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     );
   }
 
-  Listener _cancellaButton(
-      VoidCallback updateStateAgendaPage,
-      NoteService noteService,
-      Note note,
-      Color backgroundColor,
-      Offset distanceCancella,
-      double blurCancella) {
+  Listener _cancellaButton(Offset distanceCancella, double blurCancella) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isCancellaPressed = true); // Reset the state
@@ -176,14 +164,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     );
   }
 
-  Listener _modificaButton(
-      VoidCallback updateStateAgendaPage,
-      NoteService noteService,
-      Note note,
-      Color backgroundColor,
-      Offset distanceModifica,
-      double blurModifica,
-      TextEditingController _textFieldController) {
+  Listener _modificaButton(Offset distanceModifica, double blurModifica) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isModificaPressed = true); // Reset the state

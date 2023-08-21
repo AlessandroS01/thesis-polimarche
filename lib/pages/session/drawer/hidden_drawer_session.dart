@@ -96,6 +96,13 @@ class _HiddenDrawerSessionState extends State<HiddenDrawerSession> {
         screens: _pages,
         backgroundColorMenu: backgroundColorMenu,
         initPositionSelected: 0,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.5),
+            offset: Offset(-5, -5),
+            blurRadius: 40
+          )
+        ],
       ),
     );
   }

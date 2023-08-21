@@ -19,6 +19,7 @@ class AgendaPage extends StatefulWidget {
 class _AgendaPageState extends State<AgendaPage> {
   late Member loggedMember;
 
+  final backgroundColor = Colors.grey.shade300;
   bool isAddPressed = false;
   Offset distanceAdd = Offset(5, 5);
   double blurAdd = 12;
@@ -65,13 +66,11 @@ class _AgendaPageState extends State<AgendaPage> {
     _notesForSelectedDay = noteService.getNotesByMemberMatricolaDuringDay(
         loggedMember.matricola, selectedDay);
 
-    final backgroundColor = Colors.grey.shade300;
-
     return AgendaInheritedState(
       noteService: noteService, // extends an inherited widget
       child: SafeArea(
         child: Container(
-          margin: EdgeInsets.only(top: 25),
+          margin: EdgeInsets.only(top: 20),
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
