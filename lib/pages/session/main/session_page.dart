@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/Session.dart';
-import 'package:polimarche/pages/session/session_list_item_card.dart';
+import 'package:polimarche/pages/session/main/session_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
-import '../../model/Member.dart';
+import '../../../model/Member.dart';
 
 class SessionPage extends StatefulWidget {
   final Member loggedMember;
@@ -17,17 +17,13 @@ class SessionPage extends StatefulWidget {
 }
 
 class _SessionPageState extends State<SessionPage> {
+  final backgroundColor = Colors.grey.shade300;
   bool isAccelerationPressed = false;
   bool isSkidpadPressed = false;
   bool isEndurancePressed = false;
   bool isAutocrossPressed = false;
 
-  bool isPlanPressed = false;
-  bool isTrackPressed = false;
-  bool isHomePressed = false;
-
   late Member loggedMember;
-  final backgroundColor = Colors.grey.shade300;
   late final SessionService sessionService;
 
   final TextEditingController _searchBarController = TextEditingController();

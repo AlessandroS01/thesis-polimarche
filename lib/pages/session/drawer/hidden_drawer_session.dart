@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-import 'package:polimarche/pages/home/home_page.dart';
 import 'package:polimarche/pages/session/plan/plan_session_page.dart';
-import 'package:polimarche/pages/session/session_page.dart';
+import 'package:polimarche/pages/session/main/session_page.dart';
 
 import '../../../inherited_widgets/session_state.dart';
 import '../../../model/Member.dart';
 import '../../../services/session_service.dart';
+import '../tracks/track_page.dart';
 
 class HiddenDrawerSession extends StatefulWidget {
   final Member loggedMember;
@@ -53,8 +53,17 @@ class _HiddenDrawerSessionState extends State<HiddenDrawerSession> {
                 colorLineSelected: Colors.white),
             PlanSessionPage(
               sessionService: sessionService,
-
             )),
+      ScreenHiddenDrawer(
+          ItemHiddenMenu(
+              name: 'Tracciati',
+              baseStyle: textStyle,
+              selectedStyle: textStyle,
+              colorLineSelected: Colors.white),
+          TrackPage(
+            loggedMember: widget.loggedMember,
+            sessionService: sessionService,
+          )),
     ];
   }
 

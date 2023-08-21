@@ -6,7 +6,7 @@ import 'package:polimarche/pages/session/detail/detail_page_session.dart';
 import 'package:polimarche/services/session_service.dart';
 import 'package:intl/intl.dart';
 
-import '../../model/Session.dart';
+import '../../../model/Session.dart';
 
 class CardSessionListItem extends StatefulWidget {
   final Session session;
