@@ -92,6 +92,8 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
       newSession
     );
 
+    showToast("Sessione modificata con successo");
+
     updateState();
 
     Navigator.pop(context);
