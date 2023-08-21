@@ -3,6 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polimarche/inherited_widgets/session_state.dart';
 import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/pages/session/plan/plan_session_page.dart';
 import 'package:polimarche/pages/session/session_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
@@ -22,6 +23,10 @@ class _SessionPageState extends State<SessionPage> {
   bool isSkidpadPressed = false;
   bool isEndurancePressed = false;
   bool isAutocrossPressed = false;
+
+  bool isPlanPressed = false;
+  bool isTrackPressed = false;
+  bool isHomePressed = false;
 
   late Member loggedMember;
   final backgroundColor = Colors.grey.shade300;
@@ -77,13 +82,6 @@ class _SessionPageState extends State<SessionPage> {
     }
   }
 
-  // called from other widget the rebuild the list
-  void updateStateSession() {
-    setState(() {
-      return;
-    });
-  }
-
   // called whenever a button is clicked
   void changeEventButtonPressed() {
     setState(() {
@@ -117,13 +115,23 @@ class _SessionPageState extends State<SessionPage> {
         isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAutocross = isAutocrossPressed ? 5.0 : 30.0;
 
+    Offset distancePlan = isPlanPressed ? Offset(5, 5) : Offset(18, 18);
+    double blurPlan = isPlanPressed ? 5.0 : 30.0;
+
+    Offset distanceTrack = isTrackPressed ? Offset(5, 5) : Offset(18, 18);
+    double blurTrack = isTrackPressed ? 5.0 : 30.0;
+
+    Offset distanceHome = isHomePressed ? Offset(5, 5) : Offset(18, 18);
+    double blurHome = isHomePressed ? 5.0 : 30.0;
+
     setState(() {
       filterListByQuery(_searchBarController.text);
     });
 
     return Scaffold(
       appBar: _appBar(),
-      drawer: _drawer(),
+      drawer: _drawer(distancePlan, blurPlan, distanceTrack, blurTrack,
+          distanceHome, blurHome, sessionService),
       body: SessionInheritedState(
         sessionService: sessionService,
         child: Container(
@@ -159,9 +167,7 @@ class _SessionPageState extends State<SessionPage> {
                       itemBuilder: (context, index) {
                         final element = _filteredSessionList[index];
                         return CardSessionListItem(
-                            session: element,
-                            updateStateSessionPage: updateStateSession,
-                            loggedMember: loggedMember);
+                            session: element, loggedMember: loggedMember);
                       },
                     ),
                   ),
@@ -174,9 +180,204 @@ class _SessionPageState extends State<SessionPage> {
     );
   }
 
-  Drawer _drawer() => Drawer(
+  Drawer _drawer(Offset distancePlan, double blurPlan, Offset distanceTrack,
+          double blurTrack, Offset distanceHome, double blurHome, SessionService sessionService) =>
+      Drawer(
         backgroundColor: backgroundColor,
+        child: Column(
+          children: [
+            Expanded(
+                flex: 1,
+                child: Center(
+                  child: Text(
+                    "Sessioni",
+                    style: TextStyle(fontSize: 25, color: Colors.black),
+                  ),
+                )),
+            Expanded(
+                flex: 1,
+                child: Container(
+                  margin: EdgeInsets.only(left: 50),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        loggedMember.ruolo == "Manager" ||
+                                loggedMember.ruolo == "Caporeparto"
+                            ? _planSessionButton(
+                                backgroundColor, distancePlan, blurPlan, sessionService)
+                            : Container(),
+
+                        _tracksButton(backgroundColor, distanceTrack, blurTrack)
+                      ],
+                    ),
+                  ),
+                )),
+            Expanded(
+                flex: 1,
+                child: Center(
+                  child: _homeButton(backgroundColor, distanceHome, blurHome)
+                )),
+          ],
+        ),
       );
+
+  Listener _planSessionButton(
+      Color backgroundColor, Offset distancePlan, double blurPlan, SessionService sessionService) {
+    return Listener(
+      onPointerDown: (_) async {
+        setState(() => isPlanPressed = true); // Reset the state
+        await Future.delayed(
+            const Duration(milliseconds: 200)); // Wait for animation
+
+        
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PlanSessionPage(
+                      sessionService: sessionService,
+                    )));
+
+         setState(() => isPlanPressed = false); // Reset the state,
+      },
+      child: AnimatedContainer(
+        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+        duration: Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isPlanPressed
+                ? [
+                    BoxShadow(
+                        offset: distancePlan,
+                        blurRadius: blurPlan,
+                        color: Colors.grey.shade500,
+                        inset: true),
+                    BoxShadow(
+                        offset: -distancePlan,
+                        blurRadius: blurPlan,
+                        color: Colors.white,
+                        inset: true),
+                  ]
+                : []),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(
+            Icons.add,
+            color: Colors.black,
+          ),
+          Text(
+            "Pianifica sessione",
+            style: TextStyle(color: Colors.black),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Listener _tracksButton(
+      Color backgroundColor, Offset distanceTrack, double blurTrack) {
+    return Listener(
+      onPointerDown: (_) async {
+        setState(() => isTrackPressed = true); // Reset the state
+        await Future.delayed(
+            const Duration(milliseconds: 200)); // Wait for animation
+        setState(() => isTrackPressed = false); // Reset the state,
+
+        SessionService sessionService =
+            SessionInheritedState.of(context)!.sessionService;
+
+        /*
+        // PASS THE SESSION TO THE NEXT WIDGET
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => isPlanPressed(
+                      loggedMember: loggedMember,
+                      session: session,
+                      sessionService: sessionService,
+                    )));
+
+
+         */
+      },
+      child: AnimatedContainer(
+        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+        duration: Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isTrackPressed
+                ? [
+                    BoxShadow(
+                        offset: distanceTrack,
+                        blurRadius: blurTrack,
+                        color: Colors.grey.shade500,
+                        inset: true),
+                    BoxShadow(
+                        offset: -distanceTrack,
+                        blurRadius: blurTrack,
+                        color: Colors.white,
+                        inset: true),
+                  ]
+                : []),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(
+            Icons.track_changes,
+            color: Colors.black,
+          ),
+          Text(
+            "Tracciati",
+            style: TextStyle(color: Colors.black),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Listener _homeButton(
+      Color backgroundColor, Offset distanceHome, double blurHome) {
+    return Listener(
+      onPointerDown: (_) async {
+        setState(() => isHomePressed = true); // Reset the state
+        await Future.delayed(
+            const Duration(milliseconds: 200)); // Wait for animation
+        Navigator.popUntil(context, ModalRoute.withName('/home'));
+      },
+      child: AnimatedContainer(
+        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+        duration: Duration(milliseconds: 150),
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isHomePressed
+                ? [
+                    BoxShadow(
+                        offset: distanceHome,
+                        blurRadius: blurHome,
+                        color: Colors.grey.shade500,
+                        inset: true),
+                    BoxShadow(
+                        offset: -distanceHome,
+                        blurRadius: blurHome,
+                        color: Colors.white,
+                        inset: true),
+                  ]
+                : []),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(
+            Icons.home,
+            color: Colors.black,
+          ),
+          Text(
+            "Home",
+            style: TextStyle(color: Colors.black),
+          ),
+        ]),
+      ),
+    );
+  }
 
   AppBar _appBar() {
     return AppBar(

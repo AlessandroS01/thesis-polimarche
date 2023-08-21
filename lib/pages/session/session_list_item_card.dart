@@ -10,13 +10,11 @@ import '../../model/Session.dart';
 
 class CardSessionListItem extends StatefulWidget {
   final Session session;
-  final VoidCallback updateStateSessionPage;
   final Member loggedMember;
 
   const CardSessionListItem({
     Key? key,
     required this.session,
-    required this.updateStateSessionPage,
     required this.loggedMember,
   }) : super(key: key);
 
@@ -28,10 +26,15 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
   bool isVisualizzaPressed = false;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     final session = widget.session;
-
-    VoidCallback updateState = widget.updateStateSessionPage;
 
     final backgroundColor = Colors.grey.shade300;
     Offset distance = Offset(5, 5);
@@ -89,7 +92,7 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
                           ),
                         ],
                       ),
-                      _visualizeMemberButton(widget.loggedMember, updateState,
+                      _visualizeMemberButton(widget.loggedMember,
                           session, backgroundColor, distance, blur)
                     ]),
               ),
@@ -98,7 +101,7 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
     );
   }
 
-  Listener _visualizeMemberButton(Member loggedMember, VoidCallback updateState,
+  Listener _visualizeMemberButton(Member loggedMember,
       Session session, Color backgroundColor, Offset distance, double blur) {
     return Listener(
       onPointerDown: (_) async {
@@ -109,16 +112,18 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
         SessionService sessionService =
             SessionInheritedState.of(context)!.sessionService;
 
+
         // PASS THE SESSION TO THE NEXT WIDGET
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => DetailSession(
-                      updateState: updateState,
                       loggedMember: loggedMember,
                       session: session,
                       sessionService: sessionService,
                     )));
+
+
 
         setState(() => isVisualizzaPressed = false); // Reset the state,
       },

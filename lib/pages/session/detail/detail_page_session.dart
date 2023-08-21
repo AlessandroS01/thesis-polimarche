@@ -11,14 +11,12 @@ import 'package:polimarche/services/session_service.dart';
 class DetailSession extends StatefulWidget {
   final Session session;
   final Member loggedMember;
-  final VoidCallback updateState;
   final SessionService sessionService;
 
   const DetailSession({
     super.key,
     required this.session,
     required this.loggedMember,
-    required this.updateState,
     required this.sessionService,
   });
 
@@ -39,6 +37,13 @@ class _DetailSessionState extends State<DetailSession> {
   bool isParticipationButtonPressed = false;
   bool isBreakagesButtonPressed = false;
   bool isSetupButtonPressed = false;
+
+
+  void updateDetailSessionState() {
+    setState(() {
+      return;
+    });
+  }
 
   @override
   void initState() {
@@ -77,8 +82,6 @@ class _DetailSessionState extends State<DetailSession> {
     Offset distanceParticipation =
         isParticipationButtonPressed ? Offset(5, 5) : Offset(18, 18);
     double blurParticipation = isParticipationButtonPressed ? 5.0 : 30.0;
-
-    VoidCallback updateState = widget.updateState;
 
     final backgroundColor = Colors.grey.shade300;
 
@@ -123,7 +126,7 @@ class _DetailSessionState extends State<DetailSession> {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 _modifyButton(backgroundColor, distanceModify,
-                                    blurModify, sessionService, updateState),
+                                    blurModify, sessionService),
                                 _brekageButton(
                                     backgroundColor,
                                     distanceBreakages,
@@ -240,7 +243,8 @@ class _DetailSessionState extends State<DetailSession> {
             builder: (BuildContext context) => CommentSessionPage(
                 sessionService: sessionService,
                 session: session,
-                loggedMember: loggedMember),
+                loggedMember: loggedMember
+            ),
           ),
         );
 
@@ -281,7 +285,6 @@ class _DetailSessionState extends State<DetailSession> {
     Offset distanceComment,
     double blurComment,
     SessionService sessionService,
-    VoidCallback updateState,
   ) {
     return Listener(
       onPointerDown: (_) async {
@@ -294,7 +297,10 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySessionPage(
-                session: session, sessionService: sessionService),
+                session: session,
+                sessionService: sessionService,
+                updateState: updateDetailSessionState
+            ),
           ),
         );
 

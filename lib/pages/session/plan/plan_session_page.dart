@@ -8,28 +8,22 @@ import 'package:polimarche/services/session_service.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:intl/intl.dart';
 
-class ModifySessionPage extends StatefulWidget {
-  final Session session;
+class PlanSessionPage extends StatefulWidget {
   final SessionService sessionService;
-  final VoidCallback updateState;
 
-  const ModifySessionPage(
+  const PlanSessionPage(
       {super.key,
-      required this.session,
-      required this.sessionService,
-      required this.updateState});
+      required this.sessionService,});
 
   @override
-  State<ModifySessionPage> createState() => _ModifySessionPageState();
+  State<PlanSessionPage> createState() => _PlanSessionPageState();
 }
 
-class _ModifySessionPageState extends State<ModifySessionPage> with TickerProviderStateMixin {
+class _PlanSessionPageState extends State<PlanSessionPage> with TickerProviderStateMixin {
   // GENERAL DATA
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
-  late final Session session;
   late final SessionService sessionService;
-  late final VoidCallback updateState;
   int _progress = 1;
   final _totalSteps = 3;
   List<String> _stepsName = ["Informazioni", "Tracciato", "Condizioni"];
@@ -51,7 +45,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
     }
   }
 
-  void _modifySession() {
+  void _planSession() {
     List<bool> buttonPressed = [
       isAccelerationPressed,
       isSkidpadPressed,
@@ -76,7 +70,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
     );
 
     Session newSession = Session(
-      session.id,
+      sessionService.listSessions.last.id + 1,
       events[buttonPressed.indexWhere((element) => element)],
       newDate,
       startingTime,
@@ -88,13 +82,11 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
       double.parse(_controllerTrackTemperature.text),
       _controllerTrackCondition.text
     );
-    sessionService.modifySession(
+    sessionService.addSession(
       newSession
     );
 
-    updateState();
-
-    Navigator.pop(context);
+    Navigator.popUntil(context, ModalRoute.withName('/session'));
   }
 
   void showToast(String message) {
@@ -110,10 +102,10 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
   }
 
   // FIRST STEP DATA
-  late bool isAccelerationPressed;
-  late bool isSkidpadPressed ;
-  late bool isEndurancePressed;
-  late bool isAutocrossPressed;
+  bool isAccelerationPressed = false;
+  bool isSkidpadPressed = false;
+  bool isEndurancePressed = false;
+  bool isAutocrossPressed = false;
   bool isDateButtonPressed = false;
   bool isTimeButtonPressed = false;
 
@@ -125,9 +117,9 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
   void _setNewDate() async {
     DateTime? date = await showDatePicker(
         context: context,
-        initialDate: widget.session.data,
-        firstDate: DateTime(widget.session.data.year),
-        lastDate: DateTime(widget.session.data.year + 3));
+        initialDate: newDate,
+        firstDate: DateTime(newDate.year),
+        lastDate: DateTime(newDate.year + 3));
 
     if (date != null) {
       setState(() {
@@ -202,48 +194,15 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
       vsync: this,
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
-    session = widget.session;
     sessionService = widget.sessionService;
-    updateState = widget.updateState;
 
     // FIRST STEP
-    if (session.evento == "Acceleration") {
-      isAccelerationPressed = true;
-      isSkidpadPressed = false;
-      isEndurancePressed = false;
-      isAutocrossPressed = false;
-    } else if (session.evento == "Skidpad") {
-      isAccelerationPressed = false;
-      isSkidpadPressed = true;
-      isEndurancePressed = false;
-      isAutocrossPressed = false;
-    } else if (session.evento == "Endurance") {
-      isAccelerationPressed = false;
-      isSkidpadPressed = false;
-      isEndurancePressed = true;
-      isAutocrossPressed = false;
-    } else {
-      isAccelerationPressed = false;
-      isSkidpadPressed = false;
-      isEndurancePressed = false;
-      isAutocrossPressed = true;
-    }
-
-    newDate = session.data;
-    newStartingTime = TimeOfDay(
-        hour: session.oraInizio.hour, minute: session.oraInizio.minute);
-    newEndingTime =
-        TimeOfDay(hour: session.oraFine.hour, minute: session.oraFine.minute);
+    newDate = DateTime.now();
+    newStartingTime = TimeOfDay.now();
+    newEndingTime = TimeOfDay.now();
 
     // SECOND STEP
-    newTrack = session.tracciato;
-    _controllerTrackCondition.text = session.condizioneTracciato;
-    _controllerTrackTemperature.text = session.temperaturaTracciato.toString();
-
-    // THIRD STEP
-    _controllerWeather.text = session.meteo;
-    _controllerPressure.text = session.pressioneAtmosferica.toString();
-    _controllerAirTemperature.text = session.temperaturaAria.toString();
+    newTrack = sessionService.listTracks.first;
   }
 
   @override
@@ -1055,7 +1014,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
                                   null) {
 
 
-                                _modifySession();
+                                _planSession();
 
                               } else {
                                 showToast(
@@ -1101,7 +1060,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
       ],
       iconTheme: IconThemeData(color: Colors.black),
       title: Text(
-        "Modifica sessione",
+        "Pianificazione sessione",
         style: TextStyle(color: Colors.black),
       ),
       centerTitle: true,

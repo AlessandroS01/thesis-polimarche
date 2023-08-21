@@ -39,33 +39,34 @@ class _LoginState extends State<Login> {
           children: [
             Expanded(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: 'aleo',
-                    letterSpacing: 2.5,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 50),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        fontFamily: 'aleo',
+                        letterSpacing: 2.5,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 40,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 50),
 
-                // Username Field
-                _matricolaInput(backgroundColor),
+                    // Username Field
+                    _matricolaInput(backgroundColor),
 
-                const SizedBox(height: 20.0),
-                // Password Field
-                _passwordInput(backgroundColor),
+                    const SizedBox(height: 20.0),
+                    // Password Field
+                    _passwordInput(backgroundColor),
 
-                const SizedBox(height: 50.0),
+                    const SizedBox(height: 50.0),
 
-                // Login Button
-                _loginButton(context, backgroundColor),
-              ],
-            )),
+                    // Login Button
+                    _loginButton(context, backgroundColor),
+                  ],
+              )
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

@@ -107,4 +107,28 @@ class SessionService {
     if (input.isEmpty) return input; // Handle empty string case
     return input[0].toUpperCase() + input.substring(1);
   }
+
+  Track findTrackByName(String trackName) {
+    return listTracks.where((element) => element.nome == trackName).first;
+  }
+
+  void modifySession(Session newSession) {
+    Session session =
+        listSessions.where((element) => element.id == newSession.id).first;
+
+    session.evento = newSession.evento;
+    session.data = newSession.data;
+    session.oraInizio = newSession.oraInizio;
+    session.oraFine = newSession.oraFine;
+    session.tracciato = newSession.tracciato;
+    session.condizioneTracciato = newSession.condizioneTracciato;
+    session.temperaturaTracciato = newSession.temperaturaTracciato;
+    session.meteo = newSession.meteo;
+    session.pressioneAtmosferica = newSession.pressioneAtmosferica;
+    session.temperaturaAria = newSession.temperaturaAria;
+  }
+
+  void addSession(Session newSession) {
+    listSessions.add(newSession);
+  }
 }
