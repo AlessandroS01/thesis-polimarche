@@ -86,7 +86,9 @@ class _PlanSessionPageState extends State<PlanSessionPage> with TickerProviderSt
       newSession
     );
 
-    Navigator.popUntil(context, ModalRoute.withName('/session'));
+    showToast("Sessione pianificata con successo");
+
+    resetWidget();
   }
 
   void showToast(String message) {
@@ -99,6 +101,32 @@ class _PlanSessionPageState extends State<PlanSessionPage> with TickerProviderSt
       textColor: Colors.white, // Text color of the toast message
       fontSize: 16.0, // Font size of the toast message
     );
+  }
+
+  void resetWidget() {
+    setState(() {
+      _progress = 1;
+
+      isAccelerationPressed = false;
+      isSkidpadPressed = false;
+      isEndurancePressed = false;
+      isAutocrossPressed = false;
+
+      newDate = DateTime.now();
+
+      newStartingTime = TimeOfDay.now();
+      newEndingTime = TimeOfDay.now();
+
+      // SECOND STEP
+      newTrack = sessionService.listTracks.first;
+      _controllerTrackCondition.clear();
+      _controllerTrackTemperature.clear();
+
+      // THIRD STEP
+      _controllerWeather.clear();
+      _controllerPressure.clear();
+      _controllerAirTemperature.clear();
+    });
   }
 
   // FIRST STEP DATA
@@ -241,7 +269,6 @@ class _PlanSessionPageState extends State<PlanSessionPage> with TickerProviderSt
     double blurTime = isTimeButtonPressed ? 5.0 : 30.0;
 
     return Scaffold(
-      appBar: _appBar(backgroundColor),
       bottomNavigationBar: _bottomNavBar(),
       body: Container(
         decoration: BoxDecoration(color: backgroundColor),
@@ -941,13 +968,12 @@ class _PlanSessionPageState extends State<PlanSessionPage> with TickerProviderSt
     return Container(
       color: Colors.grey.shade300,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: GNav(
           iconSize: 30,
           backgroundColor: Colors.grey.shade300,
           color: Colors.black,
           activeColor: Colors.black,
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15),
           gap: 8,
           tabs: [
             _progress > 1

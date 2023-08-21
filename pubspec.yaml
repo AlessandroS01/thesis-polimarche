@@ -45,6 +45,7 @@ dependencies:
   table_calendar: ^3.0.9
 
   step_progress_indicator: ^1.0.2
+  hidden_drawer_menu: ^3.0.1
 
 dev_dependencies:
   flutter_test:
