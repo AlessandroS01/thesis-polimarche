@@ -180,8 +180,14 @@ class _SessionPageState extends State<SessionPage> {
     );
   }
 
-  Drawer _drawer(Offset distancePlan, double blurPlan, Offset distanceTrack,
-          double blurTrack, Offset distanceHome, double blurHome, SessionService sessionService) =>
+  Drawer _drawer(
+          Offset distancePlan,
+          double blurPlan,
+          Offset distanceTrack,
+          double blurTrack,
+          Offset distanceHome,
+          double blurHome,
+          SessionService sessionService) =>
       Drawer(
         backgroundColor: backgroundColor,
         child: Column(
@@ -200,39 +206,45 @@ class _SessionPageState extends State<SessionPage> {
                   margin: EdgeInsets.only(left: 50),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        loggedMember.ruolo == "Manager" ||
-                                loggedMember.ruolo == "Caporeparto"
-                            ? _planSessionButton(
-                                backgroundColor, distancePlan, blurPlan, sessionService)
-                            : Container(),
-
-                        _tracksButton(backgroundColor, distanceTrack, blurTrack)
-                      ],
-                    ),
+                    child: loggedMember.ruolo == "Manager" ||
+                            loggedMember.ruolo == "Caporeparto"
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _planSessionButton(backgroundColor, distancePlan,
+                                  blurPlan, sessionService),
+                              _tracksButton(
+                                  backgroundColor, distanceTrack, blurTrack)
+                            ],
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _tracksButton(
+                                  backgroundColor, distanceTrack, blurTrack),
+                            ],
+                          ),
                   ),
                 )),
             Expanded(
                 flex: 1,
                 child: Center(
-                  child: _homeButton(backgroundColor, distanceHome, blurHome)
-                )),
+                    child:
+                        _homeButton(backgroundColor, distanceHome, blurHome))),
           ],
         ),
       );
 
-  Listener _planSessionButton(
-      Color backgroundColor, Offset distancePlan, double blurPlan, SessionService sessionService) {
+  Listener _planSessionButton(Color backgroundColor, Offset distancePlan,
+      double blurPlan, SessionService sessionService) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isPlanPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
 
-        
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -240,7 +252,7 @@ class _SessionPageState extends State<SessionPage> {
                       sessionService: sessionService,
                     )));
 
-         setState(() => isPlanPressed = false); // Reset the state,
+        setState(() => isPlanPressed = false); // Reset the state,
       },
       child: AnimatedContainer(
         padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
