@@ -46,12 +46,6 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
   @override
   Widget build(BuildContext context) {
 
-    final backgroundColor = Colors.grey.shade300;
-    Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
-    double blurModifica = isModificaPressed ? 5 : 10;
-    Offset distanceCancella = isCancellaPressed ? Offset(5, 5) : Offset(8, 8);
-    double blurCancella = isCancellaPressed ? 5 : 10;
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),

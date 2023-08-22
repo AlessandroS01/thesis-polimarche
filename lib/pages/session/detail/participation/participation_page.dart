@@ -50,7 +50,8 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
 
   void updateState() {
     setState(() {
-      nonPartecipatingDrivers = sessionService.findDriversNotParticipatingSession(sessionId);
+      nonPartecipatingDrivers =
+          sessionService.findDriversNotParticipatingSession(sessionId);
     });
   }
 
@@ -74,7 +75,6 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
     } else {
       _newDriverParticipationId = "";
     }
-
   }
 
   void _addNewDriverParticipation() {
@@ -182,12 +182,11 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
                 await Future.delayed(
                     const Duration(milliseconds: 200)); // Wait for animation
                 setState(() => isAddPressed = false); // Reset the state,
-                if (nonPartecipatingDrivers.isEmpty){
+                if (nonPartecipatingDrivers.isEmpty) {
                   showToast("Tutti i piloti hanno partecipato alla sessione");
                 } else {
-                  _addCommentDialog();
+                  _addParticipationDialog();
                 }
-
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.all(10),
@@ -216,139 +215,142 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
             )));
   }
 
-  Future<dynamic> _addCommentDialog() {
+  Future<dynamic> _addParticipationDialog() {
     return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Nuova partecipazione"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                  padding: EdgeInsets.all(10),
-                  borderRadius: BorderRadius.circular(10),
-                  dropdownColor: backgroundColor,
-                  value: nonPartecipatingDrivers.first.id.toString(),
-                  items: nonPartecipatingDrivers
-                      .map<DropdownMenuItem<String>>((Driver value) {
-                    return DropdownMenuItem<String>(
-                      value: value.id.toString(),
-                      child:
-                          Text("${value.membro.nome} ${value.membro.cognome}"),
-                    );
-                  }).toList(),
-                  onChanged: (String? driverId) {
-                    setState(() {
-                      _newDriverParticipationId = driverId!;
-                    });
-                  }),
-            ),
-            SizedBox(
-                height:
-                    10), // Add some spacing between the text field and radio buttons
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              title: const Text("Nuova partecipazione"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                        padding: EdgeInsets.all(10),
+                        borderRadius: BorderRadius.circular(10),
+                        dropdownColor: backgroundColor,
+                        value: nonPartecipatingDrivers.first.id.toString(),
+                        items: nonPartecipatingDrivers
+                            .map<DropdownMenuItem<String>>((Driver value) {
+                          return DropdownMenuItem<String>(
+                            value: value.id.toString(),
+                            child: Text(
+                                "${value.membro.nome} ${value.membro.cognome}"),
+                          );
+                        }).toList(),
+                        onChanged: (String? driverId) {
+                          setState(() {
+                            _newDriverParticipationId = driverId!;
+                          });
+                        }),
+                  ),
+                  SizedBox(
+                      height:
+                          10), // Add some spacing between the text field and radio buttons
 
-            Column(
-              children: [
-                Text("Cambio pilota"),
-                Text("(HH:mm:ss.mmm)"),
+                  Column(
+                    children: [
+                      Text("Cambio pilota"),
+                      Text("(HH:mm:ss.mmm)"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                          child: TextField(
+                        maxLength: 2,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        cursorColor: Colors.black,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          hintText: 'HH',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: _controllerNewDriverParticipationCambioHour,
+                      )),
+                      Text(":"),
+                      Expanded(
+                          child: TextField(
+                        maxLength: 2,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        cursorColor: Colors.black,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          hintText: 'mm',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: _controllerNewDriverParticipationCambioMin,
+                      )),
+                      Text(":"),
+                      Expanded(
+                          child: TextField(
+                        maxLength: 2,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        cursorColor: Colors.black,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          hintText: 'ss',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: _controllerNewDriverParticipationCambioSec,
+                      )),
+                      Text("."),
+                      Expanded(
+                          child: TextField(
+                        maxLength: 3,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        cursorColor: Colors.black,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'aleo',
+                            letterSpacing: 1),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                          hintText: 'mmm',
+                          hintStyle: TextStyle(color: Colors.grey),
+                        ),
+                        controller: _controllerNewDriverParticipationCambioMil,
+                      )),
+                    ],
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Cancella"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: Text("Conferma"),
+                  onPressed: _addNewDriverParticipation,
+                ),
               ],
             ),
-            Row(
-              children: [
-                Expanded(
-                    child: TextField(
-                  maxLength: 2,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.black,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: InputBorder.none,
-                    hintText: 'HH',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  controller: _controllerNewDriverParticipationCambioHour,
-                )),
-                Text(":"),
-                Expanded(
-                    child: TextField(
-                  maxLength: 2,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.black,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: InputBorder.none,
-                    hintText: 'mm',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  controller: _controllerNewDriverParticipationCambioMin,
-                )),
-                Text(":"),
-                Expanded(
-                    child: TextField(
-                  maxLength: 2,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.black,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: InputBorder.none,
-                    hintText: 'ss',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  controller: _controllerNewDriverParticipationCambioSec,
-                )),
-                Text("."),
-                Expanded(
-                    child: TextField(
-                  maxLength: 3,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.black,
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontFamily: 'aleo',
-                      letterSpacing: 1),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    border: InputBorder.none,
-                    hintText: 'mmm',
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  controller: _controllerNewDriverParticipationCambioMil,
-                )),
-              ],
-            )
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text("Cancella"),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          TextButton(
-            child: Text("Conferma"),
-            onPressed: _addNewDriverParticipation,
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   void showToast(String message) {
