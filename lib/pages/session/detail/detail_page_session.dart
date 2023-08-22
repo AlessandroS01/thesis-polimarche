@@ -5,6 +5,7 @@ import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/pages/session/detail/comments/comments_page.dart';
 import 'package:polimarche/pages/session/detail/modify/modify_session_page.dart';
+import 'package:polimarche/pages/session/detail/participation/participation_page.dart';
 import 'package:polimarche/pages/session/detail/session_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
@@ -37,7 +38,6 @@ class _DetailSessionState extends State<DetailSession> {
   bool isParticipationButtonPressed = false;
   bool isBreakagesButtonPressed = false;
   bool isSetupButtonPressed = false;
-
 
   void updateDetailSessionState() {
     setState(() {
@@ -243,8 +243,7 @@ class _DetailSessionState extends State<DetailSession> {
             builder: (BuildContext context) => CommentSessionPage(
                 sessionService: sessionService,
                 session: session,
-                loggedMember: loggedMember
-            ),
+                loggedMember: loggedMember),
           ),
         );
 
@@ -299,8 +298,7 @@ class _DetailSessionState extends State<DetailSession> {
             builder: (BuildContext context) => ModifySessionPage(
                 session: session,
                 sessionService: sessionService,
-                updateState: updateDetailSessionState
-            ),
+                updateState: updateDetailSessionState),
           ),
         );
 
@@ -464,14 +462,15 @@ class _DetailSessionState extends State<DetailSession> {
         await Future.delayed(
             const Duration(milliseconds: 170)); // Wait for animation
 
-        /*
-                      Navigator.pushNamed(
-                          context,
-                          '/session',
-                          arguments: loggedMember
-                      );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => ParticipationSessionPage(
+                  sessionId: session.id,
+                  sessionService: sessionService,
+                  loggedMember: loggedMember),
+            ));
 
-                       */
         setState(() => isParticipationButtonPressed = false);
       },
       child: AnimatedContainer(

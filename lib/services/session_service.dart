@@ -1,82 +1,50 @@
+import 'dart:math';
+
+import 'package:polimarche/model/Participation.dart';
 import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/model/Track.dart';
 import 'package:polimarche/model/Comment.dart';
-import 'package:polimarche/services/breakage_service.dart';
-import 'package:polimarche/services/participation_service.dart';
+import 'package:polimarche/repository/comment_repository.dart';
+import 'package:polimarche/repository/driver_repository.dart';
+import 'package:polimarche/repository/participation_repository.dart';
+import 'package:polimarche/repository/session_repository.dart';
+import 'package:polimarche/repository/track_repository.dart';
+
+import '../model/Driver.dart';
 
 class SessionService {
-  late BreakageService breakageService;
-  late ParticipationService participationService;
+  late SessionRepository sessionRepository;
+  late TrackRepository trackRepository;
+  late CommentRepository commentRepository;
+  late ParticipationRepository participationRepository;
+  late DriverRepository driverRepository;
 
   late List<Session> listSessions;
   late List<Track> listTracks;
-
   late List<Comment> listComments;
+  late List<Participation> listParticipations;
+  late List<Driver> listDrivers;
 
   SessionService() {
-    listTracks = [
-      Track("Mugello", 5.12),
-      Track("Monaco", 7.87),
-      Track("Imola", 6.42)
-    ];
+    sessionRepository = SessionRepository();
+    trackRepository = TrackRepository();
+    commentRepository = CommentRepository();
+    participationRepository = ParticipationRepository();
+    driverRepository = DriverRepository();
 
-    listSessions = [
-      Session(
-          1,
-          "Endurance",
-          DateTime(2023, 8, 16, 10, 0),
-          DateTime(2023, 8, 16, 10, 30),
-          DateTime(2023, 8, 16, 11, 30),
-          listTracks[0],
-          "Sunny",
-          1013.25,
-          25.0,
-          30.0,
-          "Dry"),
-      Session(
-          2,
-          "Acceleration",
-          DateTime(2023, 8, 20, 10, 0),
-          DateTime(2023, 8, 20, 10, 30),
-          DateTime(2023, 8, 20, 11, 30),
-          listTracks[1],
-          "Sunny",
-          1013.25,
-          25.0,
-          30.0,
-          "Dry"),
-      Session(
-          3,
-          "Autocross",
-          DateTime(2023, 8, 20, 10, 0),
-          DateTime(2023, 8, 20, 10, 30),
-          DateTime(2023, 8, 20, 11, 30),
-          listTracks[2],
-          "Sunny",
-          1013.25,
-          25.0,
-          30.0,
-          "Dry"),
-      Session(
-          4,
-          "Skidpad",
-          DateTime(2023, 8, 20, 10, 0),
-          DateTime(2023, 8, 20, 10, 30),
-          DateTime(2023, 8, 20, 11, 30),
-          listTracks[2],
-          "Sunny",
-          1013.25,
-          25.0,
-          30.0,
-          "Dry"),
-    ];
+    listTracks = trackRepository.listTracks;
+    listSessions = sessionRepository.listSessions;
+    listComments = commentRepository.listComments;
+    listParticipations = participationRepository.listParticipations;
+    listDrivers = driverRepository.listDrivers;
+  }
 
-    listComments = [
-      Comment(1, "Team", "Commento team", listSessions[0]),
-      Comment(2, "Pilota", "Commento pilota", listSessions[0]),
-    ];
-    breakageService = BreakageService(listSessions);
-    participationService = ParticipationService(listSessions);
+  void updateLists() {
+    listTracks = trackRepository.listTracks;
+    listSessions = sessionRepository.listSessions;
+    listComments = commentRepository.listComments;
+    listParticipations = participationRepository.listParticipations;
+    listDrivers = driverRepository.listDrivers;
   }
 
   List<Comment> getCommentsBySessionId(int sessionId) {
@@ -86,49 +54,71 @@ class SessionService {
   }
 
   void deleteComment(Comment comment) {
-    listComments.remove(comment);
+    commentRepository.delete(comment);
+    updateLists();
   }
 
   void modifyComment(
       Comment oldComment, String newDescrizione, String newFlag) {
-    Comment comment =
-        listComments.where((element) => element.id == oldComment.id).first;
-
-    comment.descrizione = newDescrizione;
-    comment.flag = capitalizeFirstLetter(newFlag);
+    commentRepository.modifyComment(oldComment, newDescrizione, newFlag);
+    updateLists();
   }
 
   void addComment(String newDescrizione, String newFlag, Session session) {
-    listComments.add(Comment(listComments.last.id + 1,
-        capitalizeFirstLetter(newFlag), newDescrizione, session));
-  }
-
-  String capitalizeFirstLetter(String input) {
-    if (input.isEmpty) return input; // Handle empty string case
-    return input[0].toUpperCase() + input.substring(1);
+    commentRepository.addComment(newDescrizione, newFlag, session);
+    updateLists();
   }
 
   Track findTrackByName(String trackName) {
     return listTracks.where((element) => element.nome == trackName).first;
   }
 
-  void modifySession(Session newSession) {
-    Session session =
-        listSessions.where((element) => element.id == newSession.id).first;
+  Session findSessionById(int sessionId) {
+    return listSessions.where((element) => element.id == sessionId).first;
+  }
 
-    session.evento = newSession.evento;
-    session.data = newSession.data;
-    session.oraInizio = newSession.oraInizio;
-    session.oraFine = newSession.oraFine;
-    session.tracciato = newSession.tracciato;
-    session.condizioneTracciato = newSession.condizioneTracciato;
-    session.temperaturaTracciato = newSession.temperaturaTracciato;
-    session.meteo = newSession.meteo;
-    session.pressioneAtmosferica = newSession.pressioneAtmosferica;
-    session.temperaturaAria = newSession.temperaturaAria;
+  void modifySession(Session newSession) {
+    sessionRepository.modifySession(newSession);
+    updateLists();
   }
 
   void addSession(Session newSession) {
-    listSessions.add(newSession);
+    sessionRepository.addSession(newSession);
+    updateLists();
+  }
+
+  List<Participation> findParticipationsBySessionId(int sessionId) {
+    return listParticipations
+        .where((element) => element.sessione.id == sessionId)
+        .toList();
+  }
+
+  List<Driver> findDriversNotParticipatingSession(int sessionId) {
+    List<Participation> participatingSession =
+        findParticipationsBySessionId(sessionId);
+
+    List<Driver> notParticipatingDrivers = listDrivers.where((driver) {
+      return !participatingSession
+          .any((participation) => participation.pilota.id == driver.id);
+    }).toList();
+
+    return notParticipatingDrivers;
+  }
+
+  void addNewParticipation(String hour, String min, String sec, String mil, String _newDriverParticipationId, int sessionId) {
+    Driver driver = listDrivers.where((element) => element.id == int.parse(_newDriverParticipationId)).first;
+    int maxOrdine = findParticipationsBySessionId(sessionId)
+      .map<int>((obj) => obj.ordine) // Extract the ordine attribute
+      .reduce((currentMax, value) => currentMax > value ? currentMax : value);
+    String newDriverChange = hour + ":" + min + ":" + sec + "." + mil;
+    Session session = findSessionById(sessionId);
+
+    Participation newParticipation = Participation(listParticipations.last.id + 1, driver, session, maxOrdine + 1, newDriverChange);
+
+    participationRepository.addNewParticipation(
+      newParticipation
+    );
+
+    updateLists();
   }
 }

@@ -3,40 +3,41 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Comment.dart';
 import 'package:polimarche/model/Member.dart';
+import 'package:polimarche/model/Participation.dart';
 import 'package:polimarche/services/session_service.dart';
 
-class CardCommentListItem extends StatefulWidget {
-  final Comment comment;
+class ParticipationListItem extends StatefulWidget {
+  final Participation participation;
   final SessionService sessionService;
-  final VoidCallback updateStateCommentPage;
+  final VoidCallback updateStateParticipationPage;
   final Member loggedMember;
 
-  const CardCommentListItem(
-      {required this.comment,
+  const ParticipationListItem(
+      {required this.participation,
       required this.sessionService,
-      required this.updateStateCommentPage,
+      required this.updateStateParticipationPage,
       required this.loggedMember});
 
   @override
-  State<CardCommentListItem> createState() => _CardCommentListItemState();
+  State<ParticipationListItem> createState() => _ParticipationListItemState();
 }
 
-class _CardCommentListItemState extends State<CardCommentListItem> {
+class _ParticipationListItemState extends State<ParticipationListItem> {
   bool isModificaPressed = false;
   bool isCancellaPressed = false;
 
-  late final Comment comment;
+  late final Participation participation;
   late final SessionService sessionService;
-  late final VoidCallback updateStateCommentPage;
+  late final VoidCallback updateStateParticipationPage;
   late final Member loggedMember;
 
-  final backgroundColors = Colors.grey.shade300;
+  final backgroundColor = Colors.grey.shade300;
 
   @override
   void initState() {
-    comment = widget.comment;
+    participation = widget.participation;
     sessionService = widget.sessionService;
-    updateStateCommentPage = widget.updateStateCommentPage;
+    updateStateParticipationPage = widget.updateStateParticipationPage;
     loggedMember = widget.loggedMember;
 
     super.initState();
@@ -44,10 +45,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _textFieldController = TextEditingController();
-    TextEditingController _textFieldControllerFlag = TextEditingController();
-    _textFieldController.text = comment.descrizione;
-    _textFieldControllerFlag.text = comment.flag;
 
     final backgroundColor = Colors.grey.shade300;
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -56,7 +53,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
     double blurCancella = isCancellaPressed ? 5 : 10;
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+      margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(
@@ -79,57 +76,54 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
       child: Column(
         children: [
           Text(
-            "${comment.descrizione}",
+            "Pilota: ${participation.pilota.membro.nome} ${participation.pilota.membro.cognome}",
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 5),
+          Text(
+            "Ordine di partecipazione: ${participation.ordine}",
+            style: TextStyle(fontSize: 14),
+          ),
+          SizedBox(height: 5),
+          participation.cambioPilota != "00:00:00.000" ? Text(
+            "Cambio con pilota precedente: ${participation.cambioPilota}",
+            style: TextStyle(fontSize: 12),
+          ) : Container(),
+          SizedBox(height: 10),
+          /*
           loggedMember.ruolo == "Manager" || loggedMember.ruolo == "Caporeparto"
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _modificaButton(
-                        updateStateCommentPage,
-                        sessionService,
-                        comment,
-                        backgroundColor,
                         distanceModifica,
-                        blurModifica,
-                        _textFieldController,
-                        _textFieldControllerFlag),
+                        blurModifica),
                     _cancellaButton(
-                        updateStateCommentPage,
-                        sessionService,
-                        comment,
-                        backgroundColor,
                         distanceCancella,
                         blurCancella),
                   ],
                 )
               : Container()
+
+           */
         ],
       ),
     );
   }
 
-  Listener _cancellaButton(
-      VoidCallback updateStateAgendaPage,
-      SessionService sessionService,
-      Comment comment,
-      Color backgroundColor,
-      Offset distanceCancella,
-      double blurCancella) {
+  /*
+  Listener _cancellaButton(Offset distanceCancella, double blurCancella) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isCancellaPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
-        setState(() => isCancellaPressed = false); // Reset the state,
 
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text("Conferma eliminazione"),
-            content: const Text("Sei sicuro di voler eliminare il commento?"),
+            content: const Text("Sei sicuro di voler eliminare il ?"),
             actions: <Widget>[
               TextButton(
                 child: Text("Cancella"),
@@ -150,6 +144,8 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
             ],
           ),
         );
+        setState(() => isCancellaPressed = false); // Reset the state,
+
       },
       child: AnimatedContainer(
         padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
@@ -173,7 +169,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                 : []),
         child: Row(children: [
           Text(
-            "Cancella",
+            "Rimuovi",
             style: TextStyle(color: Colors.black),
           ),
           Icon(
@@ -185,89 +181,13 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
     );
   }
 
-  Listener _modificaButton(
-      VoidCallback updateStateCommentPage,
-      SessionService sessionService,
-      Comment comment,
-      Color backgroundColor,
-      Offset distanceModifica,
-      double blurModifica,
-      TextEditingController _textFieldController,
-      TextEditingController _textFieldControllerFlag) {
+  Listener _modificaButton(Offset distanceModifica, double blurModifica) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isModificaPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
 
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Nuova descrizione"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Text("Descrizione"),
-                    Expanded(child: Container()),
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _textFieldController,
-                      ),
-                    )
-                  ],
-                ),
-
-                SizedBox(
-                    height:
-                        10), // Add some spacing between the text field and radio buttons
-
-                Row(
-                  children: [
-                    Text("Flag"),
-                    Expanded(child: Container()),
-                    Expanded(
-                      flex: 2,
-                      child: TextField(
-                        controller: _textFieldControllerFlag,
-                      ),
-                    )
-                  ],
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text("Cancella"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              TextButton(
-                child: Text("Conferma"),
-                onPressed: () {
-                  if (_textFieldControllerFlag.text.toLowerCase() ==
-                          "Team".toLowerCase() ||
-                      _textFieldControllerFlag.text.toLowerCase() ==
-                          "Pilota".toLowerCase()) {
-                    sessionService.modifyComment(
-                        comment,
-                        _textFieldController.text,
-                        _textFieldControllerFlag.text);
-
-                    updateStateCommentPage();
-
-                    Navigator.pop(context);
-                  } else {
-                    showToast("Immettere team o pilota come flag.");
-                  }
-                },
-              ),
-            ],
-          ),
-        );
 
         setState(() => isModificaPressed = false); // Reset the state,
       },
@@ -305,6 +225,8 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
     );
   }
 
+
+   */
   void showToast(String message) {
     Fluttertoast.showToast(
       msg: message,

@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
         setState(() => isSessionPressed = true);
 
         await Future.delayed(
-            const Duration(milliseconds: 170)); // Wait for animation
+            const Duration(milliseconds: 200)); // Wait for animation
 
         Navigator.pushNamed(context, '/session', arguments: loggedMember);
         setState(() => isSessionPressed = false);

@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/services/session_service.dart';
+import '../../../../model/Comment.dart';
 import 'comment_list_item_card.dart';
 
 class CommentSessionPage extends StatefulWidget {
@@ -31,6 +32,10 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   late final Session session;
   late final Member loggedMember;
 
+  late List<Comment> _listComments;
+  late List<Comment> _listCommentsDrivers;
+  late List<Comment> _listCommentsTeam;
+
   void updateState() {
     setState(() {
       return;
@@ -48,13 +53,13 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    List _comments = sessionService.getCommentsBySessionId(session.id);
+    _listComments = sessionService.getCommentsBySessionId(session.id);
 
-    List _commentsDrivers =
-        _comments.where((element) => element.flag == "Pilota").toList();
+    _listCommentsDrivers =
+        _listComments.where((element) => element.flag == "Pilota").toList();
 
-    List _commentsTeam =
-        _comments.where((element) => element.flag == "Team").toList();
+    _listCommentsTeam =
+        _listComments.where((element) => element.flag == "Team").toList();
 
     return Scaffold(
       appBar: _appBar(backgroundColor),
@@ -79,9 +84,9 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                       return false;
                     },
                     child: ListView.builder(
-                        itemCount: _commentsDrivers.length,
+                        itemCount: _listCommentsDrivers.length,
                         itemBuilder: (context, index) {
-                          final element = _commentsDrivers[index];
+                          final element = _listCommentsDrivers[index];
                           return CardCommentListItem(
                               comment: element,
                               sessionService: sessionService,
@@ -102,9 +107,9 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                     return false;
                   },
                   child: ListView.builder(
-                      itemCount: _commentsTeam.length,
+                      itemCount: _listCommentsTeam.length,
                       itemBuilder: (context, index) {
-                        final element = _commentsTeam[index];
+                        final element = _listCommentsTeam[index];
                         return CardCommentListItem(
                             comment: element,
                             sessionService: sessionService,
