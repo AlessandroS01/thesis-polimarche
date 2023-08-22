@@ -9,9 +9,10 @@ import 'package:polimarche/services/note_service.dart';
 class CardNoteListItem extends StatefulWidget {
   final Note note;
   final VoidCallback updateStateAgendaPage;
+  final NoteService noteService;
 
   const CardNoteListItem(
-      {required this.note, required this.updateStateAgendaPage});
+      {required this.note, required this.updateStateAgendaPage, required this.noteService});
 
   @override
   State<CardNoteListItem> createState() => _CardNoteListItemState();
@@ -34,6 +35,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     super.initState();
 
     note = widget.note;
+    noteService = widget.noteService;
     updateStateAgendaPage = widget.updateStateAgendaPage;
 
     _textFieldController.text = note.descrizione;
@@ -41,7 +43,6 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
 
   @override
   Widget build(BuildContext context) {
-    noteService = AgendaInheritedState.of(context)!.noteService;
 
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
     double blurModifica = isModificaPressed ? 5 : 10;

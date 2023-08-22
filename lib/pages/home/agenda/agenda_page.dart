@@ -97,7 +97,9 @@ class _AgendaPageState extends State<AgendaPage> {
                           final element = _notesForSelectedDay[index];
                           return CardNoteListItem(
                               note: element,
-                              updateStateAgendaPage: updateState);
+                              updateStateAgendaPage: updateState,
+                              noteService: noteService
+                          );
                         }),
                   ),
                 ),
