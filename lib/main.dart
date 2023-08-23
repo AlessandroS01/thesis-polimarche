@@ -3,6 +3,7 @@ import 'package:polimarche/pages/home/main_page.dart';
 import 'package:polimarche/pages/loading.dart';
 import 'package:polimarche/pages/login.dart';
 import 'package:polimarche/pages/session/drawer/hidden_drawer_session.dart';
+import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
 
 import 'model/Member.dart';
 
@@ -33,6 +34,11 @@ class MyApp extends StatelessWidget {
           final Member loggedMember =
               ModalRoute.of(context)?.settings.arguments as Member;
           return HiddenDrawerSession(loggedMember: loggedMember);
+        },
+        '/setup': (context) {
+          final Member loggedMember =
+              ModalRoute.of(context)?.settings.arguments as Member;
+          return HiddenDrawerSetup(loggedMember: loggedMember);
         },
       },
     );

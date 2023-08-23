@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       _telemetryButton(
                           backgroundColor, distanceTelemetry, blurTelemetry),
-                      _setupButton(backgroundColor, distanceSetup, blurSetup),
+                      _setupButton(backgroundColor, distanceSetup, blurSetup, loggedMember),
                     ],
                   )
                 ],
@@ -96,11 +96,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Listener _setupButton(
-      Color backgroundColor, Offset distanceSetup, double blurSetup) {
+      Color backgroundColor, Offset distanceSetup, double blurSetup, Member loggedMember) {
     return Listener(
       onPointerUp: (_) async {
         await Future.delayed(
             const Duration(milliseconds: 150)); // Wait for animation
+
+        Navigator.pushNamed(context, '/setup', arguments: loggedMember);
         setState(() => isSetupPressed = false); // Reset the state
       },
       onPointerDown: (_) => setState(() => isSetupPressed = true),

@@ -33,8 +33,6 @@ class _DetailSessionState extends State<DetailSession> {
   late final Session session;
   late final SessionService sessionService;
 
-  final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _weightController = TextEditingController();
 
   bool isCommentButtonPressed = false;
   bool isModifyButtonPressed = false;
@@ -59,9 +57,6 @@ class _DetailSessionState extends State<DetailSession> {
 
   @override
   void dispose() {
-    _weightController.dispose();
-    _heightController.dispose();
-
     super.dispose();
   }
 

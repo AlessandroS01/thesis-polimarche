@@ -7,7 +7,7 @@ class SpringRepository {
     listSprings = [
       Spring(
         id: 3,
-        posizione: 'stiff',
+        posizione: 'Ant',
         codifica: 'rear',
         posizioneArb: 'Ant',
         rigidezzaArb: 'ABCD1234',
@@ -15,7 +15,7 @@ class SpringRepository {
       ),
       Spring(
         id: 4,
-        posizione: 'stiff',
+        posizione: 'Ant',
         codifica: 'rear',
         posizioneArb: 'Ant',
         rigidezzaArb: 'ABCD1234',
@@ -23,7 +23,7 @@ class SpringRepository {
       ),
       Spring(
         id: 1,
-        posizione: 'stiff',
+        posizione: 'Post',
         codifica: 'rear',
         posizioneArb: 'Post',
         rigidezzaArb: 'ABCD1234',
@@ -31,7 +31,7 @@ class SpringRepository {
       ),
       Spring(
         id: 5,
-        posizione: 'stiff',
+        posizione: 'Post',
         codifica: 'rear',
         posizioneArb: 'Post',
         rigidezzaArb: 'ABCD1234',
