@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:polimarche/model/Breakage.dart';
 import 'package:polimarche/model/Participation.dart';
 import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/model/Setup.dart';
@@ -12,8 +13,11 @@ import 'package:polimarche/repository/session_repository.dart';
 import 'package:polimarche/repository/track_repository.dart';
 import 'package:polimarche/repository/used_setup_repository.dart';
 
+import '../model/BreakageHappen.dart';
 import '../model/Driver.dart';
 import '../model/UsedSetup.dart';
+import '../repository/breakage_happen_repository.dart';
+import '../repository/breakage_repository.dart';
 import '../repository/setup_repository.dart';
 
 class SessionService {
@@ -24,6 +28,8 @@ class SessionService {
   late DriverRepository driverRepository;
   late SetupRepository setupRepository;
   late UsedSetupRepository usedSetupRepository;
+  late BreakageRepository breakageRepository;
+  late BreakageHappenRepository breakageHappenRepository;
 
   late List<Session> listSessions;
   late List<Track> listTracks;
@@ -32,6 +38,8 @@ class SessionService {
   late List<Driver> listDrivers;
   late List<Setup> listSetups;
   late List<UsedSetup> listUsedSetups;
+  late List<Breakage> listBreakages;
+  late List<BreakageHappen> listBreakagesHappened;
 
   SessionService() {
     sessionRepository = SessionRepository();
@@ -41,6 +49,8 @@ class SessionService {
     driverRepository = DriverRepository();
     setupRepository = SetupRepository();
     usedSetupRepository = UsedSetupRepository();
+    breakageRepository = BreakageRepository();
+    breakageHappenRepository = BreakageHappenRepository();
 
     listTracks = trackRepository.listTracks;
     listSessions = sessionRepository.listSessions;
@@ -49,6 +59,8 @@ class SessionService {
     listDrivers = driverRepository.listDrivers;
     listSetups = setupRepository.listSetups;
     listUsedSetups = usedSetupRepository.listSetupsUsed;
+    listBreakages = breakageRepository.listBreakages;
+    listBreakagesHappened = breakageHappenRepository.listBreakagesHappened;
   }
 
   void updateLists() {
@@ -59,6 +71,8 @@ class SessionService {
     listDrivers = driverRepository.listDrivers;
     listSetups = setupRepository.listSetups;
     listUsedSetups = usedSetupRepository.listSetupsUsed;
+    listBreakages = breakageRepository.listBreakages;
+    listBreakagesHappened = breakageHappenRepository.listBreakagesHappened;
   }
 
   List<Comment> getCommentsBySessionId(int sessionId) {
@@ -164,8 +178,6 @@ class SessionService {
 
     Setup setup = findSetupById(newSetupUsedId);
 
-
-
     UsedSetup newUsedSetup = UsedSetup(
         id: listUsedSetups.last.id + 1,
         sessione: session,
@@ -182,4 +194,31 @@ class SessionService {
         .where((element) => element.id.toString() == newSetupUsedId)
         .first;
   }
+
+  Breakage findBrekageById(String newBreakageHappenedBreakageId) {
+    return listBreakages
+        .where((element) => element.id.toString() == newBreakageHappenedBreakageId)
+        .first;
+  }
+
+  List<BreakageHappen> findBreakagesHappenedDuringSession(int sessionId) {
+    return listBreakagesHappened
+        .where((element) => element.sessione.id == sessionId)
+        .toList();
+  }
+
+  void addNewBreakageHappened(String newBreakageHappenedBreakageId,
+      String description, bool colpaPilota, int sessionId) {
+
+    Session session = findSessionById(sessionId);
+    Breakage breakage = findBrekageById(newBreakageHappenedBreakageId);
+
+    BreakageHappen breakageHappen = BreakageHappen(listBreakagesHappened.last.id + 1, description, session, breakage, colpaPilota);
+
+    breakageHappenRepository.addBreakageHappend(breakageHappen);
+
+    updateLists();
+  }
+
+
 }

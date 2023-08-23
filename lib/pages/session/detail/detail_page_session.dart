@@ -3,6 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Member.dart';
 import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/pages/session/detail/breakages/breakage_page.dart';
 import 'package:polimarche/pages/session/detail/comments/comments_page.dart';
 import 'package:polimarche/pages/session/detail/modify/modify_session_page.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_page.dart';
@@ -336,14 +337,15 @@ class _DetailSessionState extends State<DetailSession> {
         await Future.delayed(
             const Duration(milliseconds: 170)); // Wait for animation
 
-        /*
-                      Navigator.pushNamed(
-                          context,
-                          '/session',
-                          arguments: loggedMember
-                      );
-
-                       */
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => BreakagesSessionPage(
+                sessionId: session.id,
+                sessionService: sessionService,
+                loggedMember: loggedMember),
+          ),
+        );
         setState(() => isBreakagesButtonPressed = false);
       },
       child: AnimatedContainer(
