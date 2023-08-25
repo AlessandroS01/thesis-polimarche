@@ -22,7 +22,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   final backgroundColor = Colors.grey.shade300;
 
-  late Member loggedMember;
+  late final Member loggedMember;
   late final SetupService setupService;
 
   final TextEditingController _searchBarController = TextEditingController();
@@ -37,8 +37,7 @@ class _SetupPageState extends State<SetupPage> {
     if (query.isNotEmpty) {
       setState(() {
         _filteredSetupList = setupList
-            .where((element) =>
-                element.id.toString().contains(query.toString()))
+            .where((setup) => setup.id.toString().contains(query.toString()))
             .toList();
       });
     } else {
@@ -46,30 +45,21 @@ class _SetupPageState extends State<SetupPage> {
         _filteredSetupList = setupList;
       });
     }
-  }
 
-  // called whenever a button is clicked
-  void changeEventButtonPressed() {
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
   }
 
   @override
   void initState() {
     super.initState();
-
     setupService = widget.setupService;
+    loggedMember = widget.loggedMember;
   }
 
   @override
   Widget build(BuildContext context) {
-    loggedMember = widget.loggedMember;
-    setupList = setupService.listSetups;
 
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
+    setupList = setupService.listSetups;
+    filterListByQuery(_searchBarController.text);
 
     return Scaffold(
       body: Container(
@@ -94,9 +84,9 @@ class _SetupPageState extends State<SetupPage> {
                     itemBuilder: (context, index) {
                       final element = _filteredSetupList[index];
                       return CardSetupListItem(
-                          setup: element, loggedMember: loggedMember);
-
-
+                          setup: element,
+                          loggedMember: loggedMember
+                      );
                     },
                   ),
                 ),

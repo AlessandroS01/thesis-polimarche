@@ -98,7 +98,7 @@ class CardSetup extends StatelessWidget {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     mainAxisSpacing: 15,
-                    childAspectRatio: 0.75 // width / height
+                    childAspectRatio: 0.6 // width / height
                     ),
                 itemCount:
                     wheels.length, // Change this to the desired number of cells

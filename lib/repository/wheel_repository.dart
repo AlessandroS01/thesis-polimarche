@@ -11,15 +11,23 @@ class WheelRepository {
         posizione: 'Post sx',
         frontale: 'example_frontal',
         superiore: 'example_superiore',
-        pressione: 11111.0000,
+        pressione: 1,
       ),
       Wheel(
         id: 5,
-        codifica: 'setup ant dx',
+        codifica: 'setup ant dxsdfsdfsdfsdfds',
         posizione: 'Ant dx',
         frontale: 'setup ant dx',
         superiore: 'setup ant dx',
-        pressione: 11111.0000,
+        pressione: 2,
+      ),
+      Wheel(
+        id: 15,
+        codifica: 'prova 15',
+        posizione: 'Ant dx',
+        frontale: 'setup ant dx',
+        superiore: 'setup ant dx',
+        pressione: 3,
       ),
       Wheel(
         id: 6,
@@ -27,7 +35,7 @@ class WheelRepository {
         posizione: 'Ant sx',
         frontale: 'setup ant sx',
         superiore: 'setup ant sx',
-        pressione: 11111.0000,
+        pressione: 4,
       ),
       Wheel(
         id: 2,
@@ -35,7 +43,7 @@ class WheelRepository {
         posizione: 'Post dx',
         frontale: 'setup post dx',
         superiore: 'setup post dx',
-        pressione: 123.4500,
+        pressione: 5,
       ),
       Wheel(
         id: 3,
@@ -43,7 +51,7 @@ class WheelRepository {
         posizione: 'Post sx',
         frontale: 'setup post sx',
         superiore: 'setup post sx',
-        pressione: 123.4500,
+        pressione: 6,
       ),
     ];
   }

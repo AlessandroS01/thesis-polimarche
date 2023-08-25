@@ -23,7 +23,7 @@ class _SessionPageState extends State<SessionPage> {
   bool isEndurancePressed = false;
   bool isAutocrossPressed = false;
 
-  late Member loggedMember;
+  late final Member loggedMember;
   late final SessionService sessionService;
 
   final TextEditingController _searchBarController = TextEditingController();
@@ -79,9 +79,7 @@ class _SessionPageState extends State<SessionPage> {
 
   // called whenever a button is clicked
   void changeEventButtonPressed() {
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
+    filterListByQuery(_searchBarController.text);
   }
 
   @override
@@ -89,11 +87,11 @@ class _SessionPageState extends State<SessionPage> {
     super.initState();
 
     sessionService = widget.sessionService;
+    loggedMember = widget.loggedMember;
   }
 
   @override
   Widget build(BuildContext context) {
-    loggedMember = widget.loggedMember;
     sessionList = sessionService.listSessions;
 
     Offset distanceAcceleration =
@@ -111,9 +109,7 @@ class _SessionPageState extends State<SessionPage> {
         isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAutocross = isAutocrossPressed ? 5.0 : 30.0;
 
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
+    filterListByQuery(_searchBarController.text);
 
     return Scaffold(
       body: Container(

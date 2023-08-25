@@ -15,11 +15,11 @@ class SetupRepository {
         note: 'note',
         wheelAntDx: Wheel(
           id: 5,
-          codifica: 'setup ant dx',
+          codifica: 'setup ant dxsdfsdfsdfsdfds',
           posizione: 'Ant dx',
           frontale: 'setup ant dx',
           superiore: 'setup ant dx',
-          pressione: 11111.0000,
+          pressione: 2,
         ),
         wheelAntSx: Wheel(
           id: 6,
@@ -96,11 +96,11 @@ class SetupRepository {
         note: 'note',
         wheelAntDx: Wheel(
           id: 5,
-          codifica: 'setup ant dx',
+          codifica: 'setup ant dxsdfsdfsdfsdfds',
           posizione: 'Ant dx',
           frontale: 'setup ant dx',
           superiore: 'setup ant dx',
-          pressione: 11111.0000,
+          pressione: 2,
         ),
         wheelAntSx: Wheel(
           id: 6,
@@ -177,11 +177,11 @@ class SetupRepository {
         note: 'note',
         wheelAntDx: Wheel(
           id: 5,
-          codifica: 'setup ant dx',
+          codifica: 'setup ant dxsdfsdfsdfsdfds',
           posizione: 'Ant dx',
           frontale: 'setup ant dx',
           superiore: 'setup ant dx',
-          pressione: 11111.0000,
+          pressione: 2,
         ),
         wheelAntSx: Wheel(
           id: 6,
@@ -258,11 +258,11 @@ class SetupRepository {
         note: 'note',
         wheelAntDx: Wheel(
           id: 5,
-          codifica: 'setup ant dx',
+          codifica: 'setup ant dxsdfsdfsdfsdfds',
           posizione: 'Ant dx',
           frontale: 'setup ant dx',
           superiore: 'setup ant dx',
-          pressione: 11111.0000,
+          pressione: 2,
         ),
         wheelAntSx: Wheel(
           id: 6,

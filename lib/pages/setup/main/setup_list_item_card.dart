@@ -33,18 +33,17 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
   final Offset distance = Offset(5, 5);
   final double blur = 10;
 
-  late final setup;
+  late Setup setup;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    setup = widget.setup;
   }
 
   @override
   Widget build(BuildContext context) {
+    setup = widget.setup;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 60, vertical: 18),

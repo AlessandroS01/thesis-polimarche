@@ -14,6 +14,7 @@ import 'package:polimarche/services/session_service.dart';
 import 'package:polimarche/services/setup_service.dart';
 
 import '../../../model/Setup.dart';
+import 'modify/modify_setup_page.dart';
 
 class DetailSetup extends StatefulWidget {
   final Setup setup;
@@ -134,18 +135,18 @@ class _DetailSetupState extends State<DetailSetup> {
         await Future.delayed(
             const Duration(milliseconds: 170)); // Wait for animation
 
-        /*
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (BuildContext context) => ModifySessionPage(
-                session: setup,
-                sessionService: setupService,
-                updateState: updateDetailSessionState),
+            builder: (BuildContext context) => ModifySetupPage(
+              setup: setup,
+              setupService: setupService,
+              updateStateDetailSetup: updateDetailSessionState,
+                ),
           ),
         );
 
-         */
 
         setState(() => isModifyButtonPressed = false);
       },

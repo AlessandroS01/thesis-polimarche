@@ -67,6 +67,7 @@ class _TeamPageState extends State<TeamPage> {
     _teamDrivers.add("Piloti");
     List<int> driverMatricole =
         drivers.map((driver) => driver.membro.matricola).toList();
+    // add all the members who are also drivers
     _teamDrivers.addAll(
         members.where((member) => driverMatricole.contains(member.matricola)));
   }
