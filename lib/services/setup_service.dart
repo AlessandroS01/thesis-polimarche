@@ -7,6 +7,7 @@ import 'package:polimarche/repository/spring_repository.dart';
 import 'package:polimarche/repository/used_setup_repository.dart';
 import 'package:polimarche/repository/wheel_repository.dart';
 
+import '../model/Balance.dart';
 import '../model/Setup.dart';
 
 class SetupService {
@@ -21,6 +22,7 @@ class SetupService {
   late List<Setup> listSetups;
   late List<UsedSetup> listUsedSetups;
   late List<Wheel> listWheels;
+  late List<Balance> listBalance;
 
   SetupService() {
     setupRepository = SetupRepository();
@@ -33,12 +35,14 @@ class SetupService {
     listSetups = setupRepository.listSetups;
     listUsedSetups = usedSetupRepository.listSetupsUsed;
     listWheels = wheelRepository.listWheels;
+    listBalance = balanceRepository.listBalances;
   }
 
   void updateLists() {
     listSetups = setupRepository.listSetups;
     listUsedSetups = usedSetupRepository.listSetupsUsed;
     listWheels = wheelRepository.listWheels;
+    listBalance = balanceRepository.listBalances;
   }
 
   List<Wheel> findFrontRightWheelParams() {
@@ -77,5 +81,77 @@ class SetupService {
         .toList();
 
     return matchingWheels.isNotEmpty ? matchingWheels.first : false;
+  }
+
+  dynamic findFrontLeftFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    List<Wheel> matchingWheels = listWheels
+        .where((element) =>
+            element.posizione == "Ant sx" &&
+            element.codifica == codifica &&
+            double.parse(pressione) == element.pressione &&
+            element.frontale == camber &&
+            element.superiore == toe)
+        .toList();
+
+    return matchingWheels.isNotEmpty ? matchingWheels.first : false;
+  }
+
+  dynamic findRearRightFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    List<Wheel> matchingWheels = listWheels
+        .where((element) =>
+            element.posizione == "Post dx" &&
+            element.codifica == codifica &&
+            double.parse(pressione) == element.pressione &&
+            element.frontale == camber &&
+            element.superiore == toe)
+        .toList();
+
+    return matchingWheels.isNotEmpty ? matchingWheels.first : false;
+  }
+
+  dynamic findRearLeftFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    List<Wheel> matchingWheels = listWheels
+        .where((element) =>
+            element.posizione == "Post sx" &&
+            element.codifica == codifica &&
+            double.parse(pressione) == element.pressione &&
+            element.frontale == camber &&
+            element.superiore == toe)
+        .toList();
+
+    return matchingWheels.isNotEmpty ? matchingWheels.first : false;
+  }
+
+  List<Balance> findFrontBalanceParams() {
+    return listBalance.where((element) => element.posizione == "Ant").toList();
+  }
+
+  List<Balance> findRearBalanceParams() {
+    return listBalance.where((element) => element.posizione == "Post").toList();
+  }
+
+  dynamic findFrontFromExistingParams(String peso, String frenata) {
+    List<Balance> matchingBalance = listBalance
+        .where((element) =>
+            element.posizione == "Ant" &&
+            element.peso == double.parse(peso) &&
+            element.frenata == double.parse(frenata))
+        .toList();
+
+    return matchingBalance.isNotEmpty ? matchingBalance.first : false;
+  }
+
+  findRearFromExistingParams(String peso, String frenata) {
+    List<Balance> matchingBalance = listBalance
+        .where((element) =>
+            element.posizione == "Post" &&
+            element.peso == double.parse(peso) &&
+            element.frenata == double.parse(frenata))
+        .toList();
+
+    return matchingBalance.isNotEmpty ? matchingBalance.first : false;
   }
 }

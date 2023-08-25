@@ -9,7 +9,8 @@ import 'package:polimarche/model/Spring.dart';
 import 'package:polimarche/model/Track.dart';
 import 'package:polimarche/model/Wheel.dart';
 import 'package:polimarche/pages/home/home_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance_page.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_page.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/dampers_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_information_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/springs_page.dart';
@@ -70,11 +71,25 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     }
   }
 
-  void _previousStep() {
-    if (_progress != 1) {
-      setState(() {
-        _progress--;
-      });
+  void _tryPreviousStepFromBalancePage(List<Balance?> balance) {
+    if (balance[0] != null) {
+      if (balance[1] != null) {
+        if (balance[0]!.peso + balance[1]!.peso == 100) {
+          if (balance[0]!.frenata + balance[1]!.frenata == 100) {
+            setState(() {
+              _progress--;
+            });
+          } else {
+            showToast("La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.frenata + balance[1]!.frenata)}");
+          }
+        } else {
+          showToast("La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.peso + balance[1]!.peso)}");
+        }
+      } else {
+        showToast("Specificare il bilanciamento posteriore");
+      }
+    } else {
+      showToast("Specificare il bilanciamento anteriore");
     }
   }
 
@@ -134,11 +149,31 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   late Balance rearBalance;
 
   // SECOND STEP METHODS
-  void onBalanceFromPage(List<Balance> listBalance) {
-    setState(() {
-      frontBalance = listBalance[0];
-      rearBalance = listBalance[1];
-    });
+  void onBalanceFromPage(List<Balance?> listBalance) {
+    Balance? front = listBalance[0];
+    Balance? rear = listBalance[1];
+
+    if (front != null) {
+      if (rear != null) {
+        if (front.peso + rear.peso == 100) {
+          if (front.frenata + rear.frenata == 100) {
+            setState(() {
+              frontBalance = front;
+              rearBalance = rear;
+            });
+            _nextStep();
+          } else {
+            showToast("La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(front.frenata + rear.frenata)}");
+          }
+        } else {
+          showToast("La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(front.peso + rear.peso)}");
+        }
+      } else {
+        showToast("Specificare il bilanciamento posteriore");
+      }
+    } else {
+      showToast("Specificare il bilanciamento anteriore");
+    }
   }
 
   // THIRD STEP DATA
@@ -215,9 +250,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     _stepPages = [
       WheelsPage(sendDataToParent: onWheelFromPage, setupService: setupService),
       BalancePage(
-          balances: [frontBalance, rearBalance],
-          updateModifySetupPage: onBalanceFromPage,
-          setupService: setupService),
+          sendDataToParent: onBalanceFromPage, setupService: setupService),
       SpringsPage(
           springs: [frontSpring, rearSpring],
           updateModifySetupPage: onSpringFromPage,
@@ -238,8 +271,12 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (context) => WheelProvider(frontRightWheel, frontLeftWheel,
-                rearRightWheel, rearLeftWheel)),
+          create: (context) => WheelProvider(
+              frontRightWheel, frontLeftWheel, rearRightWheel, rearLeftWheel),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BalanceProvider(frontBalance, rearBalance),
+        ),
       ],
       child: Scaffold(
         appBar: _appBar(backgroundColor),
@@ -286,12 +323,27 @@ class _ModifySetupPageState extends State<ModifySetupPage>
             gap: 8,
             tabs: [
               _progress > 1
-                  ? GButton(icon: Icons.arrow_back, onPressed: _previousStep)
+                  ? GButton(
+                      icon: Icons.arrow_back,
+                      onPressed: () {
+                        if (_progress == 2) {
+                          List<Balance?> balance =
+                              BalancePage.balanceOf(context);
+
+                          _tryPreviousStepFromBalancePage(balance);
+                        }
+
+                        if (_progress == 3) {
+
+                        }
+                      })
                   : GButton(
                       icon: Icons.flag_outlined,
                       leading: Badge(
                         backgroundColor: backgroundColor,
                       )),
+
+              // WHEEL
               if (_progress != 5 && _progress == 1)
                 GButton(
                     icon: Icons.arrow_forward,
@@ -300,11 +352,16 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
                       onWheelFromPage(wheels);
                     }),
+
+              // BALANCE
               if (_progress != 5 && _progress == 2)
                 GButton(
-                  icon: Icons.arrow_forward,
-                  onPressed: _nextStep,
-                ),
+                    icon: Icons.arrow_forward,
+                    onPressed: () {
+                      List<Balance?> balance = BalancePage.balanceOf(context);
+
+                      onBalanceFromPage(balance);
+                    }),
               if (_progress != 5 && _progress == 3)
                 GButton(
                   icon: Icons.arrow_forward,

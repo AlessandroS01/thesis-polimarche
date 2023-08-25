@@ -2,20 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:polimarche/model/Wheel.dart';
 
 class WheelProvider with ChangeNotifier {
-
   late Wheel? _frontRight;
   bool _existingFrontRight = true;
 
-  bool get existingFrontRight => _existingFrontRight;
+  late Wheel? _frontLeft;
+  bool _existingFrontLeft = true;
 
-  set existingFrontRight(bool value) {
-    _existingFrontRight = value;
-  }
+  late Wheel? _rearRight;
+  bool _existingRearRight = true;
 
-  late Wheel _frontLeft;
-  late Wheel _rearRight;
-  late Wheel _rearLeft;
-
+  late Wheel? _rearLeft;
+  bool _existingRearLeft = true;
 
   WheelProvider(
       this._frontRight, this._frontLeft, this._rearRight, this._rearLeft);
@@ -26,21 +23,45 @@ class WheelProvider with ChangeNotifier {
     _frontRight = value;
   }
 
-  Wheel get frontLeft => _frontLeft;
+  bool get existingFrontRight => _existingFrontRight;
 
-  set frontLeft(Wheel value) {
+  set existingFrontRight(bool value) {
+    _existingFrontRight = value;
+  }
+
+  Wheel? get frontLeft => _frontLeft;
+
+  set frontLeft(Wheel? value) {
     _frontLeft = value;
   }
 
-  Wheel get rearRight => _rearRight;
+  bool get existingFrontLeft => _existingFrontLeft;
 
-  set rearRight(Wheel value) {
+  set existingFrontLeft(bool value) {
+    _existingFrontLeft = value;
+  }
+
+  Wheel? get rearRight => _rearRight;
+
+  set rearRight(Wheel? value) {
     _rearRight = value;
   }
 
-  Wheel get rearLeft => _rearLeft;
+  bool get existingRearRight => _existingRearRight;
 
-  set rearLeft(Wheel value) {
+  set existingRearRight(bool value) {
+    _existingRearRight = value;
+  }
+
+  Wheel? get rearLeft => _rearLeft;
+
+  set rearLeft(Wheel? value) {
     _rearLeft = value;
+  }
+
+  bool get existingRearLeft => _existingRearLeft;
+
+  set existingRearLeft(bool value) {
+    _existingRearLeft = value;
   }
 }

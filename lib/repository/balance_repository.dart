@@ -3,7 +3,7 @@ import '../model/Balance.dart';
 class BalanceRepository {
   late List<Balance> listBalances;
 
-  WheelRepository() {
+  BalanceRepository() {
     listBalances = [
       Balance(
         id: 4,
