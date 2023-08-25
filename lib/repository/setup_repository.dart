@@ -335,4 +335,21 @@ class SetupRepository {
       ),
     ];
   }
+
+  void modifySetup(Setup newSetup) {
+    Setup setup = listSetups.where((element) => element.id == newSetup.id).first;
+
+    setup.note = newSetup.note;
+    setup.ala = newSetup.ala;
+    setup.damperPost = newSetup.damperPost;
+    setup.damperAnt = newSetup.damperAnt;
+    setup.springPost = newSetup.springPost;
+    setup.springAnt = newSetup.springAnt;
+    setup.balancePost = newSetup.balancePost;
+    setup.balanceAnt = newSetup.balanceAnt;
+    setup.wheelPostSx = newSetup.wheelPostSx;
+    setup.wheelPostDx = newSetup.wheelPostDx;
+    setup.wheelAntSx = newSetup.wheelAntSx;
+    setup.wheelAntDx = newSetup.wheelAntDx;
+  }
 }

@@ -7,11 +7,10 @@ import 'package:provider/provider.dart';
 import '../../../../../../model/Balance.dart';
 
 class BalancePage extends StatefulWidget {
-  final void Function(List<Balance> balance) sendDataToParent;
   final SetupService setupService;
 
   const BalancePage(
-      {super.key, required this.sendDataToParent, required this.setupService});
+      {super.key, required this.setupService});
 
   static List<Balance?> balanceOf(BuildContext context) {
     final balanceProvider =
@@ -111,7 +110,7 @@ class _BalancePageState extends State<BalancePage> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontFrenata.text) != null) {
         if (double.tryParse(_controllerFrontPeso.text) != null) {
-          var result = setupService.findFrontFromExistingParams(
+          var result = setupService.findFrontBalanceFromExistingParams(
               _controllerFrontPeso.text, _controllerFrontFrenata.text);
 
           Balance balance;
@@ -204,7 +203,7 @@ class _BalancePageState extends State<BalancePage> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearFrenata.text) != null) {
         if (double.tryParse(_controllerRearPeso.text) != null) {
-          var result = setupService.findRearFromExistingParams(
+          var result = setupService.findRearBalanceFromExistingParams(
               _controllerRearPeso.text, _controllerRearFrenata.text);
 
           Balance balance;
@@ -231,6 +230,9 @@ class _BalancePageState extends State<BalancePage> {
       }
     }
   }
+
+
+
 
   @override
   void initState() {

@@ -9,11 +9,10 @@ import 'package:provider/provider.dart';
 import '../../../../../../model/Wheel.dart';
 
 class WheelsPage extends StatefulWidget {
-  final void Function(List<Wheel> wheels) sendDataToParent;
   final SetupService setupService;
 
   const WheelsPage(
-      {super.key, required this.sendDataToParent, required this.setupService});
+      {super.key, required this.setupService});
 
   static List<Wheel?> wheelsOf(BuildContext context) {
     final wheelProvider = Provider.of<WheelProvider>(context, listen: false);

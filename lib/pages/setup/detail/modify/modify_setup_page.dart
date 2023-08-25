@@ -11,9 +11,12 @@ import 'package:polimarche/model/Wheel.dart';
 import 'package:polimarche/pages/home/home_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/dampers_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_information_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/springs_page.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/damper_provider.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/dampers_page.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_informations/general_information_page.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_informations/general_information_provider.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
+import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/springs_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheels_page.dart';
 import 'package:polimarche/services/session_service.dart';
@@ -80,16 +83,61 @@ class _ModifySetupPageState extends State<ModifySetupPage>
               _progress--;
             });
           } else {
-            showToast("La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.frenata + balance[1]!.frenata)}");
+            showToast(
+                "La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.frenata + balance[1]!.frenata)}");
           }
         } else {
-          showToast("La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.peso + balance[1]!.peso)}");
+          showToast(
+              "La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(balance[0]!.peso + balance[1]!.peso)}");
         }
       } else {
         showToast("Specificare il bilanciamento posteriore");
       }
     } else {
       showToast("Specificare il bilanciamento anteriore");
+    }
+  }
+
+  void _tryPreviousStepFromSpringPage(List<Spring?> springs) {
+    if (springs[0] != null) {
+      if (springs[1] != null) {
+        setState(() {
+          _progress--;
+        });
+      } else {
+        showToast("Specificare le molle posteriori");
+      }
+    } else {
+      showToast("Specificare le molle anteriori");
+    }
+  }
+
+  void _tryPreviousStepFromDamperPage(List<Damper?> dampers) {
+    if (dampers[0] != null) {
+      if (dampers[1] != null) {
+        setState(() {
+          _progress--;
+        });
+      } else {
+        showToast("Specificare gli ammortizzatori posteriori");
+      }
+    } else {
+      showToast("Specificare gli ammortizzatori anteriori");
+    }
+  }
+
+  void _tryPreviousStepFromGeneralInformationPage(List<String> infos) {
+
+    if (infos[0].isNotEmpty) {
+      if (infos[1].isNotEmpty) {
+        setState(() {
+          _progress--;
+        });
+      } else {
+        showToast("Specificare le note o immettere un qualsiasi carattere");
+      }
+    } else {
+      showToast("Specificare l'ala");
     }
   }
 
@@ -163,10 +211,12 @@ class _ModifySetupPageState extends State<ModifySetupPage>
             });
             _nextStep();
           } else {
-            showToast("La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(front.frenata + rear.frenata)}");
+            showToast(
+                "La somma del bilanciamento della frenata anteriore e posteriore deve essere 100. Attualmente: ${(front.frenata + rear.frenata)}");
           }
         } else {
-          showToast("La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(front.peso + rear.peso)}");
+          showToast(
+              "La somma del bilanciamento del peso anteriore e posteriore deve essere 100. Attualmente: ${(front.peso + rear.peso)}");
         }
       } else {
         showToast("Specificare il bilanciamento posteriore");
@@ -181,11 +231,23 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   late Spring rearSpring;
 
   // THIRD STEP METHODS
-  void onSpringFromPage(List<Spring> listSpring) {
-    setState(() {
-      frontSpring = listSpring[0];
-      rearSpring = listSpring[1];
-    });
+  void onSpringFromPage(List<Spring?> listSpring) {
+    Spring? front = listSpring[0];
+    Spring? rear = listSpring[1];
+
+    if (front != null) {
+      if (rear != null) {
+        setState(() {
+          frontSpring = front;
+          rearSpring = rear;
+        });
+        _nextStep();
+      } else {
+        showToast("Specificare le molle posteriori");
+      }
+    } else {
+      showToast("Specificare le molle anteriori");
+    }
   }
 
   // FOURTH STEP DATA
@@ -193,11 +255,23 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   late Damper rearDamper;
 
   // FOURTH STEP METHODS
-  void onDamperFromPage(List<Damper> listDamper) {
-    setState(() {
-      frontDamper = listDamper[0];
-      rearDamper = listDamper[1];
-    });
+  void onDamperFromPage(List<Damper?> listDamper) {
+    Damper? front = listDamper[0];
+    Damper? rear = listDamper[1];
+
+    if (front != null) {
+      if (rear != null) {
+        setState(() {
+          frontDamper = front;
+          rearDamper = rear;
+        });
+        _nextStep();
+      } else {
+        showToast("Specificare gli ammortizzatori posteriori");
+      }
+    } else {
+      showToast("Specificare gli ammortizzatori anteriori");
+    }
   }
 
   // FIFTH STEP DATA
@@ -248,21 +322,11 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
     // PAGES
     _stepPages = [
-      WheelsPage(sendDataToParent: onWheelFromPage, setupService: setupService),
-      BalancePage(
-          sendDataToParent: onBalanceFromPage, setupService: setupService),
-      SpringsPage(
-          springs: [frontSpring, rearSpring],
-          updateModifySetupPage: onSpringFromPage,
-          setupService: setupService),
-      DampersPage(
-          dampers: [frontDamper, rearDamper],
-          updateModifySetupPage: onDamperFromPage,
-          setupService: setupService),
-      GeneralInformationPage(
-          ala: ala,
-          note: note,
-          updateModifySetupPage: onGeneralInformationFromPage)
+      WheelsPage(setupService: setupService),
+      BalancePage(setupService: setupService),
+      SpringsPage(setupService: setupService),
+      DampersPage(setupService: setupService),
+      GeneralInformationPage()
     ];
   }
 
@@ -276,6 +340,15 @@ class _ModifySetupPageState extends State<ModifySetupPage>
         ),
         ChangeNotifierProvider(
           create: (context) => BalanceProvider(frontBalance, rearBalance),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SpringProvider(frontSpring, rearSpring),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => DamperProvider(frontDamper, rearDamper),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => GeneralInformationProvider(ala, note),
         ),
       ],
       child: Scaffold(
@@ -334,7 +407,21 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                         }
 
                         if (_progress == 3) {
+                          List<Spring?> springs = SpringsPage.springOf(context);
 
+                          _tryPreviousStepFromSpringPage(springs);
+                        }
+
+                        if (_progress == 4) {
+                          List<Damper?> dampers = DampersPage.damperOf(context);
+
+                          _tryPreviousStepFromDamperPage(dampers);
+                        }
+
+                        if (_progress == 5) {
+                          List<String> infos = GeneralInformationPage.stringOf(context);
+
+                          _tryPreviousStepFromGeneralInformationPage(infos);
                         }
                       })
                   : GButton(
@@ -364,14 +451,20 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                     }),
               if (_progress != 5 && _progress == 3)
                 GButton(
-                  icon: Icons.arrow_forward,
-                  onPressed: _nextStep,
-                ),
+                    icon: Icons.arrow_forward,
+                    onPressed: () {
+                      List<Spring?> springs = SpringsPage.springOf(context);
+
+                      onSpringFromPage(springs);
+                    }),
               if (_progress != 5 && _progress == 4)
                 GButton(
                   icon: Icons.arrow_forward,
-                  onPressed: _nextStep,
-                ),
+                    onPressed: () {
+                      List<Damper?> dampers = DampersPage.damperOf(context);
+
+                      onDamperFromPage(dampers);
+                    }),
               if (_progress == 5)
                 GButton(
                   icon: Icons.upload,
@@ -380,6 +473,9 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                       return;
                     }
                     await _animationController.forward();
+
+                    _modifySetup();
+
                     _animationController.reset();
                   },
                 ),
@@ -410,4 +506,43 @@ class _ModifySetupPageState extends State<ModifySetupPage>
       centerTitle: true,
     );
   }
+
+  void _modifySetup() {
+
+    List<Wheel> wheels = [
+      frontRightWheel,
+      frontLeftWheel,
+      rearRightWheel,
+      rearLeftWheel
+    ];
+    List<Balance> balance = [
+      frontBalance,
+      rearBalance
+    ];
+    List<Spring> springs = [
+      frontSpring,
+      rearSpring
+    ];
+    List<Damper> dampers = [
+      frontDamper,
+      rearDamper
+    ];
+    List<String> genInfos = [
+      ala,
+      note
+    ];
+
+    setupService.modifySetup(setup, wheels, balance, springs, dampers, genInfos);
+
+    showToast("Setup modificata con successo");
+
+    updateStateDetailSetup();
+
+    Navigator.pop(context);
+
+  }
+
+
 }
+
+

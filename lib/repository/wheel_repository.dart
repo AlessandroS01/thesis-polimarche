@@ -55,4 +55,8 @@ class WheelRepository {
       ),
     ];
   }
+
+  void addWheel(Wheel wheel) {
+    listWheels.add(wheel);
+  }
 }
