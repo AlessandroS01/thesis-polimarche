@@ -45,14 +45,14 @@ class CommentRepository {
   }
 
   void delete(Comment comment) {
-    listComments.remove(comment);
+    listComments.removeWhere((element) => element.id == comment.id);
   }
 
   void modifyComment(Comment oldComment, String newDescrizione, String newFlag) {
     Comment comment =
           listComments.where((element) => element.id == oldComment.id).first;
       comment.descrizione = newDescrizione;
-      comment.flag = capitalizeFirstLetter(newFlag);
+      comment.flag = newFlag;
   }
 
   String capitalizeFirstLetter(String input) {
@@ -62,6 +62,6 @@ class CommentRepository {
 
   void addComment(String newDescrizione, String newFlag, Session session) {
     listComments.add(Comment(listComments.last.id + 1,
-        capitalizeFirstLetter(newFlag), newDescrizione, session));
+        newFlag, newDescrizione, session));
   }
 }

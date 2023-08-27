@@ -36,6 +36,9 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   late List<Comment> _listCommentsDrivers;
   late List<Comment> _listCommentsTeam;
 
+  bool _flagTeam = true;
+  bool _flagPilota = false;
+
   void updateState() {
     setState(() {
       return;
@@ -199,68 +202,92 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
       TextEditingController _textFieldControllerFlag) {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Nuova descrizione"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text("Descrizione"),
-                Expanded(child: Container()),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _textFieldController,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text("Nuova descrizione"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.text,
+                cursorColor: Colors.black,
+                style: const TextStyle(
+                color: Colors.black, fontFamily: 'aleo', letterSpacing: 1),
+                decoration: InputDecoration(
+              counterText: '',
+              border: InputBorder.none,
+              hintText: 'Descrizione',
+              hintStyle: TextStyle(color: Colors.grey),
+                ),
+                controller: _textFieldController,
+              ),
+
+              SizedBox(
+                  height:
+                      30), // Add some spacing between the text field and radio buttons
+
+              Column(
+                children: [
+                  Text("Flag"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Team"),
+                      Checkbox(
+                        activeColor: Colors.black,
+                        value: _flagTeam,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _flagTeam = value!;
+                            _flagPilota = !value;
+                          });
+                        },
+                      ),
+                    ],
                   ),
-                )
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Pilota"),
+                      Checkbox(
+                        activeColor: Colors.black,
+                        value: _flagPilota,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            _flagPilota = value!;
+                            _flagTeam = !value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancella"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
+            TextButton(
+              child: Text("Conferma"),
+              onPressed: () {
+                String newFlag = _flagTeam ? "Team" : "Pilota";
 
-            SizedBox(
-                height:
-                    10), // Add some spacing between the text field and radio buttons
+                  sessionService.addComment(_textFieldController.text,
+                      newFlag, session);
 
-            Row(
-              children: [
-                Text("Flag"),
-                Expanded(child: Container()),
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _textFieldControllerFlag,
-                  ),
-                )
-              ],
+                  updateState();
+
+                  Navigator.pop(context);
+                },
             ),
           ],
         ),
-        actions: <Widget>[
-          TextButton(
-            child: Text("Cancella"),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          TextButton(
-            child: Text("Conferma"),
-            onPressed: () {
-              if (_textFieldControllerFlag.text.toLowerCase() ==
-                      "Team".toLowerCase() ||
-                  _textFieldControllerFlag.text.toLowerCase() ==
-                      "Pilota".toLowerCase()) {
-                sessionService.addComment(_textFieldController.text,
-                    _textFieldControllerFlag.text, session);
-
-                updateState();
-
-                Navigator.pop(context);
-              } else {
-                showToast("Immettere team o pilota come flag.");
-              }
-            },
-          ),
-        ],
       ),
     );
   }
