@@ -8,49 +8,42 @@ import 'package:polimarche/model/Setup.dart';
 import 'package:polimarche/model/Spring.dart';
 import 'package:polimarche/model/Track.dart';
 import 'package:polimarche/model/Wheel.dart';
-import 'package:polimarche/pages/home/home_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/damper_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/dampers_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_informations/general_information_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_informations/general_information_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/springs_page.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheels_page.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/balance/balance_page_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/damper/damper_provider_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/damper/dampers_page_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/general_informations/general_information_page_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/spring/spring_provider_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/spring/springs_page_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/wheel/wheel_provider_create.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/wheel/wheels_page_create.dart';
 import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:intl/intl.dart';
+
 
 import '../../../../model/Damper.dart';
-import 'modify_step_pages/wheel/wheel_provider.dart';
+import '../../../../model/Member.dart';
+import 'balance/balance_provider_create.dart';
+import 'general_informations/general_information_provider_create.dart';
 
-class ModifySetupPage extends StatefulWidget {
-  final Setup setup;
+class PlanSetupPage extends StatefulWidget {
   final SetupService setupService;
-  final VoidCallback updateStateDetailSetup;
+  final Member loggedMember;
 
-  const ModifySetupPage(
+  const PlanSetupPage(
       {super.key,
-      required this.setup,
-      required this.setupService,
-      required this.updateStateDetailSetup});
+      required this.setupService, required this.loggedMember});
 
   @override
-  State<ModifySetupPage> createState() => _ModifySetupPageState();
+  State<PlanSetupPage> createState() => _PlanSetupPageState();
 }
 
-class _ModifySetupPageState extends State<ModifySetupPage>
+class _PlanSetupPageState extends State<PlanSetupPage>
     with TickerProviderStateMixin {
   // GENERAL DATA
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
-  late final Setup setup;
   late final SetupService setupService;
-  late final VoidCallback updateStateDetailSetup;
 
   int _progress = 1;
   final _totalSteps = 5;
@@ -290,43 +283,20 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   void initState() {
     super.initState();
     // GENERAL DATA
+    _progress = 1;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
-    setup = widget.setup;
     setupService = widget.setupService;
-    updateStateDetailSetup = widget.updateStateDetailSetup;
-
-    // FIRST STEP DATA
-    frontRightWheel = setup.wheelAntDx;
-    frontLeftWheel = setup.wheelAntSx;
-    rearRightWheel = setup.wheelPostDx;
-    rearLeftWheel = setup.wheelPostSx;
-
-    // SECOND STEP DATA
-    frontBalance = setup.balanceAnt;
-    rearBalance = setup.balancePost;
-
-    // THIRD STEP DATA
-    frontSpring = setup.springAnt;
-    rearSpring = setup.springPost;
-
-    // FOURTH STEP DATA
-    frontDamper = setup.damperAnt;
-    rearDamper = setup.damperPost;
-
-    // FIFTH STEP DATA
-    ala = setup.ala;
-    note = setup.note;
 
     // PAGES
     _stepPages = [
-      WheelsPage(setupService: setupService),
-      BalancePage(setupService: setupService),
-      SpringsPage(setupService: setupService),
-      DampersPage(setupService: setupService),
-      GeneralInformationPage()
+      WheelsPageCreate(setupService: setupService),
+      BalancePageCreate(setupService: setupService),
+      SpringsPageCreate(setupService: setupService),
+      DampersPageCreate(setupService: setupService),
+      GeneralInformationPageCreate()
     ];
   }
 
@@ -335,24 +305,22 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => WheelProvider(
-              frontRightWheel, frontLeftWheel, rearRightWheel, rearLeftWheel),
+          create: (context) => WheelProviderCreate(),
         ),
         ChangeNotifierProvider(
-          create: (context) => BalanceProvider(frontBalance, rearBalance),
+          create: (context) => BalanceProviderCreate(),
         ),
         ChangeNotifierProvider(
-          create: (context) => SpringProvider(frontSpring, rearSpring),
+          create: (context) => SpringProviderCreate(),
         ),
         ChangeNotifierProvider(
-          create: (context) => DamperProvider(frontDamper, rearDamper),
+          create: (context) => DamperProviderCreate(),
         ),
         ChangeNotifierProvider(
-          create: (context) => GeneralInformationProvider(ala, note),
+          create: (context) => GeneralInformationProviderCreate(),
         ),
       ],
       child: Scaffold(
-        appBar: _appBar(backgroundColor),
         bottomNavigationBar: _bottomNavBar(),
         body: Container(
           decoration: BoxDecoration(color: backgroundColor),
@@ -401,25 +369,25 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                       onPressed: () {
                         if (_progress == 2) {
                           List<Balance?> balance =
-                              BalancePage.balanceOf(context);
+                              BalancePageCreate.balanceOf(context);
 
                           _tryPreviousStepFromBalancePage(balance);
                         }
 
                         if (_progress == 3) {
-                          List<Spring?> springs = SpringsPage.springOf(context);
+                          List<Spring?> springs = SpringsPageCreate.springOf(context);
 
                           _tryPreviousStepFromSpringPage(springs);
                         }
 
                         if (_progress == 4) {
-                          List<Damper?> dampers = DampersPage.damperOf(context);
+                          List<Damper?> dampers = DampersPageCreate.damperOf(context);
 
                           _tryPreviousStepFromDamperPage(dampers);
                         }
 
                         if (_progress == 5) {
-                          List<String> infos = GeneralInformationPage.stringOf(context);
+                          List<String> infos = GeneralInformationPageCreate.stringOf(context);
 
                           _tryPreviousStepFromGeneralInformationPage(infos);
                         }
@@ -435,7 +403,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Wheel?> wheels = WheelsPage.wheelsOf(context);
+                      List<Wheel?> wheels = WheelsPageCreate.wheelsOf(context);
 
                       onWheelFromPage(wheels);
                     }),
@@ -445,7 +413,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Balance?> balance = BalancePage.balanceOf(context);
+                      List<Balance?> balance = BalancePageCreate.balanceOf(context);
 
                       onBalanceFromPage(balance);
                     }),
@@ -453,7 +421,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Spring?> springs = SpringsPage.springOf(context);
+                      List<Spring?> springs = SpringsPageCreate.springOf(context);
 
                       onSpringFromPage(springs);
                     }),
@@ -461,7 +429,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                 GButton(
                   icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Damper?> dampers = DampersPage.damperOf(context);
+                      List<Damper?> dampers = DampersPageCreate.damperOf(context);
 
                       onDamperFromPage(dampers);
                     }),
@@ -469,14 +437,13 @@ class _ModifySetupPageState extends State<ModifySetupPage>
                 GButton(
                   icon: Icons.upload,
                   onPressed: () async {
-                    List<String> genInfos = GeneralInformationPage.stringOf(context);
-                    onGeneralInformationFromPage(genInfos[0], genInfos[1]);
                     if (_animationController.isAnimating) {
                       return;
                     }
                     await _animationController.forward();
-
-                    _modifySetup();
+                    List<String> genInfos = GeneralInformationPageCreate.stringOf(context);
+                    onGeneralInformationFromPage(genInfos[0], genInfos[1]);
+                    _createSetup();
 
                     _animationController.reset();
                   },
@@ -486,30 +453,8 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     });
   }
 
-  AppBar _appBar(Color backgroundColor) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: backgroundColor,
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.close), // Change to the "X" icon
-          onPressed: () {
-            // Implement your desired action when the "X" icon is pressed
-            Navigator.pop(context); // Example action: Navigate back
-          },
-        )
-      ],
-      iconTheme: IconThemeData(color: Colors.black),
-      title: Text(
-        "Modifica setup",
-        style: TextStyle(color: Colors.black),
-      ),
-      centerTitle: true,
-    );
-  }
 
-  void _modifySetup() {
+  void _createSetup() {
 
     List<Wheel> wheels = [
       frontRightWheel,
@@ -534,14 +479,13 @@ class _ModifySetupPageState extends State<ModifySetupPage>
       note
     ];
 
-    setupService.modifySetup(setup, wheels, balance, springs, dampers, genInfos);
+    print("object");
 
-    showToast("Setup modificata con successo");
+    setupService.createSetup(wheels, balance, springs, dampers, genInfos);
 
-    updateStateDetailSetup();
+    showToast("Setup creato con successo");
 
-    Navigator.pop(context);
-
+    Navigator.popAndPushNamed(context, '/setup', arguments: widget.loggedMember);
   }
 
 

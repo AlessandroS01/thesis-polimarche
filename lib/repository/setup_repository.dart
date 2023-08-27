@@ -352,4 +352,8 @@ class SetupRepository {
     setup.wheelAntSx = newSetup.wheelAntSx;
     setup.wheelAntDx = newSetup.wheelAntDx;
   }
+
+  void createSetup(Setup newSetup) {
+    listSetups.add(newSetup);
+  }
 }

@@ -9,6 +9,7 @@ import '../../../inherited_widgets/session_state.dart';
 import '../../../inherited_widgets/setup_state.dart';
 import '../../../model/Member.dart';
 import '../../../services/session_service.dart';
+import '../plan/create_step_pages/create_setup_page.dart';
 
 class HiddenDrawerSetup extends StatefulWidget {
   final Member loggedMember;
@@ -45,7 +46,6 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
             loggedMember: widget.loggedMember,
             setupService: setupService,
           )),
-      /*
       if (widget.loggedMember.ruolo == "Manager" ||
           widget.loggedMember.ruolo == "Caporeparto")
         ScreenHiddenDrawer(
@@ -54,11 +54,10 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
                 baseStyle: textStyle,
                 selectedStyle: textStyle,
                 colorLineSelected: Colors.white),
-            PlanSessionPage(
-              sessionService: sessionService,
+            PlanSetupPage(
+              setupService: setupService,
+              loggedMember: widget.loggedMember,
             )),
-
-       */
     ];
   }
 

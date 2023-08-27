@@ -1,21 +1,19 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/wheel/wheel_provider_create.dart';
 import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/Wheel.dart';
 
-class WheelsPage extends StatefulWidget {
+class WheelsPageCreate extends StatefulWidget {
   final SetupService setupService;
 
-  const WheelsPage(
-      {super.key, required this.setupService});
+  const WheelsPageCreate({super.key, required this.setupService});
 
   static List<Wheel?> wheelsOf(BuildContext context) {
-    final wheelProvider = Provider.of<WheelProvider>(context, listen: false);
+    final wheelProvider =
+        Provider.of<WheelProviderCreate>(context, listen: false);
 
     final List<Wheel?> wheels = [
       wheelProvider.frontRight,
@@ -28,14 +26,14 @@ class WheelsPage extends StatefulWidget {
   }
 
   @override
-  State<WheelsPage> createState() => _WheelsPageState();
+  State<WheelsPageCreate> createState() => _WheelsPageCreateState();
 }
 
-class _WheelsPageState extends State<WheelsPage> {
+class _WheelsPageCreateState extends State<WheelsPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
   late final SetupService setupService;
 
-  late WheelProvider wheelProvider;
+  late WheelProviderCreate wheelProvider;
   bool _isDataInitialized = false;
 
   void showToast(String message) {
@@ -156,8 +154,6 @@ class _WheelsPageState extends State<WheelsPage> {
     }
   }
 
-
-
   // FRONT LEFT DATA
   late bool _useExistingParamsFrontLeft;
   late Wheel frontLeftWheel;
@@ -194,8 +190,7 @@ class _WheelsPageState extends State<WheelsPage> {
         frontLeftWheel = setupService.findFrontLeftWheelParams().first;
 
         _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
-        _controllerFrontLeftPressure.text =
-            frontLeftWheel.pressione.toString();
+        _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
         _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
         _controllerFrontLeftToe.text = frontLeftWheel.superiore;
 
@@ -300,8 +295,7 @@ class _WheelsPageState extends State<WheelsPage> {
         rearRightWheel = setupService.findRearRightWheelParams().first;
 
         _controllerRearRightCodifica.text = rearRightWheel.codifica;
-        _controllerRearRightPressure.text =
-            rearRightWheel.pressione.toString();
+        _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
         _controllerRearRightCamber.text = rearRightWheel.frontale;
         _controllerRearRightToe.text = rearRightWheel.superiore;
 
@@ -370,7 +364,6 @@ class _WheelsPageState extends State<WheelsPage> {
     }
   }
 
-
   // REAR LEFT DATA
   late bool _useExistingParamsRearLeft;
   late Wheel rearLeftWheel;
@@ -393,8 +386,7 @@ class _WheelsPageState extends State<WheelsPage> {
       wheelProvider.existingRearLeft = true;
 
       _controllerRearLeftCodifica.text = rearLeftNewWheel.codifica;
-      _controllerRearLeftPressure.text =
-          rearLeftNewWheel.pressione.toString();
+      _controllerRearLeftPressure.text = rearLeftNewWheel.pressione.toString();
       _controllerRearLeftCamber.text = rearLeftNewWheel.frontale;
       _controllerRearLeftToe.text = rearLeftNewWheel.superiore;
     });
@@ -407,8 +399,7 @@ class _WheelsPageState extends State<WheelsPage> {
         rearLeftWheel = setupService.findRearLeftWheelParams().first;
 
         _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
-        _controllerRearLeftPressure.text =
-            rearLeftWheel.pressione.toString();
+        _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
         _controllerRearLeftCamber.text = rearLeftWheel.frontale;
         _controllerRearLeftToe.text = rearLeftWheel.superiore;
 
@@ -485,51 +476,60 @@ class _WheelsPageState extends State<WheelsPage> {
     setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      wheelProvider = Provider.of<WheelProvider>(context, listen: false);
+      wheelProvider = Provider.of<WheelProviderCreate>(context, listen: false);
 
       // FRONT RIGHT WHEEL DATA
       _useExistingParamsFrontRight = wheelProvider.existingFrontRight;
-      frontRightWheel = wheelProvider.frontRight!;
       frontRightWheelParams = setupService.findFrontRightWheelParams();
       frontRightWheelIds =
           frontRightWheelParams.map((param) => param.id).toList();
-      _controllerFrontRightCodifica.text = frontRightWheel.codifica;
-      _controllerFrontRightPressure.text = frontRightWheel.pressione.toString();
-      _controllerFrontRightCamber.text = frontRightWheel.frontale;
-      _controllerFrontRightToe.text = frontRightWheel.superiore;
+      if (wheelProvider.frontRight != null) {
+        frontRightWheel = wheelProvider.frontRight!;
+        _controllerFrontRightCodifica.text = frontRightWheel.codifica;
+        _controllerFrontRightPressure.text =
+            frontRightWheel.pressione.toString();
+        _controllerFrontRightCamber.text = frontRightWheel.frontale;
+        _controllerFrontRightToe.text = frontRightWheel.superiore;
+      }
 
       // FRONT LEFT WHEEL DATA
       _useExistingParamsFrontLeft = wheelProvider.existingFrontLeft;
-      frontLeftWheel = wheelProvider.frontLeft!;
       frontLeftWheelParams = setupService.findFrontLeftWheelParams();
       frontLeftWheelIds =
           frontLeftWheelParams.map((param) => param.id).toList();
-      _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
-      _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
-      _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
-      _controllerFrontLeftToe.text = frontLeftWheel.superiore;
+      if (wheelProvider.frontLeft != null) {
+        frontLeftWheel = wheelProvider.frontLeft!;
+        _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
+        _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
+        _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
+        _controllerFrontLeftToe.text = frontLeftWheel.superiore;
+      }
 
       // REAR RIGHT WHEEL DATA
       _useExistingParamsRearRight = wheelProvider.existingRearRight;
-      rearRightWheel = wheelProvider.rearRight!;
       rearRightWheelParams = setupService.findRearRightWheelParams();
       rearRightWheelIds =
           rearRightWheelParams.map((param) => param.id).toList();
-      _controllerRearRightCodifica.text = rearRightWheel.codifica;
-      _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
-      _controllerRearRightCamber.text = rearRightWheel.frontale;
-      _controllerRearRightToe.text = rearRightWheel.superiore;
+      if (wheelProvider.rearRight != null) {
+        rearRightWheel = wheelProvider.rearRight!;
+        _controllerRearRightCodifica.text = rearRightWheel.codifica;
+        _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
+        _controllerRearRightCamber.text = rearRightWheel.frontale;
+        _controllerRearRightToe.text = rearRightWheel.superiore;
+      }
 
       // REAR LEFT WHEEL DATA
       _useExistingParamsRearLeft = wheelProvider.existingRearLeft;
-      rearLeftWheel = wheelProvider.rearLeft!;
+
       rearLeftWheelParams = setupService.findRearLeftWheelParams();
-      rearLeftWheelIds =
-          rearLeftWheelParams.map((param) => param.id).toList();
-      _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
-      _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
-      _controllerRearLeftCamber.text = rearLeftWheel.frontale;
-      _controllerRearLeftToe.text = rearLeftWheel.superiore;
+      rearLeftWheelIds = rearLeftWheelParams.map((param) => param.id).toList();
+      if (wheelProvider.rearLeft != null) {
+        rearLeftWheel = wheelProvider.rearLeft!;
+        _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
+        _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
+        _controllerRearLeftCamber.text = rearLeftWheel.frontale;
+        _controllerRearLeftToe.text = rearLeftWheel.superiore;
+      }
 
       setState(() {
         _isDataInitialized = true;
@@ -577,10 +577,10 @@ class _WheelsPageState extends State<WheelsPage> {
             ),
           ))
         : Expanded(
-          child: Center(
+            child: Center(
               child: CircularProgressIndicator(),
             ),
-        );
+          );
   }
 
   Column _frontRightColumn() {
@@ -1030,8 +1030,6 @@ class _WheelsPageState extends State<WheelsPage> {
     );
   }
 
-
-
   Column _frontLeftColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -1479,8 +1477,6 @@ class _WheelsPageState extends State<WheelsPage> {
     );
   }
 
-
-
   Column _rearRightColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -1760,21 +1756,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Codifica',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightCodifica,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Codifica',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightCodifica,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
 
                     SizedBox(
@@ -1807,21 +1802,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Camber',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightCamber,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Camber',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightCamber,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
                   ],
                 ),
@@ -1855,21 +1849,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Pressione',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightPressure,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Pressione',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightPressure,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
 
                     SizedBox(
@@ -1902,21 +1895,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Toe',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightToe,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Toe',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightToe,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
                   ],
                 ),
@@ -1927,8 +1919,6 @@ class _WheelsPageState extends State<WheelsPage> {
       ),
     );
   }
-
-
 
   Column _rearLeftColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/general_informations/general_information_provider.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/general_informations/general_information_provider_create.dart';
 import 'package:provider/provider.dart';
 
-class GeneralInformationPage extends StatefulWidget {
-  const GeneralInformationPage({super.key});
+class GeneralInformationPageCreate extends StatefulWidget {
+  const GeneralInformationPageCreate({super.key});
 
   static List<String> stringOf(BuildContext context) {
     final generalInformationProvider =
-        Provider.of<GeneralInformationProvider>(context, listen: false);
+        Provider.of<GeneralInformationProviderCreate>(context, listen: false);
 
     final List<String> strings = [
       generalInformationProvider.ala,
@@ -19,13 +19,15 @@ class GeneralInformationPage extends StatefulWidget {
   }
 
   @override
-  State<GeneralInformationPage> createState() => _GeneralInformationPageState();
+  State<GeneralInformationPageCreate> createState() =>
+      _GeneralInformationPageCreateState();
 }
 
-class _GeneralInformationPageState extends State<GeneralInformationPage> {
+class _GeneralInformationPageCreateState
+    extends State<GeneralInformationPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
 
-  late GeneralInformationProvider generalInformationProvider;
+  late GeneralInformationProviderCreate generalInformationProvider;
   bool _isDataInitialized = false;
 
   void showToast(String message) {
@@ -65,13 +67,17 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       generalInformationProvider =
-          Provider.of<GeneralInformationProvider>(context, listen: false);
+          Provider.of<GeneralInformationProviderCreate>(context, listen: false);
 
       // ALA
-      _controllerAla.text = generalInformationProvider.ala!;
+      if (generalInformationProvider.ala.isNotEmpty) {
+        _controllerAla.text = generalInformationProvider.ala;
+      }
 
       // NOTE
-      _controllerNote.text = generalInformationProvider.note!;
+      if (generalInformationProvider.note.isNotEmpty) {
+        _controllerNote.text = generalInformationProvider.note;
+      }
 
       setState(() {
         _isDataInitialized = true;
@@ -170,7 +176,6 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
       ),
     );
   }
-
 
   Column _noteColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [

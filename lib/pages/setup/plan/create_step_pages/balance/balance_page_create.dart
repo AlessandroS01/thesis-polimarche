@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/balance/balance_provider_create.dart';
 import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/Balance.dart';
 
-class BalancePage extends StatefulWidget {
+class BalancePageCreate extends StatefulWidget {
   final SetupService setupService;
 
-  const BalancePage(
-      {super.key, required this.setupService});
+  const BalancePageCreate({super.key, required this.setupService});
 
   static List<Balance?> balanceOf(BuildContext context) {
     final balanceProvider =
-        Provider.of<BalanceProvider>(context, listen: false);
+        Provider.of<BalanceProviderCreate>(context, listen: false);
 
     final List<Balance?> balance = [
       balanceProvider.front,
@@ -25,14 +24,14 @@ class BalancePage extends StatefulWidget {
   }
 
   @override
-  State<BalancePage> createState() => _BalancePageState();
+  State<BalancePageCreate> createState() => _BalancePageCreateState();
 }
 
-class _BalancePageState extends State<BalancePage> {
+class _BalancePageCreateState extends State<BalancePageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
   late final SetupService setupService;
 
-  late BalanceProvider balanceProvider;
+  late BalanceProviderCreate balanceProvider;
   bool _isDataInitialized = false;
 
   void showToast(String message) {
@@ -128,6 +127,7 @@ class _BalancePageState extends State<BalancePage> {
                 peso: double.parse(_controllerFrontPeso.text),
                 frenata: double.parse(_controllerFrontFrenata.text));
           }
+          print("object");
           balanceProvider.front = balance;
           balanceProvider.existingFront = false;
         } else {
@@ -231,9 +231,6 @@ class _BalancePageState extends State<BalancePage> {
     }
   }
 
-
-
-
   @override
   void initState() {
     // TODO: implement initState
@@ -242,23 +239,28 @@ class _BalancePageState extends State<BalancePage> {
     setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      balanceProvider = Provider.of<BalanceProvider>(context, listen: false);
+      balanceProvider =
+          Provider.of<BalanceProviderCreate>(context, listen: false);
 
       // FRONT BALANCE DATA
       _useExistingParamsFront = balanceProvider.existingFront;
-      frontBalance = balanceProvider.front!;
       frontBalanceParams = setupService.findFrontBalanceParams();
       frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
-      _controllerFrontPeso.text = frontBalance.peso.toString();
-      _controllerFrontFrenata.text = frontBalance.frenata.toString();
+      if (balanceProvider.front != null) {
+        frontBalance = balanceProvider.front!;
+        _controllerFrontPeso.text = frontBalance.peso.toString();
+        _controllerFrontFrenata.text = frontBalance.frenata.toString();
+      }
 
       // REAR BALANCE DATA
       _useExistingParamsRear = balanceProvider.existingRear;
-      rearBalance = balanceProvider.rear!;
       rearBalanceParams = setupService.findRearBalanceParams();
       rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
-      _controllerRearPeso.text = rearBalance.peso.toString();
-      _controllerRearFrenata.text = rearBalance.frenata.toString();
+      if (balanceProvider.rear != null) {
+        rearBalance = balanceProvider.rear!;
+        _controllerRearPeso.text = rearBalance.peso.toString();
+        _controllerRearFrenata.text = rearBalance.frenata.toString();
+      }
 
       setState(() {
         _isDataInitialized = true;

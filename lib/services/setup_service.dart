@@ -280,4 +280,49 @@ class SetupService {
 
     updateLists();
   }
+
+  void createSetup(List<Wheel> wheels, List<Balance> balance, List<Spring> springs, List<Damper> dampers, List<String> genInfos) {
+    wheels.forEach((wheel) {
+      var posizione = wheel.posizione;
+      var codifica = wheel.codifica;
+      var pressione = wheel.pressione;
+      var frontale = wheel.frontale;
+      var superiore = wheel.superiore;
+
+      var matchingWheel = listWheels.where(
+        (element) =>
+            element.posizione == posizione &&
+            element.codifica == codifica &&
+            element.pressione == pressione &&
+            element.frontale == frontale &&
+            element.superiore == superiore
+      ).toList();
+
+      if (matchingWheel.isNotEmpty) {
+        wheel.id = matchingWheel.first.id;
+      } else {
+        // Assuming wheelRepository.addWheel() method adds a new wheel to the list
+        wheelRepository.addWheel(wheel);
+      }
+    });
+
+    Setup newSetup = Setup(
+        id: listSetups.last.id + 1,
+        ala: genInfos[0],
+        note: genInfos[1],
+        wheelAntDx: wheels[0],
+        wheelAntSx: wheels[1],
+        wheelPostDx: wheels[2],
+        wheelPostSx: wheels[3],
+        balanceAnt: balance[0],
+        balancePost: balance[1],
+        springAnt: springs[0],
+        springPost: springs[1],
+        damperAnt: dampers[0],
+        damperPost: dampers[1]);
+
+    setupRepository.createSetup(newSetup);
+
+    updateLists();
+  }
 }

@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
+import 'package:polimarche/model/Wheel.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/damper/damper_provider_create.dart';
 import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Spring.dart';
+import '../../../../../../model/Damper.dart';
 
-class SpringsPage extends StatefulWidget {
+class DampersPageCreate extends StatefulWidget {
   final SetupService setupService;
 
-  const SpringsPage(
-      {super.key, required this.setupService});
+  const DampersPageCreate({super.key, required this.setupService});
 
-  static List<Spring?> springOf(BuildContext context) {
-    final springProvider = Provider.of<SpringProvider>(context, listen: false);
+  static List<Damper?> damperOf(BuildContext context) {
+    final damperProvider =
+        Provider.of<DamperProviderCreate>(context, listen: false);
 
-    final List<Spring?> spring = [springProvider.front, springProvider.rear];
+    final List<Damper?> dampers = [damperProvider.front, damperProvider.rear];
 
-    return spring;
+    return dampers;
   }
 
   @override
-  State<SpringsPage> createState() => _SpringsPageState();
+  State<DampersPageCreate> createState() => _DampersPageCreateState();
 }
 
-class _SpringsPageState extends State<SpringsPage> {
+class _DampersPageCreateState extends State<DampersPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
   late final SetupService setupService;
 
-  late SpringProvider springProvider;
+  late DamperProviderCreate damperProvider;
   bool _isDataInitialized = false;
 
   void showToast(String message) {
@@ -45,29 +46,29 @@ class _SpringsPageState extends State<SpringsPage> {
 
   // FRONT DATA
   late bool _useExistingParamsFront;
-  late Spring frontSpring;
-  late List<Spring> frontSpringParams;
-  late List<int> frontSpringIds;
-  TextEditingController _controllerFrontCodifica = TextEditingController();
-  TextEditingController _controllerFrontPosArb = TextEditingController();
-  TextEditingController _controllerFrontRigArb = TextEditingController();
-  TextEditingController _controllerFrontAltezza = TextEditingController();
+  late Damper frontDamper;
+  late List<Damper> frontDamperParams;
+  late List<int> frontDamperIds;
+  TextEditingController _controllerFrontLsr = TextEditingController();
+  TextEditingController _controllerFrontLsc = TextEditingController();
+  TextEditingController _controllerFrontHsc = TextEditingController();
+  TextEditingController _controllerFrontHsr = TextEditingController();
 
   // FRONT METHOD
-  _changeDropdownItemFront(int? SpringId) {
-    Spring frontNewSpring =
-        frontSpringParams.where((element) => element.id == SpringId!).first;
+  _changeDropdownItemFront(int? DamperId) {
+    Damper frontNewDamper =
+        frontDamperParams.where((element) => element.id == DamperId!).first;
 
     setState(() {
-      frontSpring = frontNewSpring;
+      frontDamper = frontNewDamper;
 
-      springProvider.front = frontSpring;
-      springProvider.existingFront = true;
+      damperProvider.front = frontDamper;
+      damperProvider.existingFront = true;
 
-      _controllerFrontCodifica.text = frontNewSpring.codifica.toString();
-      _controllerFrontAltezza.text = frontNewSpring.altezza.toString();
-      _controllerFrontPosArb.text = frontNewSpring.posizioneArb;
-      _controllerFrontRigArb.text = frontNewSpring.rigidezzaArb;
+      _controllerFrontLsr.text = frontNewDamper.lsr.toString();
+      _controllerFrontHsr.text = frontNewDamper.hsr.toString();
+      _controllerFrontLsc.text = frontNewDamper.lsc.toString();
+      _controllerFrontHsc.text = frontNewDamper.hsc.toString();
     });
   }
 
@@ -75,23 +76,23 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontSpring = setupService.findFrontSpringParams().first;
+        frontDamper = setupService.findFrontDamperParams().first;
 
-        _controllerFrontCodifica.text = frontSpring.codifica;
-        _controllerFrontAltezza.text = frontSpring.altezza.toString();
-        _controllerFrontPosArb.text = frontSpring.posizioneArb;
-        _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
+        _controllerFrontLsr.text = frontDamper.lsr.toString();
+        _controllerFrontHsr.text = frontDamper.hsr.toString();
+        _controllerFrontLsc.text = frontDamper.lsc.toString();
+        _controllerFrontHsc.text = frontDamper.hsc.toString();
 
-        springProvider.front = frontSpring;
-        springProvider.existingFront = true;
+        damperProvider.front = frontDamper;
+        damperProvider.existingFront = true;
       } else {
-        springProvider.front = null;
+        damperProvider.front = null;
 
-        _controllerFrontCodifica.clear();
-        _controllerFrontAltezza.clear();
-        _controllerFrontRigArb.clear();
-        _controllerFrontPosArb.clear();
-        springProvider.existingFront = false;
+        _controllerFrontLsr.clear();
+        _controllerFrontHsr.clear();
+        _controllerFrontHsc.clear();
+        _controllerFrontLsc.clear();
+        damperProvider.existingFront = false;
       }
     });
   }
@@ -100,8 +101,8 @@ class _SpringsPageState extends State<SpringsPage> {
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
-      _controllerFrontCodifica.text,
-      _controllerFrontAltezza.text
+      _controllerFrontLsr.text,
+      _controllerFrontHsr.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -112,63 +113,64 @@ class _SpringsPageState extends State<SpringsPage> {
       }
     }
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerFrontAltezza.text) != null) {
-        var result = setupService.findFrontSpringFromExistingParams(
-            _controllerFrontCodifica.text, _controllerFrontAltezza.text,
-            _controllerFrontRigArb.text, _controllerFrontPosArb.text);
+      if (double.tryParse(_controllerFrontHsr.text) != null) {
+        var result = setupService.findFrontDamperFromExistingParams(
+            _controllerFrontLsr.text,
+            _controllerFrontHsr.text,
+            _controllerFrontHsc.text,
+            _controllerFrontLsc.text);
 
-        Spring spring;
+        Damper damper;
 
         if (result != false) {
-          spring = result;
+          damper = result;
         } else {
-          spring = Spring(
-              id: setupService.listSprings.fold<int>(
+          damper = Damper(
+              id: setupService.listDampers.fold<int>(
                       0,
                       (maxValue, item) =>
                           maxValue > item.id ? maxValue : item.id) +
                   1,
               posizione: "Ant",
-              altezza: double.parse(_controllerFrontAltezza.text),
-              codifica: _controllerFrontCodifica.text,
-              posizioneArb: _controllerFrontPosArb.text,
-              rigidezzaArb: _controllerFrontRigArb.text);
+              hsr: double.parse(_controllerFrontHsr.text),
+              lsr: double.parse(_controllerFrontLsr.text),
+              lsc: double.parse(_controllerFrontLsc.text),
+              hsc: double.parse(_controllerFrontHsc.text));
         }
-        springProvider.front = spring;
-        springProvider.existingFront = false;
+        damperProvider.front = damper;
+        damperProvider.existingFront = false;
       } else {
         showToast(
-            "L'altezza della molla anteriore deve rappresentare un numero");
+            "Hsr degli ammortizzatori anteriore deve rappresentare un numero");
       }
     }
   }
 
-
   // REAR DATA
   late bool _useExistingParamsRear;
-  late Spring rearSpring;
-  late List<Spring> rearSpringParams;
-  late List<int> rearSpringIds;
-  TextEditingController _controllerRearCodifica = TextEditingController();
-  TextEditingController _controllerRearPosArb = TextEditingController();
-  TextEditingController _controllerRearRigArb = TextEditingController();
-  TextEditingController _controllerRearAltezza = TextEditingController();
+  late Damper rearDamper;
+  late List<Damper> rearDamperParams;
+  late List<int> rearDamperIds;
+  TextEditingController _controllerRearLsr = TextEditingController();
+  TextEditingController _controllerRearLsc = TextEditingController();
+  TextEditingController _controllerRearHsc = TextEditingController();
+  TextEditingController _controllerRearHsr = TextEditingController();
 
   // REAR METHOD
-  _changeDropdownItemRear(int? SpringId) {
-    Spring rearNewSpring =
-        rearSpringParams.where((element) => element.id == SpringId!).first;
+  _changeDropdownItemRear(int? DamperId) {
+    Damper rearNewDamper =
+        rearDamperParams.where((element) => element.id == DamperId!).first;
 
     setState(() {
-      rearSpring = rearNewSpring;
+      rearDamper = rearNewDamper;
 
-      springProvider.rear = rearSpring;
-      springProvider.existingRear = true;
+      damperProvider.rear = rearDamper;
+      damperProvider.existingRear = true;
 
-      _controllerRearCodifica.text = rearNewSpring.codifica.toString();
-      _controllerRearAltezza.text = rearNewSpring.altezza.toString();
-      _controllerRearPosArb.text = rearNewSpring.posizioneArb;
-      _controllerRearRigArb.text = rearNewSpring.rigidezzaArb;
+      _controllerRearLsr.text = rearNewDamper.lsr.toString();
+      _controllerRearHsr.text = rearNewDamper.hsr.toString();
+      _controllerRearLsc.text = rearNewDamper.lsc.toString();
+      _controllerRearHsc.text = rearNewDamper.hsc.toString();
     });
   }
 
@@ -176,23 +178,23 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearSpring = setupService.findRearSpringParams().first;
+        rearDamper = setupService.findRearDamperParams().first;
 
-        _controllerRearCodifica.text = rearSpring.codifica;
-        _controllerRearAltezza.text = rearSpring.altezza.toString();
-        _controllerRearPosArb.text = rearSpring.posizioneArb;
-        _controllerRearRigArb.text = rearSpring.rigidezzaArb;
+        _controllerRearLsr.text = rearDamper.lsr.toString();
+        _controllerRearHsr.text = rearDamper.hsr.toString();
+        _controllerRearLsc.text = rearDamper.lsc.toString();
+        _controllerRearHsc.text = rearDamper.hsc.toString();
 
-        springProvider.rear = rearSpring;
-        springProvider.existingRear = true;
+        damperProvider.rear = rearDamper;
+        damperProvider.existingRear = true;
       } else {
-        springProvider.rear = null;
+        damperProvider.rear = null;
 
-        _controllerRearCodifica.clear();
-        _controllerRearAltezza.clear();
-        _controllerRearRigArb.clear();
-        _controllerRearPosArb.clear();
-        springProvider.existingRear = false;
+        _controllerRearLsr.clear();
+        _controllerRearHsr.clear();
+        _controllerRearHsc.clear();
+        _controllerRearLsc.clear();
+        damperProvider.existingRear = false;
       }
     });
   }
@@ -201,8 +203,8 @@ class _SpringsPageState extends State<SpringsPage> {
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
-      _controllerRearCodifica.text,
-      _controllerRearAltezza.text
+      _controllerRearLsr.text,
+      _controllerRearHsr.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -213,33 +215,35 @@ class _SpringsPageState extends State<SpringsPage> {
       }
     }
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerRearAltezza.text) != null) {
-        var result = setupService.findRearSpringFromExistingParams(
-            _controllerRearCodifica.text, _controllerRearAltezza.text,
-            _controllerRearRigArb.text, _controllerRearPosArb.text);
+      if (double.tryParse(_controllerRearHsr.text) != null) {
+        var result = setupService.findRearDamperFromExistingParams(
+            _controllerRearLsr.text,
+            _controllerRearHsr.text,
+            _controllerRearHsc.text,
+            _controllerRearLsc.text);
 
-        Spring spring;
+        Damper damper;
 
         if (result != false) {
-          spring = result;
+          damper = result;
         } else {
-          spring = Spring(
-              id: setupService.listSprings.fold<int>(
+          damper = Damper(
+              id: setupService.listDampers.fold<int>(
                       0,
                       (maxValue, item) =>
                           maxValue > item.id ? maxValue : item.id) +
                   1,
               posizione: "Post",
-              altezza: double.parse(_controllerRearAltezza.text),
-              codifica: _controllerRearCodifica.text,
-              posizioneArb: _controllerRearPosArb.text,
-              rigidezzaArb: _controllerRearRigArb.text);
+              hsr: double.parse(_controllerRearHsr.text),
+              lsr: double.parse(_controllerRearLsr.text),
+              lsc: double.parse(_controllerRearLsc.text),
+              hsc: double.parse(_controllerRearHsc.text));
         }
-        springProvider.rear = spring;
-        springProvider.existingRear = false;
+        damperProvider.rear = damper;
+        damperProvider.existingRear = false;
       } else {
         showToast(
-            "L'altezza della molla posteriori deve rappresentare un numero");
+            "Hsr degli ammortizzatori posteriori deve rappresentare un numero");
       }
     }
   }
@@ -251,29 +255,32 @@ class _SpringsPageState extends State<SpringsPage> {
     setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      springProvider = Provider.of<SpringProvider>(context, listen: false);
+      damperProvider =
+          Provider.of<DamperProviderCreate>(context, listen: false);
 
-      // FRONT SPRING DATA
-      _useExistingParamsFront = springProvider.existingFront;
-      frontSpring = springProvider.front!;
-      frontSpringParams = setupService.findFrontSpringParams();
-      frontSpringIds = frontSpringParams.map((param) => param.id).toList();
-      _controllerFrontCodifica.text = frontSpring.codifica;
-      _controllerFrontAltezza.text = frontSpring.altezza.toString();
-      _controllerFrontPosArb.text = frontSpring.posizioneArb;
-      _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
+      // FRONT Damper DATA
+      _useExistingParamsFront = damperProvider.existingFront;
+      frontDamperParams = setupService.findFrontDamperParams();
+      frontDamperIds = frontDamperParams.map((param) => param.id).toList();
+      if (damperProvider.front != null) {
+        frontDamper = damperProvider.front!;
+        _controllerFrontLsr.text = frontDamper.lsr.toString();
+        _controllerFrontHsr.text = frontDamper.hsr.toString();
+        _controllerFrontLsc.text = frontDamper.lsc.toString();
+        _controllerFrontHsc.text = frontDamper.hsc.toString();
+      }
 
-
-
-      // REAR SPRING DATA
-      _useExistingParamsRear = springProvider.existingRear;
-      rearSpring = springProvider.rear!;
-      rearSpringParams = setupService.findRearSpringParams();
-      rearSpringIds = rearSpringParams.map((param) => param.id).toList();
-      _controllerRearCodifica.text = rearSpring.codifica;
-      _controllerRearAltezza.text = rearSpring.altezza.toString();
-      _controllerRearPosArb.text = rearSpring.posizioneArb;
-      _controllerRearRigArb.text = rearSpring.rigidezzaArb;
+      // REAR Damper DATA
+      _useExistingParamsRear = damperProvider.existingRear;
+      rearDamperParams = setupService.findRearDamperParams();
+      rearDamperIds = rearDamperParams.map((param) => param.id).toList();
+      if (damperProvider.rear != null) {
+        rearDamper = damperProvider.rear!;
+        _controllerRearLsr.text = rearDamper.lsr.toString();
+        _controllerRearHsr.text = rearDamper.hsr.toString();
+        _controllerRearLsc.text = rearDamper.lsc.toString();
+        _controllerRearHsc.text = rearDamper.hsc.toString();
+      }
 
       setState(() {
         _isDataInitialized = true;
@@ -348,8 +355,8 @@ class _SpringsPageState extends State<SpringsPage> {
               padding: EdgeInsets.all(10),
               borderRadius: BorderRadius.circular(10),
               dropdownColor: backgroundColor,
-              value: frontSpring.id,
-              items: frontSpringIds.map<DropdownMenuItem<int>>((int value) {
+              value: frontDamper.id,
+              items: frontDamperIds.map<DropdownMenuItem<int>>((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
                   child: Text("Id: ${value}"),
@@ -363,103 +370,8 @@ class _SpringsPageState extends State<SpringsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // CODIFICA
-                  Text("Codifica"),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: backgroundColor, // Light background color
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white,
-                              blurRadius: 10,
-                              offset: Offset(-5, -5),
-                            ),
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              blurRadius: 10,
-                              offset: Offset(5, 5),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'aleo',
-                              letterSpacing: 1),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Codifica',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          controller: _controllerFrontCodifica,
-                        )),
-                  ),
-
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  // POSIZIONE ARB
-                  Text("Posizione arb"),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: backgroundColor, // Light background color
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white,
-                              blurRadius: 10,
-                              offset: Offset(-5, -5),
-                            ),
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              blurRadius: 10,
-                              offset: Offset(5, 5),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'aleo',
-                              letterSpacing: 1),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Posizione arb',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          controller: _controllerFrontPosArb,
-                        )),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  // ALTEZZA
-                  Text("Altezza"),
+                  // Lsr
+                  Text("Lsr"),
                   SizedBox(
                     height: 20,
                   ),
@@ -494,10 +406,10 @@ class _SpringsPageState extends State<SpringsPage> {
                               letterSpacing: 1),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Altezza',
+                            hintText: 'Lsr',
                             hintStyle: TextStyle(color: Colors.grey),
                           ),
-                          controller: _controllerFrontAltezza,
+                          controller: _controllerFrontLsr,
                         )),
                   ),
 
@@ -505,8 +417,8 @@ class _SpringsPageState extends State<SpringsPage> {
                     height: 20,
                   ),
 
-                  // RIGIDEZZA ARB
-                  Text("Rigidezza arb"),
+                  // Lsc
+                  Text("Lsc"),
                   SizedBox(
                     height: 20,
                   ),
@@ -533,7 +445,7 @@ class _SpringsPageState extends State<SpringsPage> {
                         child: TextField(
                           readOnly: true,
                           textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           cursorColor: Colors.black,
                           style: const TextStyle(
                               color: Colors.black,
@@ -541,10 +453,105 @@ class _SpringsPageState extends State<SpringsPage> {
                               letterSpacing: 1),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Rigidezza arb',
+                            hintText: 'Lsc',
                             hintStyle: TextStyle(color: Colors.grey),
                           ),
-                          controller: _controllerFrontRigArb,
+                          controller: _controllerFrontLsc,
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  // Hsr
+                  Text("Hsr"),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: backgroundColor, // Light background color
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 10,
+                              offset: Offset(-5, -5),
+                            ),
+                            BoxShadow(
+                              color: Colors.grey.shade500,
+                              blurRadius: 10,
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.black,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'aleo',
+                              letterSpacing: 1),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Hsr',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          controller: _controllerFrontHsr,
+                        )),
+                  ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  // Hsc
+                  Text("Hsc"),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: backgroundColor, // Light background color
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 10,
+                              offset: Offset(-5, -5),
+                            ),
+                            BoxShadow(
+                              color: Colors.grey.shade500,
+                              blurRadius: 10,
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.black,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'aleo',
+                              letterSpacing: 1),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Hsc',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          controller: _controllerFrontHsc,
                         )),
                   ),
                 ],
@@ -567,103 +574,8 @@ class _SpringsPageState extends State<SpringsPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // CODIFICA
-                    Text("Codifica"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: backgroundColor, // Light background color
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 10,
-                                offset: Offset(-5, -5),
-                              ),
-                              BoxShadow(
-                                color: Colors.grey.shade500,
-                                blurRadius: 10,
-                                offset: Offset(5, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Codifica',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerFrontCodifica,
-                            onChanged: _checkNewValuesUsedFront,
-                          )),
-                    ),
-
-                    SizedBox(
-                      height: 20,
-                    ),
-
-                    // POSIZIONE ARB
-                    Text("Posizione arb"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: backgroundColor, // Light background color
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 10,
-                                offset: Offset(-5, -5),
-                              ),
-                              BoxShadow(
-                                color: Colors.grey.shade500,
-                                blurRadius: 10,
-                                offset: Offset(5, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Posizione arb',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerFrontPosArb,
-                            onChanged: _checkNewValuesUsedFront,
-                          )),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    // ALTEZZA
-                    Text("Altezza"),
+                    // Lsr
+                    Text("Lsr"),
                     SizedBox(
                       height: 20,
                     ),
@@ -697,10 +609,10 @@ class _SpringsPageState extends State<SpringsPage> {
                                 letterSpacing: 1),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Altezza',
+                              hintText: 'Lsr',
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
-                            controller: _controllerFrontAltezza,
+                            controller: _controllerFrontLsr,
                             onChanged: _checkNewValuesUsedFront,
                           )),
                     ),
@@ -709,8 +621,8 @@ class _SpringsPageState extends State<SpringsPage> {
                       height: 20,
                     ),
 
-                    // RIGIDEZZA ARB
-                    Text("Rigidezza arb"),
+                    // Lsc
+                    Text("Lsc"),
                     SizedBox(
                       height: 20,
                     ),
@@ -736,7 +648,7 @@ class _SpringsPageState extends State<SpringsPage> {
                           ),
                           child: TextField(
                             textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
+                            keyboardType: TextInputType.number,
                             cursorColor: Colors.black,
                             style: const TextStyle(
                                 color: Colors.black,
@@ -744,10 +656,105 @@ class _SpringsPageState extends State<SpringsPage> {
                                 letterSpacing: 1),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Rigidezza arb',
+                              hintText: 'Lsc',
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
-                            controller: _controllerFrontRigArb,
+                            controller: _controllerFrontLsc,
+                            onChanged: _checkNewValuesUsedFront,
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    // Hsr
+                    Text("Hsr"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: backgroundColor, // Light background color
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 10,
+                                offset: Offset(-5, -5),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.shade500,
+                                blurRadius: 10,
+                                offset: Offset(5, 5),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            cursorColor: Colors.black,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'aleo',
+                                letterSpacing: 1),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Hsr',
+                              hintStyle: TextStyle(color: Colors.grey),
+                            ),
+                            controller: _controllerFrontHsr,
+                            onChanged: _checkNewValuesUsedFront,
+                          )),
+                    ),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+
+                    // Hsc
+                    Text("Hsc"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: backgroundColor, // Light background color
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 10,
+                                offset: Offset(-5, -5),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.shade500,
+                                blurRadius: 10,
+                                offset: Offset(5, 5),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            cursorColor: Colors.black,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'aleo',
+                                letterSpacing: 1),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Hsc',
+                              hintStyle: TextStyle(color: Colors.grey),
+                            ),
+                            controller: _controllerFrontHsc,
                             onChanged: _checkNewValuesUsedFront,
                           )),
                     ),
@@ -760,8 +767,6 @@ class _SpringsPageState extends State<SpringsPage> {
       ),
     );
   }
-
-
 
   Column _rearColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -795,8 +800,8 @@ class _SpringsPageState extends State<SpringsPage> {
               padding: EdgeInsets.all(10),
               borderRadius: BorderRadius.circular(10),
               dropdownColor: backgroundColor,
-              value: rearSpring.id,
-              items: rearSpringIds.map<DropdownMenuItem<int>>((int value) {
+              value: rearDamper.id,
+              items: rearDamperIds.map<DropdownMenuItem<int>>((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
                   child: Text("Id: ${value}"),
@@ -810,103 +815,8 @@ class _SpringsPageState extends State<SpringsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // CODIFICA
-                  Text("Codifica"),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: backgroundColor, // Light background color
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white,
-                              blurRadius: 10,
-                              offset: Offset(-5, -5),
-                            ),
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              blurRadius: 10,
-                              offset: Offset(5, 5),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'aleo',
-                              letterSpacing: 1),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Codifica',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          controller: _controllerRearCodifica,
-                        )),
-                  ),
-
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  // POSIZIONE ARB
-                  Text("Posizione arb"),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: backgroundColor, // Light background color
-                          borderRadius: BorderRadius.circular(25),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white,
-                              blurRadius: 10,
-                              offset: Offset(-5, -5),
-                            ),
-                            BoxShadow(
-                              color: Colors.grey.shade500,
-                              blurRadius: 10,
-                              offset: Offset(5, 5),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
-                          cursorColor: Colors.black,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontFamily: 'aleo',
-                              letterSpacing: 1),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Posizione arb',
-                            hintStyle: TextStyle(color: Colors.grey),
-                          ),
-                          controller: _controllerRearPosArb,
-                        )),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  // ALTEZZA
-                  Text("Altezza"),
+                  // Lsr
+                  Text("Lsr"),
                   SizedBox(
                     height: 20,
                   ),
@@ -941,10 +851,10 @@ class _SpringsPageState extends State<SpringsPage> {
                               letterSpacing: 1),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Altezza',
+                            hintText: 'Lsr',
                             hintStyle: TextStyle(color: Colors.grey),
                           ),
-                          controller: _controllerRearAltezza,
+                          controller: _controllerRearLsr,
                         )),
                   ),
 
@@ -952,8 +862,8 @@ class _SpringsPageState extends State<SpringsPage> {
                     height: 20,
                   ),
 
-                  // RIGIDEZZA ARB
-                  Text("Rigidezza arb"),
+                  // Lsc
+                  Text("Lsc"),
                   SizedBox(
                     height: 20,
                   ),
@@ -980,7 +890,7 @@ class _SpringsPageState extends State<SpringsPage> {
                         child: TextField(
                           readOnly: true,
                           textAlign: TextAlign.center,
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           cursorColor: Colors.black,
                           style: const TextStyle(
                               color: Colors.black,
@@ -988,10 +898,105 @@ class _SpringsPageState extends State<SpringsPage> {
                               letterSpacing: 1),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Rigidezza arb',
+                            hintText: 'Lsc',
                             hintStyle: TextStyle(color: Colors.grey),
                           ),
-                          controller: _controllerRearRigArb,
+                          controller: _controllerRearLsc,
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  // Hsr
+                  Text("Hsr"),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: backgroundColor, // Light background color
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 10,
+                              offset: Offset(-5, -5),
+                            ),
+                            BoxShadow(
+                              color: Colors.grey.shade500,
+                              blurRadius: 10,
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.black,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'aleo',
+                              letterSpacing: 1),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Hsr',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          controller: _controllerRearHsr,
+                        )),
+                  ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  // Hsc
+                  Text("Hsc"),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: backgroundColor, // Light background color
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 10,
+                              offset: Offset(-5, -5),
+                            ),
+                            BoxShadow(
+                              color: Colors.grey.shade500,
+                              blurRadius: 10,
+                              offset: Offset(5, 5),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          readOnly: true,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.black,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontFamily: 'aleo',
+                              letterSpacing: 1),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Hsc',
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          controller: _controllerRearHsc,
                         )),
                   ),
                 ],
@@ -1014,103 +1019,8 @@ class _SpringsPageState extends State<SpringsPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // CODIFICA
-                    Text("Codifica"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: backgroundColor, // Light background color
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 10,
-                                offset: Offset(-5, -5),
-                              ),
-                              BoxShadow(
-                                color: Colors.grey.shade500,
-                                blurRadius: 10,
-                                offset: Offset(5, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Codifica',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearCodifica,
-                            onChanged: _checkNewValuesUsedRear,
-                          )),
-                    ),
-
-                    SizedBox(
-                      height: 20,
-                    ),
-
-                    // POSIZIONE ARB
-                    Text("Posizione arb"),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            color: backgroundColor, // Light background color
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white,
-                                blurRadius: 10,
-                                offset: Offset(-5, -5),
-                              ),
-                              BoxShadow(
-                                color: Colors.grey.shade500,
-                                blurRadius: 10,
-                                offset: Offset(5, 5),
-                              ),
-                            ],
-                          ),
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Posizione arb',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearPosArb,
-                            onChanged: _checkNewValuesUsedRear,
-                          )),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    // ALTEZZA
-                    Text("Altezza"),
+                    // Lsr
+                    Text("Lsr"),
                     SizedBox(
                       height: 20,
                     ),
@@ -1144,10 +1054,10 @@ class _SpringsPageState extends State<SpringsPage> {
                                 letterSpacing: 1),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Altezza',
+                              hintText: 'Lsr',
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
-                            controller: _controllerRearAltezza,
+                            controller: _controllerRearLsr,
                             onChanged: _checkNewValuesUsedRear,
                           )),
                     ),
@@ -1156,8 +1066,8 @@ class _SpringsPageState extends State<SpringsPage> {
                       height: 20,
                     ),
 
-                    // RIGIDEZZA ARB
-                    Text("Rigidezza arb"),
+                    // Lsc
+                    Text("Lsc"),
                     SizedBox(
                       height: 20,
                     ),
@@ -1183,7 +1093,7 @@ class _SpringsPageState extends State<SpringsPage> {
                           ),
                           child: TextField(
                             textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
+                            keyboardType: TextInputType.number,
                             cursorColor: Colors.black,
                             style: const TextStyle(
                                 color: Colors.black,
@@ -1191,10 +1101,105 @@ class _SpringsPageState extends State<SpringsPage> {
                                 letterSpacing: 1),
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Rigidezza arb',
+                              hintText: 'Lsc',
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
-                            controller: _controllerRearRigArb,
+                            controller: _controllerRearLsc,
+                            onChanged: _checkNewValuesUsedRear,
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    // Hsr
+                    Text("Hsr"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: backgroundColor, // Light background color
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 10,
+                                offset: Offset(-5, -5),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.shade500,
+                                blurRadius: 10,
+                                offset: Offset(5, 5),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            cursorColor: Colors.black,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'aleo',
+                                letterSpacing: 1),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Hsr',
+                              hintStyle: TextStyle(color: Colors.grey),
+                            ),
+                            controller: _controllerRearHsr,
+                            onChanged: _checkNewValuesUsedRear,
+                          )),
+                    ),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+
+                    // Hsc
+                    Text("Hsc"),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: backgroundColor, // Light background color
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 10,
+                                offset: Offset(-5, -5),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.shade500,
+                                blurRadius: 10,
+                                offset: Offset(5, 5),
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            cursorColor: Colors.black,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'aleo',
+                                letterSpacing: 1),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Hsc',
+                              hintStyle: TextStyle(color: Colors.grey),
+                            ),
+                            controller: _controllerRearHsc,
                             onChanged: _checkNewValuesUsedRear,
                           )),
                     ),

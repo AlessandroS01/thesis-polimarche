@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
+import 'package:polimarche/pages/setup/plan/create_step_pages/spring/spring_provider_create.dart';
 import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/Spring.dart';
 
-class SpringsPage extends StatefulWidget {
+class SpringsPageCreate extends StatefulWidget {
   final SetupService setupService;
 
-  const SpringsPage(
-      {super.key, required this.setupService});
+  const SpringsPageCreate({super.key, required this.setupService});
 
   static List<Spring?> springOf(BuildContext context) {
-    final springProvider = Provider.of<SpringProvider>(context, listen: false);
+    final springProvider =
+        Provider.of<SpringProviderCreate>(context, listen: false);
 
     final List<Spring?> spring = [springProvider.front, springProvider.rear];
 
@@ -21,14 +21,14 @@ class SpringsPage extends StatefulWidget {
   }
 
   @override
-  State<SpringsPage> createState() => _SpringsPageState();
+  State<SpringsPageCreate> createState() => _SpringsPageCreateState();
 }
 
-class _SpringsPageState extends State<SpringsPage> {
+class _SpringsPageCreateState extends State<SpringsPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
   late final SetupService setupService;
 
-  late SpringProvider springProvider;
+  late SpringProviderCreate springProvider;
   bool _isDataInitialized = false;
 
   void showToast(String message) {
@@ -114,8 +114,10 @@ class _SpringsPageState extends State<SpringsPage> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontAltezza.text) != null) {
         var result = setupService.findFrontSpringFromExistingParams(
-            _controllerFrontCodifica.text, _controllerFrontAltezza.text,
-            _controllerFrontRigArb.text, _controllerFrontPosArb.text);
+            _controllerFrontCodifica.text,
+            _controllerFrontAltezza.text,
+            _controllerFrontRigArb.text,
+            _controllerFrontPosArb.text);
 
         Spring spring;
 
@@ -142,7 +144,6 @@ class _SpringsPageState extends State<SpringsPage> {
       }
     }
   }
-
 
   // REAR DATA
   late bool _useExistingParamsRear;
@@ -215,8 +216,10 @@ class _SpringsPageState extends State<SpringsPage> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearAltezza.text) != null) {
         var result = setupService.findRearSpringFromExistingParams(
-            _controllerRearCodifica.text, _controllerRearAltezza.text,
-            _controllerRearRigArb.text, _controllerRearPosArb.text);
+            _controllerRearCodifica.text,
+            _controllerRearAltezza.text,
+            _controllerRearRigArb.text,
+            _controllerRearPosArb.text);
 
         Spring spring;
 
@@ -251,29 +254,32 @@ class _SpringsPageState extends State<SpringsPage> {
     setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      springProvider = Provider.of<SpringProvider>(context, listen: false);
+      springProvider =
+          Provider.of<SpringProviderCreate>(context, listen: false);
 
       // FRONT SPRING DATA
       _useExistingParamsFront = springProvider.existingFront;
-      frontSpring = springProvider.front!;
       frontSpringParams = setupService.findFrontSpringParams();
       frontSpringIds = frontSpringParams.map((param) => param.id).toList();
-      _controllerFrontCodifica.text = frontSpring.codifica;
-      _controllerFrontAltezza.text = frontSpring.altezza.toString();
-      _controllerFrontPosArb.text = frontSpring.posizioneArb;
-      _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
-
-
+      if (springProvider.front != null) {
+        frontSpring = springProvider.front!;
+        _controllerFrontCodifica.text = frontSpring.codifica;
+        _controllerFrontAltezza.text = frontSpring.altezza.toString();
+        _controllerFrontPosArb.text = frontSpring.posizioneArb;
+        _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
+      }
 
       // REAR SPRING DATA
       _useExistingParamsRear = springProvider.existingRear;
-      rearSpring = springProvider.rear!;
       rearSpringParams = setupService.findRearSpringParams();
       rearSpringIds = rearSpringParams.map((param) => param.id).toList();
-      _controllerRearCodifica.text = rearSpring.codifica;
-      _controllerRearAltezza.text = rearSpring.altezza.toString();
-      _controllerRearPosArb.text = rearSpring.posizioneArb;
-      _controllerRearRigArb.text = rearSpring.rigidezzaArb;
+      if (springProvider.rear != null) {
+        rearSpring = springProvider.rear!;
+        _controllerRearCodifica.text = rearSpring.codifica;
+        _controllerRearAltezza.text = rearSpring.altezza.toString();
+        _controllerRearPosArb.text = rearSpring.posizioneArb;
+        _controllerRearRigArb.text = rearSpring.rigidezzaArb;
+      }
 
       setState(() {
         _isDataInitialized = true;
@@ -606,7 +612,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerFrontCodifica,
-                            onChanged: _checkNewValuesUsedFront,
+                            onSubmitted: _checkNewValuesUsedFront,
                           )),
                     ),
 
@@ -653,7 +659,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerFrontPosArb,
-                            onChanged: _checkNewValuesUsedFront,
+                            onSubmitted: _checkNewValuesUsedFront,
                           )),
                     ),
                   ],
@@ -701,7 +707,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerFrontAltezza,
-                            onChanged: _checkNewValuesUsedFront,
+                            onSubmitted: _checkNewValuesUsedFront,
                           )),
                     ),
 
@@ -748,7 +754,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerFrontRigArb,
-                            onChanged: _checkNewValuesUsedFront,
+                            onSubmitted: _checkNewValuesUsedFront,
                           )),
                     ),
                   ],
@@ -760,8 +766,6 @@ class _SpringsPageState extends State<SpringsPage> {
       ),
     );
   }
-
-
 
   Column _rearColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -1053,7 +1057,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerRearCodifica,
-                            onChanged: _checkNewValuesUsedRear,
+                            onSubmitted: _checkNewValuesUsedRear,
                           )),
                     ),
 
@@ -1100,7 +1104,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerRearPosArb,
-                            onChanged: _checkNewValuesUsedRear,
+                            onSubmitted: _checkNewValuesUsedRear,
                           )),
                     ),
                   ],
@@ -1148,7 +1152,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerRearAltezza,
-                            onChanged: _checkNewValuesUsedRear,
+                            onSubmitted: _checkNewValuesUsedRear,
                           )),
                     ),
 
@@ -1195,7 +1199,7 @@ class _SpringsPageState extends State<SpringsPage> {
                               hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerRearRigArb,
-                            onChanged: _checkNewValuesUsedRear,
+                            onSubmitted: _checkNewValuesUsedRear,
                           )),
                     ),
                   ],
