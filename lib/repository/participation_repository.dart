@@ -1,5 +1,5 @@
 import '../model/Driver.dart';
-import '../model/Member.dart';
+import '../model/member_model.dart';
 import '../model/Participation.dart';
 import '../model/Session.dart';
 import '../model/Track.dart';
@@ -9,6 +9,7 @@ class ParticipationRepository {
   late List<Participation> listParticipations;
 
   ParticipationRepository() {
+    /*
     listParticipations = [
       Participation(
           1,
@@ -41,6 +42,8 @@ class ParticipationRepository {
           "00:00:00.000"),
 
     ];
+
+     */
   }
 
   void addNewParticipation(Participation newParticipation) {

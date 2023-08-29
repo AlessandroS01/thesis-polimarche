@@ -7,7 +7,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../../inherited_widgets/agenda_state.dart';
 import '../../../inherited_widgets/authorization_provider.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 
 class AgendaPage extends StatefulWidget {
   const AgendaPage({super.key});

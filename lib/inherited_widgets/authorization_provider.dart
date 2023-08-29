@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polimarche/model/Member.dart';
+import 'package:polimarche/model/member_model.dart';
 
 class AuthorizationProvider extends InheritedWidget {
   final Member loggedMember;

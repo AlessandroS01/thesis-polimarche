@@ -1,4 +1,4 @@
-import 'Member.dart';
+import 'member_model.dart';
 
 class Note {
   int id;

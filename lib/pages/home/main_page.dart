@@ -3,7 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:polimarche/inherited_widgets/authorization_provider.dart';
 import 'package:polimarche/pages/home/team/team_page.dart';
 
-import '../../model/Member.dart';
+import '../../model/member_model.dart';
 import 'agenda/agenda_page.dart';
 import 'home_page.dart';
 

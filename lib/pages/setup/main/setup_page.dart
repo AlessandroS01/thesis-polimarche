@@ -7,7 +7,7 @@ import 'package:polimarche/pages/setup/main/setup_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 import 'package:polimarche/services/setup_service.dart';
 
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 
 class SetupPage extends StatefulWidget {
   final Member loggedMember;

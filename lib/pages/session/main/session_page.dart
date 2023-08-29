@@ -4,7 +4,7 @@ import 'package:polimarche/model/Session.dart';
 import 'package:polimarche/pages/session/main/session_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 
 class SessionPage extends StatefulWidget {
   final Member loggedMember;

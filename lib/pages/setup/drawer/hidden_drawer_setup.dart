@@ -7,7 +7,7 @@ import 'package:polimarche/services/setup_service.dart';
 
 import '../../../inherited_widgets/session_state.dart';
 import '../../../inherited_widgets/setup_state.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 import '../../../services/session_service.dart';
 import '../plan/create_step_pages/create_setup_page.dart';
 

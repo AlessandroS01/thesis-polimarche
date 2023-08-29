@@ -1,4 +1,4 @@
-import 'package:polimarche/model/Member.dart';
+import 'package:polimarche/model/member_model.dart';
 
 class Driver {
   int id;

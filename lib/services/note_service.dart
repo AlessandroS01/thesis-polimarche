@@ -1,6 +1,6 @@
 import 'package:flutter/src/material/time.dart';
 
-import '../model/Member.dart';
+import '../model/member_model.dart';
 import '../model/Note.dart';
 import '../model/Workshop.dart';
 
@@ -8,7 +8,7 @@ class NoteService {
   late List<Note> listNotes;
 
   NoteService()
-      : listNotes = [
+      : listNotes =[] ;/* [
           Note(
             1,
             DateTime(2023, 8, 15),
@@ -67,6 +67,7 @@ class NoteService {
             'Birthday party',
           ),
         ];
+        */
 
   List<Note> getNotesByMemberMatricolaDuringDay(int matricola, DateTime date) {
     return listNotes.where(

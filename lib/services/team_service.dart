@@ -1,5 +1,5 @@
 import '../model/Driver.dart';
-import '../model/Member.dart';
+import '../model/member_model.dart';
 import '../model/Workshop.dart';
 
 class TeamService {
@@ -10,7 +10,7 @@ class TeamService {
   late List<Driver> drivers;
 
   TeamService() {
-    members = [
+    members = [];/*[
       Member(
           0,
           "Alessandro",
@@ -106,7 +106,9 @@ class TeamService {
           80,
           180),
     ];
+    */
   }
+
 
   void addNewDriver(int height, double weight, Member member) {
     drivers.add(Driver(0, member, weight, height));

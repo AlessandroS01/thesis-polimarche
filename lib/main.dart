@@ -1,46 +1,43 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:polimarche/pages/home/main_page.dart';
-import 'package:polimarche/pages/loading.dart';
+import 'package:polimarche/pages/app_widget.dart';
 import 'package:polimarche/pages/login.dart';
-import 'package:polimarche/pages/session/drawer/hidden_drawer_session.dart';
-import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
+import 'package:polimarche/pages/login_form.dart';
 
-import 'model/Member.dart';
-
-void main() {
-  runApp(MyApp()); // Replace with the name of your app's root widget
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MainPage()); // Replace with the name of your app's root widget
 }
 
-class MyApp extends StatelessWidget {
+
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+
+  Future<FirebaseApp> _initializeFirebase() async {
+    FirebaseApp firebaseApp = await Firebase.initializeApp();
+    return firebaseApp;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: "aleo",
-        textTheme: Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const Loading(),
-        '/login': (context) => const Login(),
-        '/home': (context) {
-          final Member loggedMember =
-              ModalRoute.of(context)?.settings.arguments as Member;
-          return MainPage(member: loggedMember);
-        },
-        '/session': (context) {
-          final Member loggedMember =
-              ModalRoute.of(context)?.settings.arguments as Member;
-          return HiddenDrawerSession(loggedMember: loggedMember);
-        },
-        '/setup': (context) {
-          final Member loggedMember =
-              ModalRoute.of(context)?.settings.arguments as Member;
-          return HiddenDrawerSetup(loggedMember: loggedMember);
-        },
-      },
+    return FutureBuilder(
+        future: _initializeFirebase(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done){
+            return AppWidget();
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
     );
   }
 }
+

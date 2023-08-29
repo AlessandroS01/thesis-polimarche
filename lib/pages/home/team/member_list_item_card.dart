@@ -7,7 +7,7 @@ import 'package:polimarche/services/team_service.dart';
 
 import '../../../inherited_widgets/authorization_provider.dart';
 import '../../../model/Driver.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 
 class CardMemberListItem extends StatefulWidget {
   final Member member;

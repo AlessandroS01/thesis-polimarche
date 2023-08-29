@@ -3,7 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/pages/session/tracks/track_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
 
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 import '../../../model/Track.dart';
 
 class TrackPage extends StatefulWidget {

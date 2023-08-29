@@ -4,7 +4,7 @@ import 'package:polimarche/pages/session/plan/plan_session_page.dart';
 import 'package:polimarche/pages/session/main/session_page.dart';
 
 import '../../../inherited_widgets/session_state.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 import '../../../services/session_service.dart';
 import '../tracks/track_page.dart';
 

@@ -22,7 +22,7 @@ import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 
 import '../../../../model/Damper.dart';
-import '../../../../model/Member.dart';
+import '../../../../model/member_model.dart';
 import 'balance/balance_provider_create.dart';
 import 'general_informations/general_information_provider_create.dart';
 

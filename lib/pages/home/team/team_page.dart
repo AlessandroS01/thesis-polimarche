@@ -3,7 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/inherited_widgets/team_state.dart';
 import 'package:polimarche/model/Driver.dart';
 import 'package:polimarche/services/team_service.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 import '../../../model/Workshop.dart';
 import 'member_list_item_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:optional/optional_internal.dart';
 
 import '../../../model/Driver.dart';
-import '../../../model/Member.dart';
+import '../../../model/member_model.dart';
 
 class CardMember extends StatelessWidget {
   final Optional<Driver> driver;
@@ -59,7 +59,7 @@ class CardMember extends StatelessWidget {
                         child: Text(
                           member.ruolo == "Manager"
                               ? "${member.ruolo}"
-                              : "${member.ruolo} in ${member.reparto.reparto}",
+                              : "${member.ruolo} in ${member.reparto}",
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
@@ -186,7 +186,7 @@ class CardMember extends StatelessWidget {
                         child: Text(
                           member.ruolo == "Manager"
                               ? "${member.ruolo}"
-                              : "${member.ruolo} in ${member.reparto.reparto}",
+                              : "${member.ruolo} in ${member.reparto}",
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),
