@@ -1,43 +1,43 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:optional/optional_internal.dart';
-import 'package:polimarche/inherited_widgets/team_state.dart';
 import 'package:polimarche/pages/home/team/detail_page_member.dart';
-import 'package:polimarche/services/team_service.dart';
 
 import '../../../inherited_widgets/authorization_provider.dart';
-import '../../../model/Driver.dart';
+import '../../../model/driver_model.dart';
 import '../../../model/member_model.dart';
 
 class CardMemberListItem extends StatefulWidget {
   final Member member;
-  final Optional<Driver> driver;
-  final VoidCallback updateStateTeamPage;
-  const CardMemberListItem(
-      {Key? key,
-      required this.member,
-      required this.driver,
-      required this.updateStateTeamPage})
-      : super(key: key);
+  final Driver? driver;
+
+  CardMemberListItem(
+      {required this.member,
+      required this.driver,});
 
   @override
   State<CardMemberListItem> createState() => _CardMemberListItemState();
 }
 
 class _CardMemberListItemState extends State<CardMemberListItem> {
+  final backgroundColor = Colors.grey.shade300;
   bool isVisualizzaPressed = false;
+  late final member;
+  late final Driver? driver;
+
+  Offset distance = Offset(5, 5);
+  double blur = 10;
+
+  @override
+  void initState() {
+    super.initState();
+
+    member = widget.member;
+    driver = widget.driver;
+  }
 
   @override
   Widget build(BuildContext context) {
-    VoidCallback updateState = widget.updateStateTeamPage;
-
-    final backgroundColor = Colors.grey.shade300;
-    Offset distance = Offset(5, 5);
-    double blur = 10;
-
-    final member = widget.member;
-    final driver = widget.driver;
-
     return Container(
       margin: EdgeInsets.fromLTRB(50, 0, 50, 25),
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
@@ -63,10 +63,15 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-            Text(
-              "${member.nome} ${member.cognome}",
-              style: TextStyle(fontSize: 16),
-            ),
+            member is Member
+                ? Text(
+                    "${member.nome} ${member.cognome}",
+                    style: TextStyle(fontSize: 16),
+                  )
+                : Text(
+                    "${member.matricola.nome} ${member.matricola.cognome}",
+                    style: TextStyle(fontSize: 16),
+                  ),
             Container(
               margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: Padding(
@@ -80,11 +85,12 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
                             "Matricola",
                             style: TextStyle(fontSize: 15),
                           ),
-                          Text("${member.matricola}")
+                          member is Member
+                              ? Text("${member.matricola}")
+                              : Text("${member.matricola.matricola}")
                         ],
                       ),
-                      _visualizeMemberButton(updateState, driver, member,
-                          backgroundColor, distance, blur)
+                      _visualizeMemberButton()
                     ]),
               ),
             ),
@@ -92,13 +98,7 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
     );
   }
 
-  Listener _visualizeMemberButton(
-      VoidCallback updateState,
-      Optional<Driver> driver,
-      Member member,
-      Color backgroundColor,
-      Offset distance,
-      double blur) {
+  Listener _visualizeMemberButton() {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isVisualizzaPressed = true); // Reset the state
@@ -106,19 +106,22 @@ class _CardMemberListItemState extends State<CardMemberListItem> {
             const Duration(milliseconds: 200)); // Wait for animation
         final loggedMember = AuthorizationProvider.of(context)!.loggedMember;
 
-        TeamService teamService = TeamInheritedState.of(context)!.teamService;
-
         // PASS THE DRIVER TO THE NEXT WIDGET
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DetailMember(
-                      teamService: teamService,
-                      updateState: updateState,
-                      driver: driver,
-                      member: member,
-                      loggedMember: loggedMember,
-                    )));
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          if (driver == null) {
+            return DetailMember(
+              member: member,
+              loggedMember: loggedMember,
+              driver: null,
+            );
+          } else {
+            return DetailMember(
+              member: member,
+              loggedMember: loggedMember,
+              driver: driver,
+            );
+          }
+        }));
         setState(() => isVisualizzaPressed = false); // Reset the state,
       },
       child: AnimatedContainer(

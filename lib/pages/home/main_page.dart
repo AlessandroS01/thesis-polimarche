@@ -8,9 +8,9 @@ import 'agenda/agenda_page.dart';
 import 'home_page.dart';
 
 class MainPage extends StatefulWidget {
-  final Member member;
+  final Member loggedMember;
 
-  MainPage({super.key, required this.member});
+  MainPage({super.key, required this.loggedMember});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -19,12 +19,22 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   int _currentIndex = 0;
 
-  List pages = [HomePage(), TeamPage(), AgendaPage()];
+  late List pages;
+
+  @override
+  initState() {
+    super.initState();
+    pages = [
+      HomePage(),
+      TeamPage(),
+      AgendaPage(loggedMember: widget.loggedMember)
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return AuthorizationProvider(
-      loggedMember: widget.member,
+      loggedMember: widget.loggedMember,
       child: Scaffold(
         appBar: _appBar(),
         body: Container(

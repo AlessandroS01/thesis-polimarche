@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:polimarche/service/driver_service.dart';
 
 import '../../../model/member_model.dart';
 import '../../../model/Workshop.dart';
-import '../auth/auth.dart';
-import '../service/member_service.dart';
+import '../../auth/auth.dart';
+import '../../service/member_service.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -28,7 +29,7 @@ class _LoginFormState extends State<LoginForm> {
   bool isLoginPressed = false;
 
 
-  void _togglePasswordVisibility() {
+  void _togglePasswordVisibility() async {
     setState(() {
       _isPasswordVisible = !_isPasswordVisible;
     });
@@ -111,78 +112,26 @@ class _LoginFormState extends State<LoginForm> {
 
   Listener _loginButton(BuildContext context, Color backgroundColor) {
     return Listener(
-      onPointerUp: (_) async {
-        await Future.delayed(
-            const Duration(milliseconds: 500)); // Wait for animation
-        setState(() => isLoginPressed = false); // Reset the state
+      onPointerDown: (_) async {
+        setState(() {
+          isLoginPressed = true;
+        });
 
         User? user = await signInWithEmailAndPassword();
 
         if (user != null) {
           final memberService = MemberService();
-          final Member? member = await memberService.getMemberByUid(user.uid);
-
+          loggedMember = (await memberService.getMemberByUid(user.uid))!;
+          Navigator.popAndPushNamed(context, '/home', arguments: loggedMember);
         } else {
           showToast(errorMessage!);
         }
-        /*
-        String passwordManager = "ma";
-        int matricolaManager = 1;
-        String passwordCaporeparto = "c";
-        int matricolaCaporeparto = 1;
-        String passwordMembro = "me";
-        int matricolaMembro = 1;
 
-        if (_usernameController.text == matricolaManager.toString() &&
-            _passwordController.text == passwordManager) {
-          loggedMember = Member(
-              matricolaManager,
-              "Antonio",
-              "AA",
-              DateTime(2001, 10, 10, 0, 0, 0),
-              "S1097941@univpm.it",
-              "3927602953",
-              "Manager",
-              Workshop(""));
-          // TODO: Add your navigation logic here
-          Navigator.popAndPushNamed(context, '/home', arguments: loggedMember);
-        } else if (_usernameController.text ==
-                matricolaCaporeparto.toString() &&
-            _passwordController.text == passwordCaporeparto) {
-          loggedMember = Member(
-              matricolaManager,
-              "Antonio",
-              "AA",
-              DateTime(2001, 10, 10, 0, 0, 0),
-              "S1097941@univpm.it",
-              "3927602953",
-              "Caporeparto",
-              Workshop(""));
-          // TODO: Add your navigation logic here
-          Navigator.popAndPushNamed(context, '/home', arguments: loggedMember);
-        } else if (_usernameController.text == matricolaMembro.toString() &&
-            _passwordController.text == passwordMembro) {
-          loggedMember = Member(
-              matricolaManager,
-              "Antonio",
-              "AA",
-              DateTime(2001, 10, 10, 0, 0, 0),
-              "S1097941@univpm.it",
-              "3927602953",
-              "Membro",
-              Workshop(""));
-          // TODO: Add your navigation logic here
-          Navigator.popAndPushNamed(context, '/home', arguments: loggedMember);
-        } else {
-
-        }
-
-         */
+        setState(() => isLoginPressed = false); // Reset the state
       },
-      onPointerDown: (_) => setState(() => isLoginPressed = true),
       child: AnimatedContainer(
         width: 120,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
         decoration: BoxDecoration(
             color: backgroundColor,

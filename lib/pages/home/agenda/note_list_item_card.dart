@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/inherited_widgets/agenda_state.dart';
-import 'package:polimarche/model/Note.dart';
+import 'package:polimarche/model/note_model.dart';
 import 'package:intl/intl.dart';
-import 'package:polimarche/services/note_service.dart';
 
 class CardNoteListItem extends StatefulWidget {
   final Note note;
-  final VoidCallback updateStateAgendaPage;
-  final NoteService noteService;
 
   const CardNoteListItem(
-      {required this.note, required this.updateStateAgendaPage, required this.noteService});
+      {required this.note});
 
   @override
   State<CardNoteListItem> createState() => _CardNoteListItemState();
@@ -23,8 +19,6 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   bool isCancellaPressed = false;
 
   late final Note note;
-  late final NoteService noteService;
-  late final VoidCallback updateStateAgendaPage;
 
   final backgroundColor = Colors.grey.shade300;
 
@@ -35,8 +29,6 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     super.initState();
 
     note = widget.note;
-    noteService = widget.noteService;
-    updateStateAgendaPage = widget.updateStateAgendaPage;
 
     _textFieldController.text = note.descrizione;
   }
@@ -82,8 +74,8 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
             style: TextStyle(fontSize: 15),
           ),
           SizedBox(height: 2),
-          Text("${DateFormat('HH:mm:ss').format(note.ora_inizio)} "
-              "- ${DateFormat('HH:mm:ss').format(note.ora_fine)}"),
+          //Text("${DateFormat('HH:mm:ss').format(note.ora_inizio)} "
+          //    "- ${DateFormat('HH:mm:ss').format(note.ora_fine)}"),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,9 +112,7 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
               TextButton(
                 child: Text("Conferma"),
                 onPressed: () {
-                  noteService.deleteNote(note);
-
-                  updateStateAgendaPage();
+                  //noteService.deleteNote(note);
 
                   Navigator.pop(context);
                 },
@@ -210,10 +200,9 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
                       TextButton(
                         child: Text("Conferma"),
                         onPressed: () {
-                          noteService.modifyNote(note, newDate, oraInizio,
-                              oraFine, _textFieldController.text);
+                          //noteService.modifyNote(note, newDate, oraInizio,
+                          //    oraFine, _textFieldController.text);
 
-                          updateStateAgendaPage();
 
                           Navigator.pop(context);
                         },

@@ -14,7 +14,7 @@ import 'package:polimarche/repository/track_repository.dart';
 import 'package:polimarche/repository/used_setup_repository.dart';
 
 import '../model/BreakageHappen.dart';
-import '../model/Driver.dart';
+import '../model/driver_model.dart';
 import '../model/UsedSetup.dart';
 import '../repository/breakage_happen_repository.dart';
 import '../repository/breakage_repository.dart';
@@ -122,19 +122,12 @@ class SessionService {
   }
 
   List<Driver> findDriversNotParticipatingSession(int sessionId) {
-    List<Participation> participatingSession =
-        findParticipationsBySessionId(sessionId);
-
-    List<Driver> notParticipatingDrivers = listDrivers.where((driver) {
-      return !participatingSession
-          .any((participation) => participation.pilota.id == driver.id);
-    }).toList();
-
-    return notParticipatingDrivers;
+    return [];
   }
 
   void addNewParticipation(String hour, String min, String sec, String mil,
       String _newDriverParticipationId, int sessionId) {
+    /*
     Driver driver = listDrivers
         .where((element) => element.id == int.parse(_newDriverParticipationId))
         .first;
@@ -154,6 +147,8 @@ class SessionService {
     participationRepository.addNewParticipation(newParticipation);
 
     updateLists();
+
+     */
   }
 
   List<UsedSetup> findUsedSetupsBySessionId(int sessionId) {

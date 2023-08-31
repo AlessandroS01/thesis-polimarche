@@ -1,8 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:polimarche/pages/app_widget.dart';
-import 'package:polimarche/pages/login.dart';
-import 'package:polimarche/pages/login_form.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

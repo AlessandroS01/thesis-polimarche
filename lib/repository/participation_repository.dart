@@ -1,4 +1,4 @@
-import '../model/Driver.dart';
+import '../model/driver_model.dart';
 import '../model/member_model.dart';
 import '../model/Participation.dart';
 import '../model/Session.dart';

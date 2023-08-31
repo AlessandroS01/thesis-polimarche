@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:optional/optional_internal.dart';
 
-import '../../../model/Driver.dart';
+import '../../../model/driver_model.dart';
 import '../../../model/member_model.dart';
 
 class CardMember extends StatelessWidget {
-  final Optional<Driver> driver;
   final Member member;
+  final Driver? driver;
   CardMember({super.key, required this.driver, required this.member});
 
   @override
   Widget build(BuildContext context) {
     final backgroundColor = Colors.grey.shade300;
 
-    return driver.isPresent
+    return driver != null
+        // DRIVER
         ? Expanded(
             flex: 5,
             child: Container(
-              margin: EdgeInsets.fromLTRB(40, 30, 40, 20),
+              margin: EdgeInsets.fromLTRB(20, 30, 20, 20),
               decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(20),
@@ -79,12 +79,12 @@ class CardMember extends StatelessWidget {
                                   TextStyle(fontSize: 18, color: Colors.black),
                             ),
                             Text(
-                              "Altezza ${driver.value.altezza} cm",
+                              "Altezza ${driver!.altezza} cm",
                               style:
                                   TextStyle(fontSize: 16, color: Colors.black),
                             ),
                             Text(
-                              "Peso ${driver.value.peso} kg",
+                              "Peso ${driver!.peso} kg",
                               style:
                                   TextStyle(fontSize: 16, color: Colors.black),
                             ),
@@ -142,10 +142,11 @@ class CardMember extends StatelessWidget {
               ),
             ),
           )
+        // MEMBER
         : Expanded(
             flex: 3,
             child: Container(
-              margin: EdgeInsets.fromLTRB(40, 30, 40, 20),
+              margin: EdgeInsets.fromLTRB(20, 30, 20, 20),
               decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(20),

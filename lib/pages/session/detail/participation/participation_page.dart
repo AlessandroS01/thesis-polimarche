@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/Driver.dart';
+import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
 import 'package:polimarche/services/session_service.dart';
@@ -71,7 +71,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
     nonPartecipatingDrivers =
         sessionService.findDriversNotParticipatingSession(sessionId);
     if (nonPartecipatingDrivers.isNotEmpty) {
-      _newDriverParticipationId = nonPartecipatingDrivers.first.id.toString();
+      //_newDriverParticipationId = nonPartecipatingDrivers.first.id.toString();
     } else {
       _newDriverParticipationId = "";
     }
@@ -230,11 +230,11 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
                         padding: EdgeInsets.all(10),
                         borderRadius: BorderRadius.circular(10),
                         dropdownColor: backgroundColor,
-                        value: nonPartecipatingDrivers.first.id.toString(),
+                        value: nonPartecipatingDrivers.first.toString(),
                         items: nonPartecipatingDrivers
                             .map<DropdownMenuItem<String>>((Driver value) {
                           return DropdownMenuItem<String>(
-                            value: value.id.toString(),
+                            value: value.toString(),
                             child: Text(
                                 "${value.membro.nome} ${value.membro.cognome}"),
                           );

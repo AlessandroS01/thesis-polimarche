@@ -5,7 +5,7 @@ import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
 
 import '../model/member_model.dart';
 import 'loading.dart';
-import 'login.dart';
+import 'login/login.dart';
 
 class AppWidget extends StatelessWidget {
 
@@ -24,7 +24,7 @@ class AppWidget extends StatelessWidget {
         '/home': (context) {
           final Member loggedMember =
               ModalRoute.of(context)?.settings.arguments as Member;
-          return MainPage(member: loggedMember);
+          return MainPage(loggedMember: loggedMember);
         },
         '/session': (context) {
           final Member loggedMember =

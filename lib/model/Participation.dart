@@ -1,4 +1,4 @@
-import 'package:polimarche/model/Driver.dart';
+import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/Session.dart';
 
 class Participation {

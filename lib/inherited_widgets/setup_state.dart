@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:polimarche/services/note_service.dart';
 import 'package:polimarche/services/setup_service.dart';
 
 import '../services/session_service.dart';

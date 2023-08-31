@@ -1,8 +1,9 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/inherited_widgets/team_state.dart';
-import 'package:polimarche/model/Driver.dart';
-import 'package:polimarche/services/team_service.dart';
+import 'package:polimarche/model/driver_model.dart';
+import 'package:polimarche/service/driver_service.dart';
+import 'package:polimarche/service/member_service.dart';
 import '../../../model/member_model.dart';
 import '../../../model/Workshop.dart';
 import 'member_list_item_card.dart';
@@ -18,14 +19,25 @@ class TeamPage extends StatefulWidget {
 
 class _TeamPageState extends State<TeamPage> {
   final backgroundColor = Colors.grey.shade300;
+
   bool isDriverPressed = false;
+  List<String> workshops = [
+    "Telaio",
+    "Aereodinamica",
+    "Dinamica",
+    "Battery pack",
+    "Marketing",
+    "Elettronica"
+  ];
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   final TextEditingController _searchBarController = TextEditingController();
 
-  late final TeamService teamService;
+  late final DriverService driverService;
+  late final MemberService memberService;
 
   late List<Member> members;
-  late List<Workshop> workshops;
   late List<Driver> drivers;
 
   // contains all the members and workshop areas
@@ -35,11 +47,35 @@ class _TeamPageState extends State<TeamPage> {
   // list displayed inside the listView
   List<dynamic> _filteredTeamList = [];
 
+  Future<void> _getMembersAndDrivers() async {
+    members = await memberService.getMembers();
+    drivers = await driverService.getDrivers();
+
+    populateTeamList();
+  }
+
+  Future<void> _refreshState() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    await _getMembersAndDrivers(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+      filterListByQuery(_searchBarController.text);
+    });
+  }
+
   @override
   void initState() {
-    teamService = TeamService();
-
     super.initState();
+
+    memberService = MemberService();
+    driverService = DriverService();
+    _dataLoading = _getMembersAndDrivers();
+
+    filterListByQuery(_searchBarController.text);
   }
 
   @override
@@ -65,11 +101,8 @@ class _TeamPageState extends State<TeamPage> {
 
     _teamDrivers.clear();
     _teamDrivers.add("Piloti");
-    List<int> driverMatricole =
-        drivers.map((driver) => driver.membro.matricola).toList();
     // add all the members who are also drivers
-    _teamDrivers.addAll(
-        members.where((member) => driverMatricole.contains(member.matricola)));
+    _teamDrivers.addAll(drivers);
   }
 
   // called whenever the input inside the search bar changes
@@ -79,7 +112,6 @@ class _TeamPageState extends State<TeamPage> {
         _filteredTeamList = _teamMembers
             .where((element) =>
                 element is String ||
-                element is Workshop ||
                 (element is Member &&
                     element.matricola.toString().contains(query)))
             .toList();
@@ -89,8 +121,8 @@ class _TeamPageState extends State<TeamPage> {
         _filteredTeamList = _teamDrivers
             .where((element) =>
                 element is String ||
-                (element is Member &&
-                    element.matricola.toString().contains(query)))
+                (element is Driver &&
+                    element.membro.matricola.toString().contains(query)))
             .toList();
       });
     } else if (query.isEmpty && isDriverPressed) {
@@ -104,108 +136,95 @@ class _TeamPageState extends State<TeamPage> {
     }
   }
 
-  // called when the user clicks on driver icon
-  void toggleDisplayDrivers() {
-    isDriverPressed
-        ? setState(() {
-            filterListByQuery(_searchBarController.text);
-          })
-        : {filterListByQuery(_searchBarController.text)};
-  }
-
-  void updateState() {
-    setState(() {
-      return;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     Offset distance = isDriverPressed ? Offset(5, 5) : Offset(18, 18);
     double blur = isDriverPressed ? 5.0 : 30.0;
 
-    members = teamService.members;
-    workshops = teamService.workshops;
-    drivers = teamService.drivers;
+    return SafeArea(
+        child: Column(
+      children: [
+        SizedBox(height: 35),
 
-    populateTeamList();
+        // SEARCH BAR
+        _searchBar(),
 
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
+        // DRIVER BUTTON
+        _driverButton(distance, blur),
 
-    return TeamInheritedState(
-      teamService: teamService,
-      child: SafeArea(
-          child: Column(
-        children: [
-          SizedBox(height: 35),
-
-          // SEARCH BAR
-          _searchBar(),
-
-          // DRIVER BUTTON
-          _driverButton(distance, blur),
-
-          // LIST OF MEMBERS
-          _listMember(updateState)
-        ],
-      )),
-    );
+        // LIST OF MEMBERS
+        _listMember()
+      ],
+    ));
   }
 
-  Expanded _listMember(VoidCallback updateState) {
+  Expanded _listMember() {
     return Expanded(
         flex: 5,
-        child: Container(
-          child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification overscroll) {
-              overscroll
-                  .disallowIndicator(); // Disable the overscroll glow effect
-              return false;
-            },
-            child: ListView.builder(
-              itemCount: _filteredTeamList.length,
-              itemBuilder: (context, index) {
-                final element = _filteredTeamList[index];
-                if (element is String) {
-                  return ListTile(
-                    title: Center(
-                      child: Text(
-                        element,
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                  );
-                }
-                // CREATE A CARD FOR EACH MEMBER
-                if (element is Member) {
-                  Optional<Driver> driver = Optional.ofNullable(null);
-                  _teamDrivers.asMap().forEach((index, item) {
-                    if (item is Member && item.matricola == element.matricola) {
-                      driver = Optional.of(
-                          // -1 because the first position is occupied by a string
-                          drivers[index - 1] // define the driver
-                          );
-                    }
-                  });
-                  return CardMemberListItem(
-                    member: element,
-                    driver: driver,
-                    updateStateTeamPage: updateState,
-                  );
-                }
-                if (element is Workshop) {
-                  return ListTile(
-                    title: Center(
-                        child: Text(
-                      element.reparto,
-                      style: TextStyle(fontSize: 18),
-                    )),
-                  );
-                }
-                return null;
+        child: RefreshIndicator(
+          onRefresh: _refreshState,
+          child: Container(
+            child: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification overscroll) {
+                overscroll
+                    .disallowIndicator(); // Disable the overscroll glow effect
+                return false;
               },
+              child: FutureBuilder(
+                future: _dataLoading,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      _isDataLoading) {
+                    // Return a loading indicator if still waiting for data
+                    return Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ));
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('${snapshot.error}'),
+                    );
+                  } else {
+                    return ListView.builder(
+                        itemCount: _filteredTeamList.length,
+                        itemBuilder: (context, index) {
+                          final element = _filteredTeamList[index];
+                          if (element is String) {
+                            return ListTile(
+                              title: Center(
+                                child: Text(
+                                  element,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            );
+                          }
+                          // CREATE A CARD FOR EACH MEMBER
+                          if (element is Member) {
+                            List driver = _teamDrivers
+                                .where((driver) =>
+                                    driver is Driver &&
+                                    driver.membro.matricola ==
+                                        element.matricola)
+                                .toList();
+                            if (driver.length == 0) { // MEMBER NOT DRIVER
+                              return CardMemberListItem(
+                                  member: element, driver: null);
+                            } else { // MEMBER ALSO DRIVER
+                              return CardMemberListItem(
+                                  member: element, driver: driver.first);
+                            }
+                          }
+                          // CREATE A CARD FOR EACH DRIVER
+                          if (element is Driver) {
+                            return CardMemberListItem(
+                                member: element.membro, driver: element);
+                          }
+                          return null;
+                        });
+                  }
+                },
+              ),
             ),
           ),
         ));
@@ -219,7 +238,7 @@ class _TeamPageState extends State<TeamPage> {
           onPointerDown: (_) async {
             setState(
                 () => isDriverPressed = !isDriverPressed); // Toggle the state
-            toggleDisplayDrivers();
+            _refreshState();
           },
           child: AnimatedContainer(
             duration: Duration(milliseconds: 200),
