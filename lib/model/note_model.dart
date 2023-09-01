@@ -10,13 +10,15 @@ class Note {
   TimeOfDay ora_fine;
   int matricola;
   String descrizione;
+  String? uid;
 
   Note(
       {required this.data,
       required this.ora_inizio,
       required this.ora_fine,
       required this.matricola,
-      required this.descrizione});
+      required this.descrizione,
+      required this.uid});
 
   Map<String, dynamic> toMap() {
     return {
@@ -28,13 +30,14 @@ class Note {
     };
   }
 
-  factory Note.fromMap(Map<String, dynamic> map) {
+  factory Note.fromMap(Map<String, dynamic> map, String uidDoc) {
     return Note(
       data: FirestoreTimestampDatetimeConverter.fromTimestamp(map['data'] as Timestamp),
       ora_inizio: FirestoreIntTimeOfDayConverter.stringToTimeOfDay( map['inizio'] as String),
       ora_fine: FirestoreIntTimeOfDayConverter.stringToTimeOfDay( map['fine'] as String),
       matricola: map['matricola'] as int,
       descrizione: map['descrizione'] as String,
+      uid: uidDoc,
     );
   }
 }

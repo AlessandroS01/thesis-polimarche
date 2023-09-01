@@ -1,14 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/note_model.dart';
 import 'package:intl/intl.dart';
+import 'package:polimarche/service/agenda_service.dart';
 
 class CardNoteListItem extends StatefulWidget {
   final Note note;
+  final AgendaService agendaService;
+  final Future<void> Function() updateStateAgenda;
 
   const CardNoteListItem(
-      {required this.note});
+      {required this.note,
+      required this.agendaService,
+      required this.updateStateAgenda});
 
   @override
   State<CardNoteListItem> createState() => _CardNoteListItemState();
@@ -18,24 +25,39 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
   bool isModificaPressed = false;
   bool isCancellaPressed = false;
 
-  late final Note note;
+  late Note note;
+  late AgendaService _agendaService;
+  late Future<void> Function() updateStateAgenda;
 
   final backgroundColor = Colors.grey.shade300;
 
-  TextEditingController _textFieldController = TextEditingController();
+  TextEditingController _controllerNewDescription = TextEditingController();
 
+  // Called once when the widget is first built and added to the widget tree
   @override
   void initState() {
     super.initState();
-
     note = widget.note;
+    _controllerNewDescription =
+        TextEditingController(text: widget.note.descrizione);
 
-    _textFieldController.text = note.descrizione;
+    _agendaService = widget.agendaService;
+    updateStateAgenda = widget.updateStateAgenda;
+  }
+
+  // Called when the parent widget provides new values to this widget or, generally,
+  // when the widget should be rebuilt with new widget properties
+  @override
+  void didUpdateWidget(covariant CardNoteListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.note.uid != oldWidget.note.uid) {
+      note = widget.note;
+      _controllerNewDescription.text = widget.note.descrizione;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
     double blurModifica = isModificaPressed ? 5 : 10;
     Offset distanceCancella = isCancellaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -100,19 +122,35 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text("Conferma eliminazione"),
+            title: Center(child: const Text("CONFERMA ELIMINAZIONE")),
             content: const Text("Sei sicuro di voler eliminare la nota?"),
             actions: <Widget>[
               TextButton(
-                child: Text("Cancella"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: Text(
+                  "INDIETRO",
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text("Conferma"),
-                onPressed: () {
-                  //noteService.deleteNote(note);
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: Text(
+                  "CONFERMA",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () async {
+                  await _agendaService.deleteNote(note.uid);
+
+                  updateStateAgenda();
 
                   Navigator.pop(context);
                 },
@@ -164,6 +202,24 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
         setState(() => isModificaPressed = false); // Reset the state,
 
         DateTime? newDate = await showDatePicker(
+            builder: (context, child) {
+              return Theme(
+                data: ThemeData(
+                  fontFamily: "aleo",
+                  textTheme:
+                      Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+                  colorScheme: ColorScheme.light(
+                    primary: Colors.black, // Calendar header color
+                    onPrimary: Colors.white,
+                    surface: Colors.white, // Dialog background color
+                    onSurface: Colors.black, // Dialog background color
+                  ),
+                  buttonTheme:
+                      ButtonThemeData(textTheme: ButtonTextTheme.primary),
+                ),
+                child: child!,
+              );
+            },
             context: context,
             initialDate: note.data,
             firstDate: DateTime(note.data.year),
@@ -171,12 +227,48 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
 
         if (newDate != null) {
           TimeOfDay? oraInizio = await showTimePicker(
+              builder: (context, child) {
+                return Theme(
+                  data: ThemeData(
+                    fontFamily: "aleo",
+                    textTheme:
+                        Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+                    colorScheme: ColorScheme.light(
+                      primary: Colors.black, // Calendar header color
+                      onPrimary: Colors.white,
+                      surface: Colors.white, // Dialog background color
+                      onSurface: Colors.black, // Dialog background color
+                    ),
+                    buttonTheme:
+                        ButtonThemeData(textTheme: ButtonTextTheme.primary),
+                  ),
+                  child: child!,
+                );
+              },
               context: context,
               initialTime: TimeOfDay(
                   hour: note.ora_inizio.hour, minute: note.ora_inizio.minute));
 
           if (oraInizio != null) {
             TimeOfDay? oraFine = await showTimePicker(
+                builder: (context, child) {
+                  return Theme(
+                    data: ThemeData(
+                      fontFamily: "aleo",
+                      textTheme:
+                          Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+                      colorScheme: ColorScheme.light(
+                        primary: Colors.black, // Calendar header color
+                        onPrimary: Colors.white,
+                        surface: Colors.white, // Dialog background color
+                        onSurface: Colors.black, // Dialog background color
+                      ),
+                      buttonTheme:
+                          ButtonThemeData(textTheme: ButtonTextTheme.primary),
+                    ),
+                    child: child!,
+                  );
+                },
                 context: context,
                 initialTime: TimeOfDay(
                     hour: note.ora_fine.hour, minute: note.ora_fine.minute));
@@ -186,25 +278,67 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text("Nuova descrizione"),
+                    title: Center(child: const Text("NUOVA DESCRIZIONE")),
                     content: TextField(
-                      controller: _textFieldController,
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.text,
+                      cursorColor: Colors.black,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'aleo',
+                          letterSpacing: 1),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        border: InputBorder.none,
+                        hintText: 'Descrizione',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      controller: _controllerNewDescription,
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text("Cancella"),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        child: Text(
+                          "CANCELLA",
+                          style: TextStyle(color: Colors.black),
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                       TextButton(
-                        child: Text("Conferma"),
-                        onPressed: () {
-                          //noteService.modifyNote(note, newDate, oraInizio,
-                          //    oraFine, _textFieldController.text);
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        child: Text(
+                          "CONFERMA",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () async {
+                          try {
+                            await _agendaService.modifyNote(
+                                note.uid,
+                                _controllerNewDescription.text,
+                                newDate,
+                                oraInizio,
+                                oraFine);
 
+                            updateStateAgenda();
 
-                          Navigator.pop(context);
+                            Navigator.pop(context);
+                          } catch (e) {
+                            // Handle the error here
+                            print("Error adding new note: $e");
+                            // You can also show a snackbar or dialog to inform the user about the error
+                          }
                         },
                       ),
                     ],

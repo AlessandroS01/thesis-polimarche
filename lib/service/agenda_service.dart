@@ -11,6 +11,15 @@ class AgendaService {
 
   Future<void> addNewNote(int matricola, String descrizione, DateTime newDate,
       TimeOfDay oraInizio, TimeOfDay oraFine) async {
-    _agendaRepo.addNewNote(matricola, descrizione, newDate, oraInizio, oraFine);
+    await _agendaRepo.addNewNote(matricola, descrizione, newDate, oraInizio, oraFine);
+  }
+
+  Future<void> modifyNote(String? uid, String description, DateTime newDate,
+      TimeOfDay oraInizio, TimeOfDay oraFine) async {
+    await _agendaRepo.modifyNote(uid, description, newDate, oraInizio, oraFine);
+  }
+
+  Future<void> deleteNote(String? uid) async {
+    await _agendaRepo.deleteNote(uid);
   }
 }

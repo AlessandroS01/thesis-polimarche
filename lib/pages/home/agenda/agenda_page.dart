@@ -23,6 +23,7 @@ class _AgendaPageState extends State<AgendaPage> {
   double blurAdd = 12;
 
   late Member loggedMember;
+
   late final AgendaService _agendaService;
   List<Note> _notes = [];
   List<Note> _notesForSelectedDay = [];
@@ -31,6 +32,7 @@ class _AgendaPageState extends State<AgendaPage> {
   DateTime selectedDay = DateTime.now();
 
   Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   Future<void> _getNotesByMember() async {
     _notes =
@@ -38,10 +40,19 @@ class _AgendaPageState extends State<AgendaPage> {
   }
 
   Future<void> _refreshState() async {
-    setState(() {});
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    await _getNotesByMember(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+      changeDateSelected(selectedDay, today);
+    });
   }
 
-  // return all the different events by date
+  // return all the different events by date => table calendar loading method
   List<Note> _getEventsByDate(DateTime day) {
     return _notes.where((note) => isSameDay(note.data, day)).toList();
   }
@@ -50,9 +61,8 @@ class _AgendaPageState extends State<AgendaPage> {
   void changeDateSelected(selectDay, focusedDay) {
     setState(() {
       selectedDay = selectDay;
-      today = focusedDay;
 
-      _notesForSelectedDay = _getEventsByDate(today);
+      _notesForSelectedDay = _getEventsByDate(selectedDay);
     });
   }
 
@@ -62,49 +72,67 @@ class _AgendaPageState extends State<AgendaPage> {
     loggedMember = widget.loggedMember;
     _agendaService = AgendaService();
     _dataLoading = _getNotesByMember();
+
+    _notesForSelectedDay = _getEventsByDate(selectedDay);
   }
 
   @override
   Widget build(BuildContext context) {
-    _notesForSelectedDay = _getEventsByDate(selectedDay);
-
     return SafeArea(
-      child: Container(
-        margin: EdgeInsets.only(top: 20),
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            SizedBox(height: 10),
+        child: FutureBuilder(
+            future: _dataLoading,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  _isDataLoading) {
+                // Return a loading indicator if still waiting for data
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: Colors.black,
+                ));
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('${snapshot.error}'),
+                );
+              } else {
+                return Container(
+                  margin: EdgeInsets.only(top: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10),
 
-            // CALENDAR
-            _calendar(),
+                      // CALENDAR
+                      _calendar(),
 
-            SizedBox(height: 10),
+                      SizedBox(height: 10),
 
-            Expanded(
-              flex: 2,
-              child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification: (OverscrollIndicatorNotification overscroll) {
-                    overscroll
-                        .disallowIndicator(); // Disable the overscroll glow effect
-                    return false;
-                  },
-                  child: ListView.builder(
-                      itemCount: _notesForSelectedDay.length,
-                      itemBuilder: (context, index) {
-                        final element = _notesForSelectedDay[index];
-                        return CardNoteListItem(note: element);
-                      }),
-                ),
-              ),
-            ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          child: NotificationListener<
+                              OverscrollIndicatorNotification>(
+                            onNotification:
+                                (OverscrollIndicatorNotification overscroll) {
+                              overscroll
+                                  .disallowIndicator(); // Disable the overscroll glow effect
+                              return false;
+                            },
+                            child: ListView.builder(
+                                itemCount: _notesForSelectedDay.length,
+                                itemBuilder: (context, index) {
+                                  final element = _notesForSelectedDay[index];
+                                  return CardNoteListItem(note: element, agendaService: _agendaService, updateStateAgenda: _refreshState);
+                                }),
+                          ),
+                        ),
+                      ),
 
-            _newNoteButton()
-          ],
-        ),
-      ),
-    );
+                      _newNoteButton()
+                    ],
+                  ),
+                );
+              }
+            }));
   }
 
   Align _newNoteButton() {
@@ -200,20 +228,20 @@ class _AgendaPageState extends State<AgendaPage> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Center(child: const Text("Descrizione")),
+                          title: Center(child: const Text("DESCRIZIONE")),
                           content: TextField(
                             textAlign: TextAlign.center,
                             keyboardType: TextInputType.text,
                             cursorColor: Colors.black,
                             style: const TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'aleo',
-                            letterSpacing: 1),
+                                color: Colors.black,
+                                fontFamily: 'aleo',
+                                letterSpacing: 1),
                             decoration: InputDecoration(
-                          counterText: '',
-                          border: InputBorder.none,
-                          hintText: 'Descrizione',
-                          hintStyle: TextStyle(color: Colors.grey),
+                              counterText: '',
+                              border: InputBorder.none,
+                              hintText: 'Descrizione',
+                              hintStyle: TextStyle(color: Colors.grey),
                             ),
                             controller: _controllerDescriptionNewNote,
                           ),
@@ -246,7 +274,7 @@ class _AgendaPageState extends State<AgendaPage> {
                               ),
                               onPressed: () async {
                                 try {
-                                  _agendaService.addNewNote(
+                                  await _agendaService.addNewNote(
                                     loggedMember.matricola,
                                     _controllerDescriptionNewNote.text,
                                     newDate,
@@ -306,45 +334,29 @@ class _AgendaPageState extends State<AgendaPage> {
 
   Container _calendar() {
     return Container(
-      child: FutureBuilder(
-          future: _dataLoading,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              // Return a loading indicator if still waiting for data
-              return Center(
-                  child: CircularProgressIndicator(
-                color: Colors.black,
-              ));
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('${snapshot.error}'),
-              );
-            } else {
-              return TableCalendar(
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 3, 14),
-                focusedDay: today,
-                startingDayOfWeek: StartingDayOfWeek.monday,
-                eventLoader: _getEventsByDate,
-                headerStyle: HeaderStyle(
-                    formatButtonVisible: false, titleCentered: true),
-                availableGestures: AvailableGestures.all,
-                selectedDayPredicate: (day) => isSameDay(selectedDay, day),
-                onDaySelected: changeDateSelected,
-                calendarStyle: CalendarStyle(
-                    outsideDaysVisible: false,
-                    todayTextStyle: TextStyle(color: Colors.black),
-                    todayDecoration: BoxDecoration(
-                        color: Colors.grey.shade400, shape: BoxShape.circle),
-                    selectedTextStyle: TextStyle(color: Colors.white),
-                    selectedDecoration: BoxDecoration(
-                        color: Colors.grey.shade600, shape: BoxShape.circle),
-                    markerSize: 5,
-                    markersMaxCount: 5,
-                    markersAlignment: Alignment.center),
-              );
-            }
-          }),
+      child: TableCalendar(
+        firstDay: DateTime.utc(2010, 10, 16),
+        lastDay: DateTime.utc(2030, 3, 14),
+        focusedDay: today,
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        eventLoader: _getEventsByDate,
+        headerStyle:
+            HeaderStyle(formatButtonVisible: false, titleCentered: true),
+        availableGestures: AvailableGestures.all,
+        selectedDayPredicate: (day) => isSameDay(selectedDay, day),
+        onDaySelected: changeDateSelected,
+        calendarStyle: CalendarStyle(
+            outsideDaysVisible: false,
+            todayTextStyle: TextStyle(color: Colors.black),
+            todayDecoration: BoxDecoration(
+                color: Colors.grey.shade400, shape: BoxShape.circle),
+            selectedTextStyle: TextStyle(color: Colors.white),
+            selectedDecoration: BoxDecoration(
+                color: Colors.grey.shade600, shape: BoxShape.circle),
+            markerSize: 5,
+            markersMaxCount: 5,
+            markersAlignment: Alignment.center),
+      ),
     );
   }
 
