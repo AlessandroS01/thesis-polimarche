@@ -4,19 +4,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
 
 import '../../../../model/Participation.dart';
 
 class ParticipationSessionPage extends StatefulWidget {
   final int sessionId;
-  final SessionService sessionService;
   final Member loggedMember;
 
   const ParticipationSessionPage(
       {super.key,
       required this.sessionId,
-      required this.sessionService,
       required this.loggedMember});
 
   @override
@@ -30,7 +27,6 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
   double blurAdd = 12;
   bool isAddPressed = false;
 
-  late final SessionService sessionService;
   late final int sessionId;
   late final Member loggedMember;
 
@@ -50,8 +46,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
 
   void updateState() {
     setState(() {
-      nonPartecipatingDrivers =
-          sessionService.findDriversNotParticipatingSession(sessionId);
+     // nonPartecipatingDrivers = sessionService.findDriversNotParticipatingSession(sessionId);
     });
   }
 
@@ -59,17 +54,15 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
   void initState() {
     super.initState();
     sessionId = widget.sessionId;
-    sessionService = widget.sessionService;
     loggedMember = widget.loggedMember;
-    listDrivers = sessionService.listDrivers;
+   // listDrivers = sessionService.listDrivers;
 
     _controllerNewDriverParticipationCambioHour.text = "00";
     _controllerNewDriverParticipationCambioMin.text = "00";
     _controllerNewDriverParticipationCambioSec.text = "00";
     _controllerNewDriverParticipationCambioMil.text = "000";
 
-    nonPartecipatingDrivers =
-        sessionService.findDriversNotParticipatingSession(sessionId);
+    //nonPartecipatingDrivers = sessionService.findDriversNotParticipatingSession(sessionId);
     if (nonPartecipatingDrivers.isNotEmpty) {
       //_newDriverParticipationId = nonPartecipatingDrivers.first.id.toString();
     } else {
@@ -87,6 +80,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
               null &&
           int.tryParse(_controllerNewDriverParticipationCambioMil.text) !=
               null) {
+        /*
         sessionService.addNewParticipation(
             _controllerNewDriverParticipationCambioHour.text,
             _controllerNewDriverParticipationCambioMin.text,
@@ -94,6 +88,8 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
             _controllerNewDriverParticipationCambioMil.text,
             _newDriverParticipationId,
             sessionId);
+
+         */
       } else {
         showToast("Ricontrollare i valori immessi per il cambio pilota");
       }
@@ -108,7 +104,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    listParticipation = sessionService.findParticipationsBySessionId(sessionId);
+    //listParticipation = sessionService.findParticipationsBySessionId(sessionId);
     listParticipation.sort((a, b) => a.ordine.compareTo(b.ordine));
 
     return Scaffold(
@@ -132,7 +128,6 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
                           final element = listParticipation[index];
                           return ParticipationListItem(
                               participation: element,
-                              sessionService: sessionService,
                               updateStateParticipationPage: updateState,
                               loggedMember: loggedMember);
                         })),

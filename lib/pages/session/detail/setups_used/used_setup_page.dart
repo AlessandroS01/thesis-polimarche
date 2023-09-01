@@ -5,7 +5,6 @@ import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
 import 'package:polimarche/pages/session/detail/setups_used/used_setup_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
 
 import '../../../../model/Participation.dart';
 import '../../../../model/Setup.dart';
@@ -13,14 +12,12 @@ import '../../../../model/UsedSetup.dart';
 
 class UsedSetupDuringSessionPage extends StatefulWidget {
   final int sessionId;
-  final SessionService sessionService;
   final Member loggedMember;
 
   const UsedSetupDuringSessionPage(
       {super.key,
       required this.sessionId,
-      required this.loggedMember,
-      required this.sessionService});
+      required this.loggedMember});
 
   @override
   State<UsedSetupDuringSessionPage> createState() =>
@@ -35,7 +32,6 @@ class _UsedSetupDuringSessionPageState
   bool isAddPressed = false;
 
   late final int sessionId;
-  late final SessionService sessionService;
   late final Member loggedMember;
 
   late List<UsedSetup> listUsedSetups;
@@ -48,7 +44,7 @@ class _UsedSetupDuringSessionPageState
 
   void updateState() {
     setState(() {
-      nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
+      //nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
       if (nonUsedSetups.isNotEmpty) {
         _newSetupUsedId = nonUsedSetups.first.id.toString();
       } else {
@@ -62,7 +58,7 @@ class _UsedSetupDuringSessionPageState
         _controllerComment.text.isNotEmpty ? _controllerComment.text : "";
 
 
-    sessionService.addNewUsedSetup(sessionId, _newSetupUsedId, newComment);
+    //sessionService.addNewUsedSetup(sessionId, _newSetupUsedId, newComment);
 
     _controllerComment.clear();
 
@@ -78,10 +74,9 @@ class _UsedSetupDuringSessionPageState
   void initState() {
     super.initState();
     sessionId = widget.sessionId;
-    sessionService = widget.sessionService;
     loggedMember = widget.loggedMember;
 
-    nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
+    //nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
     if (nonUsedSetups.isNotEmpty) {
       _newSetupUsedId = nonUsedSetups.first.id.toString();
     } else {
@@ -91,7 +86,7 @@ class _UsedSetupDuringSessionPageState
 
   @override
   Widget build(BuildContext context) {
-    listUsedSetups = sessionService.findUsedSetupsBySessionId(sessionId);
+    //listUsedSetups = sessionService.findUsedSetupsBySessionId(sessionId);
 
     Offset distanceVisualizza =
         isVisualizzaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -117,7 +112,6 @@ class _UsedSetupDuringSessionPageState
                       itemBuilder: (context, index) {
                         final element = listUsedSetups[index];
                         return UsedSetupListItem(
-                            sessionService: sessionService,
                             loggedMember: loggedMember,
                             usedSetup: element,
                             updateStateUsedSetupPage: updateState);

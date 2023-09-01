@@ -1,14 +1,11 @@
-import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/service/driver_service.dart';
 import 'package:polimarche/service/member_service.dart';
 import '../../../model/member_model.dart';
-import '../../../model/Workshop.dart';
 import 'member_list_item_card.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:optional/optional.dart';
 
 class TeamPage extends StatefulWidget {
   const TeamPage({super.key});
@@ -81,7 +78,6 @@ class _TeamPageState extends State<TeamPage> {
   @override
   void dispose() {
     _searchBarController.dispose();
-
     super.dispose();
   }
 

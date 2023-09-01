@@ -37,6 +37,8 @@ class _AgendaPageState extends State<AgendaPage> {
   Future<void> _getNotesByMember() async {
     _notes =
         await _agendaService.getNotesByMemberMatricola(loggedMember.matricola);
+
+    changeDateSelected(selectedDay, today);
   }
 
   Future<void> _refreshState() async {

@@ -5,17 +5,14 @@ import 'package:polimarche/model/Comment.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/model/Participation.dart';
 import 'package:polimarche/model/UsedSetup.dart';
-import 'package:polimarche/services/session_service.dart';
 
 class UsedSetupListItem extends StatefulWidget {
   final UsedSetup usedSetup;
-  final SessionService sessionService;
   final VoidCallback updateStateUsedSetupPage;
   final Member loggedMember;
 
   const UsedSetupListItem(
       {required this.usedSetup,
-      required this.sessionService,
       required this.updateStateUsedSetupPage,
       required this.loggedMember});
 
@@ -25,7 +22,6 @@ class UsedSetupListItem extends StatefulWidget {
 
 class _UsedSetupListItemState extends State<UsedSetupListItem> {
   late final UsedSetup usedSetup;
-  late final SessionService sessionService;
   late final VoidCallback updateStateUsedSetupPage;
   late final Member loggedMember;
 
@@ -35,7 +31,6 @@ class _UsedSetupListItemState extends State<UsedSetupListItem> {
   @override
   void initState() {
     usedSetup = widget.usedSetup;
-    sessionService = widget.sessionService;
     updateStateUsedSetupPage = widget.updateStateUsedSetupPage;
     loggedMember = widget.loggedMember;
 

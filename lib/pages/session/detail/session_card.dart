@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:intl/intl.dart';
-import 'package:polimarche/services/session_service.dart';
-import '../../../model/Session.dart';
+import '../../../model/session_model.dart';
 
 class CardSession extends StatelessWidget {
   final Session session;
-  final SessionService sessionService;
 
-  CardSession({super.key, required this.session, required this.sessionService});
+  CardSession({super.key, required this.session});
+
+  DateTime _fromTimeOfDayToDatetime(TimeOfDay time) {
+    DateTime currentDate =
+        DateTime.now(); // You can replace this with the desired date
+
+    return DateTime(
+      currentDate.year,
+      currentDate.month,
+      currentDate.day,
+      time.hour,
+      time.minute,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +58,7 @@ class CardSession extends StatelessWidget {
                     margin: EdgeInsets.only(bottom: 10),
                     child: Center(
                       child: Text(
-                        "ID: ${session.id}",
+                        "ID: ${session.uid}",
                         style: TextStyle(fontSize: 20, color: Colors.black),
                       ),
                     ),
@@ -64,13 +75,13 @@ class CardSession extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
-                        "Inizio: ${DateFormat('HH:mm:ss').format(session.oraInizio)}",
-                        style: TextStyle(fontSize: 13),
-                      ),
-                      Text(
-                        "Fine: ${DateFormat('HH:mm:ss').format(session.oraFine)}",
-                        style: TextStyle(fontSize: 13),
-                      ),
+                            "Inizio: ${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(session.oraInizio))}",
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          Text(
+                            "Fine: ${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(session.oraFine))}",
+                            style: TextStyle(fontSize: 13),
+                          ),
                     ],
                   ),
                   Container(

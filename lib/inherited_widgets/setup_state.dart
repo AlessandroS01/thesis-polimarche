@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polimarche/services/setup_service.dart';
 
-import '../services/session_service.dart';
-
 class SetupInheritedState extends InheritedWidget {
   final SetupService setupService;
 

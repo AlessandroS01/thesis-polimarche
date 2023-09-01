@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/inherited_widgets/session_state.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/detail_page_session.dart';
-import 'package:polimarche/services/session_service.dart';
 import 'package:intl/intl.dart';
 
-import '../../../model/Session.dart';
+import '../../../model/session_model.dart';
 
 class CardSessionListItem extends StatefulWidget {
   final Session session;
   final Member loggedMember;
+  final Future<void> Function() updateStateSessionPage;
 
   const CardSessionListItem({
     Key? key,
     required this.session,
     required this.loggedMember,
+    required this.updateStateSessionPage,
   }) : super(key: key);
 
   @override
@@ -25,11 +25,27 @@ class CardSessionListItem extends StatefulWidget {
 class _CardSessionListItemState extends State<CardSessionListItem> {
   bool isVisualizzaPressed = false;
 
+  late final Future<void> Function() updateStateSessionPage;
+
+  DateTime _fromTimeOfDayToDatetime(TimeOfDay time) {
+    DateTime currentDate =
+        DateTime.now(); // You can replace this with the desired date
+
+    return DateTime(
+      currentDate.year,
+      currentDate.month,
+      currentDate.day,
+      time.hour,
+      time.minute,
+    );
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    updateStateSessionPage = widget.updateStateSessionPage;
   }
 
   @override
@@ -39,6 +55,7 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
     final backgroundColor = Colors.grey.shade300;
     Offset distance = Offset(5, 5);
     double blur = 10;
+
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 18),
@@ -66,7 +83,7 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
             Text(
-              "${session.id} - ${session.evento}",
+              "${session.uid} - ${session.evento}",
               style: TextStyle(fontSize: 16),
             ),
             Text(
@@ -81,19 +98,20 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Inizio: ${DateFormat('HH:mm:ss').format(session.oraInizio)}",
+                            "Inizio: ${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(session.oraInizio))}",
                             style: TextStyle(fontSize: 15),
                           ),
                           Text(
-                            "Fine: ${DateFormat('HH:mm:ss').format(session.oraFine)}",
+                            "Fine: ${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(session.oraFine))}",
                             style: TextStyle(fontSize: 15),
                           ),
                         ],
                       ),
-                      _visualizeMemberButton(widget.loggedMember,
-                          session, backgroundColor, distance, blur)
+                      _visualizeMemberButton(widget.loggedMember, session,
+                          backgroundColor, distance, blur)
                     ]),
               ),
             ),
@@ -101,29 +119,20 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
     );
   }
 
-  Listener _visualizeMemberButton(Member loggedMember,
-      Session session, Color backgroundColor, Offset distance, double blur) {
+  Listener _visualizeMemberButton(Member loggedMember, Session session,
+      Color backgroundColor, Offset distance, double blur) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isVisualizzaPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
 
-        SessionService sessionService =
-            SessionInheritedState.of(context)!.sessionService;
-
-
         // PASS THE SESSION TO THE NEXT WIDGET
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => DetailSession(
-                      loggedMember: loggedMember,
-                      session: session,
-                      sessionService: sessionService,
-                    )));
-
-
+                    loggedMember: loggedMember, session: session, updateSessionPage: updateStateSessionPage)));
 
         setState(() => isVisualizzaPressed = false); // Reset the state,
       },

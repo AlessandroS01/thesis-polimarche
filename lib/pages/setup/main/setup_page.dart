@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 import 'package:polimarche/model/Setup.dart';
 import 'package:polimarche/pages/session/main/session_list_item_card.dart';
 import 'package:polimarche/pages/setup/main/setup_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
 import 'package:polimarche/services/setup_service.dart';
 
 import '../../../model/member_model.dart';

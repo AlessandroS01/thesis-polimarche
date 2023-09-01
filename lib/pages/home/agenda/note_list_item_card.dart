@@ -56,6 +56,19 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
     }
   }
 
+  DateTime _fromTimeOfDayToDatetime(TimeOfDay time) {
+    DateTime currentDate =
+        DateTime.now(); // You can replace this with the desired date
+
+    return DateTime(
+      currentDate.year,
+      currentDate.month,
+      currentDate.day,
+      time.hour,
+      time.minute,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -94,6 +107,10 @@ class _CardNoteListItemState extends State<CardNoteListItem> {
           Text(
             "${DateFormat('EEEE, MMM d, yyyy').format(note.data)}",
             style: TextStyle(fontSize: 15),
+          ),
+          Text(
+            "${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(note.ora_inizio))} - ${DateFormat('HH:mm:ss').format(_fromTimeOfDayToDatetime(note.ora_fine))}",
+            style: TextStyle(fontSize: 13),
           ),
           SizedBox(height: 2),
           //Text("${DateFormat('HH:mm:ss').format(note.ora_inizio)} "

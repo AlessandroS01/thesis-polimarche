@@ -2,22 +2,21 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:polimarche/model/Session.dart';
-import 'package:polimarche/model/Track.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/model/session_model.dart';
+import 'package:polimarche/model/track_model.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../service/session_service.dart';
+import '../../../../service/track_service.dart';
+
 class ModifySessionPage extends StatefulWidget {
   final Session session;
-  final SessionService sessionService;
-  final VoidCallback updateState;
+  final Future<void> Function() updateState;
 
   const ModifySessionPage(
       {super.key,
-      required this.session,
-      required this.sessionService,
-      required this.updateState});
+      required this.session, required this.updateState,});
 
   @override
   State<ModifySessionPage> createState() => _ModifySessionPageState();
@@ -28,11 +27,11 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
   late final Session session;
-  late final SessionService sessionService;
-  late final VoidCallback updateState;
+  late final Future<void> Function() updateState;
   int _progress = 1;
   final _totalSteps = 3;
   List<String> _stepsName = ["Informazioni", "Tracciato", "Condizioni"];
+  late final SessionService _sessionService;
 
   // GENERAL METHODS
   void _nextStep() {
@@ -51,7 +50,8 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
     }
   }
 
-  void _modifySession() {
+  Future<void> _modifySession() async {
+
     List<bool> buttonPressed = [
       isAccelerationPressed,
       isSkidpadPressed,
@@ -66,37 +66,26 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
     ];
 
 
-    DateTime startingTime = DateTime(
-        newDate.year, newDate.month, newDate.day,
-        newStartingTime.hour, newStartingTime.minute
-    );
-    DateTime endingTime = DateTime(
-        newDate.year, newDate.month, newDate.day,
-        newEndingTime.hour, newEndingTime.minute
-    );
-
-    Session newSession = Session(
-      session.id,
+    await _sessionService.modifySession(
+      session.uid,
       events[buttonPressed.indexWhere((element) => element)],
       newDate,
-      startingTime,
-      endingTime,
+      newStartingTime,
+      newEndingTime,
       newTrack,
       _controllerWeather.text,
-      double.parse(_controllerPressure.text),
-      double.parse(_controllerAirTemperature.text),
-      double.parse(_controllerTrackTemperature.text),
+      _controllerPressure.text,
+      _controllerAirTemperature.text,
+      _controllerTrackTemperature.text,
       _controllerTrackCondition.text
-    );
-    sessionService.modifySession(
-      newSession
     );
 
     showToast("Sessione modificata con successo");
 
-    updateState();
+    await updateState();
 
     Navigator.pop(context);
+
   }
 
   void showToast(String message) {
@@ -126,6 +115,22 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
   // FIRST STEP METHODS
   void _setNewDate() async {
     DateTime? date = await showDatePicker(
+        builder: (context, child) {
+          return Theme(
+            data: ThemeData(
+              fontFamily: "aleo",
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+              colorScheme: ColorScheme.light(
+                primary: Colors.black, // Calendar header color
+                onPrimary: Colors.white,
+                surface: Colors.white, // Dialog background color
+                onSurface: Colors.black, // Dialog background color
+              ),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        },
         context: context,
         initialDate: widget.session.data,
         firstDate: DateTime(widget.session.data.year),
@@ -140,10 +145,40 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
 
   void _setNewTime() async {
     TimeOfDay? oraInizio =
-        await showTimePicker(context: context, initialTime: newStartingTime);
+        await showTimePicker(builder: (context, child) {
+          return Theme(
+            data: ThemeData(
+              fontFamily: "aleo",
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+              colorScheme: ColorScheme.light(
+                primary: Colors.black, // Calendar header color
+                onPrimary: Colors.white,
+                surface: Colors.white, // Dialog background color
+                onSurface: Colors.black, // Dialog background color
+              ),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        },context: context, initialTime: newStartingTime);
     if (oraInizio != null) {
       TimeOfDay? oraFine =
-          await showTimePicker(context: context, initialTime: newEndingTime);
+          await showTimePicker(builder: (context, child) {
+          return Theme(
+            data: ThemeData(
+              fontFamily: "aleo",
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'aleo'),
+              colorScheme: ColorScheme.light(
+                primary: Colors.black, // Calendar header color
+                onPrimary: Colors.white,
+                surface: Colors.white, // Dialog background color
+                onSurface: Colors.black, // Dialog background color
+              ),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        },context: context, initialTime: newEndingTime);
       if (oraFine != null && isTimeOfDayEarlier(oraInizio, oraFine)) {
         setState(() {
           newStartingTime = oraInizio;
@@ -183,19 +218,28 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
   TextEditingController _controllerTrackCondition = TextEditingController();
   TextEditingController _controllerTrackTemperature = TextEditingController();
 
+  Future<void>? _dataLoading;
+  late List<Track> trackList;
+  late final TrackService _trackService;
+
   // SECOND STEP METHODS
+  Future<void> _getTracks() async {
+    trackList = await _trackService.getTracks();
+  }
+
   void _changeTrack(String? trackName) {
     if (trackName != null) {
       setState(() {
-        newTrack = sessionService.findTrackByName(trackName);
+        newTrack = trackList.firstWhere((track) => track.nome == trackName);
       });
     }
   }
 
-  // SECOND STEP DATA
+  // THIRD STEP DATA
   TextEditingController _controllerWeather = TextEditingController();
   TextEditingController _controllerPressure = TextEditingController();
   TextEditingController _controllerAirTemperature = TextEditingController();
+
 
   @override
   void initState() {
@@ -205,8 +249,11 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
     session = widget.session;
-    sessionService = widget.sessionService;
     updateState = widget.updateState;
+
+    _trackService = TrackService();
+    _sessionService = SessionService();
+    _dataLoading = _getTracks();
 
     // FIRST STEP
     if (session.evento == "Acceleration") {
@@ -708,22 +755,40 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
                       "Nome",
                       style: TextStyle(fontSize: 16),
                     ),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                          padding: EdgeInsets.all(10),
-                          borderRadius: BorderRadius.circular(10),
-                          dropdownColor: backgroundColor,
-                          value: newTrack.nome,
-                          items: sessionService.listTracks
-                              .map<DropdownMenuItem<String>>((Track value) {
-                            return DropdownMenuItem<String>(
-                              value: value.nome,
-                              child: Text(value.nome),
-                            );
-                          }).toList(),
-                          onChanged: (String? trackName) {
-                            _changeTrack(trackName);
-                          }),
+                    FutureBuilder(
+                      future: _dataLoading,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          // Return a loading indicator if still waiting for data
+                          return Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ));
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('${snapshot.error}'),
+                          );
+                        } else {
+                          return DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                                padding: EdgeInsets.all(10),
+                                borderRadius: BorderRadius.circular(10),
+                                dropdownColor: backgroundColor,
+                                value: newTrack.nome,
+                                items: trackList.map<DropdownMenuItem<String>>(
+                                    (Track value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value.nome,
+                                    child: Text(value.nome),
+                                  );
+                                }).toList(),
+                                onChanged: (String? trackName) {
+                                  _changeTrack(trackName);
+                                }),
+                          );
+                        }
+                      },
                     ),
                     SizedBox(
                       height: 40,

@@ -2,25 +2,25 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 import 'package:polimarche/pages/session/detail/breakages/breakage_page.dart';
 import 'package:polimarche/pages/session/detail/comments/comments_page.dart';
 import 'package:polimarche/pages/session/detail/modify/modify_session_page.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_page.dart';
 import 'package:polimarche/pages/session/detail/session_card.dart';
 import 'package:polimarche/pages/session/detail/setups_used/used_setup_page.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/service/session_service.dart';
 
 class DetailSession extends StatefulWidget {
   final Session session;
   final Member loggedMember;
-  final SessionService sessionService;
+  final Future<void> Function() updateSessionPage;
 
   const DetailSession({
     super.key,
     required this.session,
     required this.loggedMember,
-    required this.sessionService,
+    required this.updateSessionPage,
   });
 
   @override
@@ -30,9 +30,9 @@ class DetailSession extends StatefulWidget {
 class _DetailSessionState extends State<DetailSession> {
   final backgroundColor = Colors.grey.shade300;
   late final Member loggedMember;
-  late final Session session;
-  late final SessionService sessionService;
+  late Session session;
 
+  final SessionService _sessionService = SessionService();
 
   bool isCommentButtonPressed = false;
   bool isModifyButtonPressed = false;
@@ -40,10 +40,16 @@ class _DetailSessionState extends State<DetailSession> {
   bool isBreakagesButtonPressed = false;
   bool isSetupButtonPressed = false;
 
-  void updateDetailSessionState() {
+  Future<void> updateDetailSessionState() async {
+    // update the card
+    Session newSession = await _sessionService.getSessionById(session.uid);
+
     setState(() {
-      return;
+      session = newSession;
     });
+
+    // update the main page
+    await widget.updateSessionPage();
   }
 
   @override
@@ -52,7 +58,6 @@ class _DetailSessionState extends State<DetailSession> {
 
     loggedMember = widget.loggedMember;
     session = widget.session;
-    sessionService = widget.sessionService;
   }
 
   @override
@@ -93,7 +98,7 @@ class _DetailSessionState extends State<DetailSession> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // SESSION CARD
-            CardSession(session: session, sessionService: sessionService),
+            CardSession(session: session),
 
             loggedMember.ruolo == "Manager" ||
                     loggedMember.ruolo == "Caporeparto"
@@ -229,9 +234,7 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => CommentSessionPage(
-                sessionService: sessionService,
-                session: session,
-                loggedMember: loggedMember),
+                session: session, loggedMember: loggedMember),
           ),
         );
 
@@ -281,9 +284,7 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySessionPage(
-                session: session,
-                sessionService: sessionService,
-                updateState: updateDetailSessionState),
+                session: session, updateState: updateDetailSessionState),
           ),
         );
 
@@ -336,9 +337,7 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => BreakagesSessionPage(
-                sessionId: session.id,
-                sessionService: sessionService,
-                loggedMember: loggedMember),
+                sessionId: session.uid!, loggedMember: loggedMember),
           ),
         );
         setState(() => isBreakagesButtonPressed = false);
@@ -388,9 +387,8 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => UsedSetupDuringSessionPage(
-              sessionId: session.id,
+              sessionId: session.uid!,
               loggedMember: loggedMember,
-              sessionService: sessionService,
             ),
           ),
         );
@@ -440,9 +438,7 @@ class _DetailSessionState extends State<DetailSession> {
             context,
             MaterialPageRoute(
               builder: (BuildContext context) => ParticipationSessionPage(
-                  sessionId: session.id,
-                  sessionService: sessionService,
-                  loggedMember: loggedMember),
+                  sessionId: session.uid!, loggedMember: loggedMember),
             ));
 
         setState(() => isParticipationButtonPressed = false);

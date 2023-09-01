@@ -3,17 +3,14 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Comment.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/services/session_service.dart';
 
 class CardCommentListItem extends StatefulWidget {
   final Comment comment;
-  final SessionService sessionService;
   final VoidCallback updateStateCommentPage;
   final Member loggedMember;
 
   const CardCommentListItem(
       {required this.comment,
-      required this.sessionService,
       required this.updateStateCommentPage,
       required this.loggedMember});
 
@@ -26,7 +23,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
   bool isCancellaPressed = false;
 
   late final Comment comment;
-  late final SessionService sessionService;
   late final VoidCallback updateStateCommentPage;
   late final Member loggedMember;
 
@@ -38,7 +34,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
   @override
   void initState() {
     comment = widget.comment;
-    sessionService = widget.sessionService;
     updateStateCommentPage = widget.updateStateCommentPage;
     loggedMember = widget.loggedMember;
 
@@ -100,7 +95,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                   children: [
                     _modificaButton(
                         updateStateCommentPage,
-                        sessionService,
                         comment,
                         backgroundColor,
                         distanceModifica,
@@ -109,7 +103,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                         _textFieldControllerFlag),
                     _cancellaButton(
                         updateStateCommentPage,
-                        sessionService,
                         comment,
                         backgroundColor,
                         distanceCancella,
@@ -124,7 +117,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
 
   Listener _cancellaButton(
       VoidCallback updateStateAgendaPage,
-      SessionService sessionService,
       Comment comment,
       Color backgroundColor,
       Offset distanceCancella,
@@ -151,7 +143,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
               TextButton(
                 child: Text("Conferma"),
                 onPressed: () {
-                  sessionService.deleteComment(comment);
+                  //sessionService.deleteComment(comment);
 
                   updateStateAgendaPage();
 
@@ -198,7 +190,6 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
 
   Listener _modificaButton(
       VoidCallback updateStateCommentPage,
-      SessionService sessionService,
       Comment comment,
       Color backgroundColor,
       Offset distanceModifica,
@@ -283,7 +274,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                 TextButton(
                   child: Text("Cancella"),
                   onPressed: () {
-                    sessionService.deleteComment(comment);
+                    //sessionService.deleteComment(comment);
 
                     updateStateCommentPage;
 
@@ -295,8 +286,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                   onPressed: () {
                     String newFlag = _flagTeam ? "Team" : "Pilota";
 
-                    sessionService.modifyComment(
-                        comment, _textFieldController.text, newFlag);
+                    //sessionService.modifyComment(comment, _textFieldController.text, newFlag);
 
                     updateStateCommentPage();
 

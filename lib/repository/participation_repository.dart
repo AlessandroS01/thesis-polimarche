@@ -1,8 +1,8 @@
 import '../model/driver_model.dart';
 import '../model/member_model.dart';
 import '../model/Participation.dart';
-import '../model/Session.dart';
-import '../model/Track.dart';
+import '../model/session_model.dart';
+import '../model/track_model.dart';
 import '../model/Workshop.dart';
 
 class ParticipationRepository {

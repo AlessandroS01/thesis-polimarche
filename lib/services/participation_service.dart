@@ -1,4 +1,4 @@
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 import 'package:polimarche/services/team_service.dart';
 
 import '../model/Participation.dart';

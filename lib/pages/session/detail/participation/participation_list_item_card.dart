@@ -4,17 +4,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/Comment.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/model/Participation.dart';
-import 'package:polimarche/services/session_service.dart';
 
 class ParticipationListItem extends StatefulWidget {
   final Participation participation;
-  final SessionService sessionService;
   final VoidCallback updateStateParticipationPage;
   final Member loggedMember;
 
   const ParticipationListItem(
       {required this.participation,
-      required this.sessionService,
       required this.updateStateParticipationPage,
       required this.loggedMember});
 
@@ -27,7 +24,6 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
   bool isCancellaPressed = false;
 
   late final Participation participation;
-  late final SessionService sessionService;
   late final VoidCallback updateStateParticipationPage;
   late final Member loggedMember;
 
@@ -36,7 +32,6 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
   @override
   void initState() {
     participation = widget.participation;
-    sessionService = widget.sessionService;
     updateStateParticipationPage = widget.updateStateParticipationPage;
     loggedMember = widget.loggedMember;
 

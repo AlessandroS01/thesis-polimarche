@@ -1,14 +1,14 @@
 import 'package:polimarche/model/BreakageHappen.dart';
 
 import '../model/Breakage.dart';
-import '../model/Session.dart';
-import '../model/Track.dart';
+import '../model/session_model.dart';
+import '../model/track_model.dart';
 
 class BreakageHappenRepository {
   late List<BreakageHappen> listBreakagesHappened;
 
   BreakageHappenRepository() {
-    listBreakagesHappened = [
+    listBreakagesHappened = []; /*[
       BreakageHappen(
           1,
           "Prova rottura avvenuta",
@@ -44,6 +44,7 @@ class BreakageHappenRepository {
           Breakage(3, "Motore"),
           false),
     ];
+    */
   }
 
   void addBreakageHappend(BreakageHappen breakageHappen) {

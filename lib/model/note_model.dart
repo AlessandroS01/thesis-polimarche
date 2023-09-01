@@ -5,12 +5,12 @@ import '../core/firestore/converter_int_time_of_day.dart';
 import '../core/firestore/converter_timestamp_datetime.dart';
 
 class Note {
-  DateTime data;
-  TimeOfDay ora_inizio;
-  TimeOfDay ora_fine;
-  int matricola;
-  String descrizione;
-  String? uid;
+  final DateTime data;
+  final TimeOfDay ora_inizio;
+  final TimeOfDay ora_fine;
+  final int matricola;
+  final String descrizione;
+  final String? uid;
 
   Note(
       {required this.data,

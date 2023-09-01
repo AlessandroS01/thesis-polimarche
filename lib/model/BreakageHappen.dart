@@ -1,5 +1,5 @@
 import 'package:polimarche/model/Breakage.dart';
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 
 class BreakageHappen {
   int id;

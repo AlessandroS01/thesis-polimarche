@@ -5,21 +5,17 @@ import 'package:polimarche/model/BreakageHappen.dart';
 import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/breakages/breakage_list_item_card.dart';
-import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
 
 import '../../../../model/Breakage.dart';
 import '../../../../model/Participation.dart';
 
 class BreakagesSessionPage extends StatefulWidget {
   final int sessionId;
-  final SessionService sessionService;
   final Member loggedMember;
 
   const BreakagesSessionPage(
       {super.key,
       required this.sessionId,
-      required this.sessionService,
       required this.loggedMember});
 
   @override
@@ -32,7 +28,6 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
   double blurAdd = 12;
   bool isAddPressed = false;
 
-  late final SessionService sessionService;
   late final int sessionId;
   late final Member loggedMember;
 
@@ -46,8 +41,7 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
 
   void updateState() {
     setState(() {
-      listBreakagesHappened =
-          sessionService.findBreakagesHappenedDuringSession(sessionId);
+     // listBreakagesHappened = sessionService.findBreakagesHappenedDuringSession(sessionId);
     });
   }
 
@@ -55,9 +49,8 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
   void initState() {
     super.initState();
     sessionId = widget.sessionId;
-    sessionService = widget.sessionService;
     loggedMember = widget.loggedMember;
-    listBreakages = sessionService.listBreakages;
+    //listBreakages = sessionService.listBreakages;
 
     _newBreakageHappenedBreakageId = listBreakages.first.id.toString();
   }
@@ -69,8 +62,7 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
       _description = _controllerDescriptionNewBreakageHappened.text;
     }
 
-    sessionService.addNewBreakageHappened(
-        _newBreakageHappenedBreakageId, _description, _colpaPilota, sessionId);
+    //sessionService.addNewBreakageHappened(_newBreakageHappenedBreakageId, _description, _colpaPilota, sessionId);
 
     updateState();
 
@@ -85,8 +77,7 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    listBreakagesHappened =
-        sessionService.findBreakagesHappenedDuringSession(sessionId);
+    //listBreakagesHappened = sessionService.findBreakagesHappenedDuringSession(sessionId);
 
     return Scaffold(
       appBar: _appBar(backgroundColor),
@@ -109,7 +100,6 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
                           final element = listBreakagesHappened[index];
                           return BreakageListItem(
                               breakageHappened: element,
-                              sessionService: sessionService,
                               updateStateBreakagePage: updateState,
                               loggedMember: loggedMember);
                         })),

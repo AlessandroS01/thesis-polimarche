@@ -1,5 +1,5 @@
 import 'package:polimarche/model/BreakageHappen.dart';
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 
 import '../model/Breakage.dart';
 

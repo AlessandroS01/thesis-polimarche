@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 import 'package:polimarche/pages/session/main/session_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/service/session_service.dart';
 
 import '../../../model/member_model.dart';
 
 class SessionPage extends StatefulWidget {
   final Member loggedMember;
-  final SessionService sessionService;
 
-  const SessionPage({super.key, required this.loggedMember, required this.sessionService});
+  const SessionPage({super.key, required this.loggedMember});
 
   @override
   State<SessionPage> createState() => _SessionPageState();
@@ -24,13 +23,35 @@ class _SessionPageState extends State<SessionPage> {
   bool isAutocrossPressed = false;
 
   late final Member loggedMember;
-  late final SessionService sessionService;
+  late final SessionService _sessionService;
+
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   final TextEditingController _searchBarController = TextEditingController();
 
   late List<Session> sessionList;
   // list displayed inside the listView
   List<dynamic> _filteredSessionList = [];
+
+  Future<void> _getSessions() async {
+    sessionList = await _sessionService.getSessions();
+
+    filterListByQuery(_searchBarController.text);
+  }
+
+  Future<void> _refreshState() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    await _getSessions(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+      filterListByQuery(_searchBarController.text);
+    });
+  }
 
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
@@ -50,7 +71,7 @@ class _SessionPageState extends State<SessionPage> {
       setState(() {
         _filteredSessionList = sessionList
             .where((element) =>
-                element.id.toString().contains(query.toString()) &&
+                element.uid.toString().contains(query.toString()) &&
                 element.evento == events[indexOfTrue])
             .toList();
       });
@@ -66,7 +87,7 @@ class _SessionPageState extends State<SessionPage> {
       setState(() {
         _filteredSessionList = sessionList
             .where(
-                (element) => element.id.toString().contains(query.toString()))
+                (element) => element.uid.toString().contains(query.toString()))
             .toList();
       });
     } else {
@@ -86,14 +107,19 @@ class _SessionPageState extends State<SessionPage> {
   void initState() {
     super.initState();
 
-    sessionService = widget.sessionService;
     loggedMember = widget.loggedMember;
+    _sessionService = SessionService();
+    _dataLoading = _getSessions();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _searchBarController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    sessionList = sessionService.listSessions;
-
     Offset distanceAcceleration =
         isAccelerationPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAcceleration = isAccelerationPressed ? 5.0 : 30.0;
@@ -108,8 +134,6 @@ class _SessionPageState extends State<SessionPage> {
     Offset distanceAutocross =
         isAutocrossPressed ? Offset(5, 5) : Offset(18, 18);
     double blurAutocross = isAutocrossPressed ? 5.0 : 30.0;
-
-    filterListByQuery(_searchBarController.text);
 
     return Scaffold(
       body: Container(
@@ -132,21 +156,45 @@ class _SessionPageState extends State<SessionPage> {
             ),
 
             Expanded(
-              child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification:
-                      (OverscrollIndicatorNotification overscroll) {
-                    overscroll
-                        .disallowIndicator(); // Disable the overscroll glow effect
-                    return false;
-                  },
-                  child: ListView.builder(
-                    itemCount: _filteredSessionList.length,
-                    itemBuilder: (context, index) {
-                      final element = _filteredSessionList[index];
-                      return CardSessionListItem(
-                          session: element, loggedMember: loggedMember);
+              child: RefreshIndicator(
+                onRefresh: _refreshState,
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
+                      overscroll
+                          .disallowIndicator(); // Disable the overscroll glow effect
+                      return false;
                     },
+                    child: FutureBuilder(
+                        future: _dataLoading,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              _isDataLoading) {
+                            // Return a loading indicator if still waiting for data
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('${snapshot.error}'),
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount: _filteredSessionList.length,
+                              itemBuilder: (context, index) {
+                                final element = _filteredSessionList[index];
+                                return CardSessionListItem(
+                                    session: element,
+                                    loggedMember: loggedMember,
+                                    updateStateSessionPage: _refreshState
+                                );
+                              },
+                            );
+                          }
+                        }),
                   ),
                 ),
               ),
@@ -156,7 +204,6 @@ class _SessionPageState extends State<SessionPage> {
       ),
     );
   }
-
 
   Padding _searchBar() {
     return Padding(

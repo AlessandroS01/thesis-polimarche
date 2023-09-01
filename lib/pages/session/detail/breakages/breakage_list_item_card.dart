@@ -5,17 +5,14 @@ import 'package:polimarche/model/BreakageHappen.dart';
 import 'package:polimarche/model/Comment.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/model/Participation.dart';
-import 'package:polimarche/services/session_service.dart';
 
 class BreakageListItem extends StatefulWidget {
   final BreakageHappen breakageHappened;
-  final SessionService sessionService;
   final VoidCallback updateStateBreakagePage;
   final Member loggedMember;
 
   const BreakageListItem(
       {required this.breakageHappened,
-      required this.sessionService,
       required this.updateStateBreakagePage,
       required this.loggedMember});
 
@@ -26,7 +23,6 @@ class BreakageListItem extends StatefulWidget {
 class _BreakageListItemState extends State<BreakageListItem> {
 
   late final BreakageHappen breakageHappened;
-  late final SessionService sessionService;
   late final VoidCallback updateStateParticipationPage;
   late final Member loggedMember;
 
@@ -35,7 +31,6 @@ class _BreakageListItemState extends State<BreakageListItem> {
   @override
   void initState() {
     breakageHappened = widget.breakageHappened;
-    sessionService = widget.sessionService;
     updateStateParticipationPage = widget.updateStateBreakagePage;
     loggedMember = widget.loggedMember;
 

@@ -1,41 +1,62 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/pages/session/tracks/track_list_item_card.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/service/track_service.dart';
 
 import '../../../model/member_model.dart';
-import '../../../model/Track.dart';
+import '../../../model/track_model.dart';
 
 class TrackPage extends StatefulWidget {
   final Member loggedMember;
-  final SessionService sessionService;
 
-  const TrackPage({super.key, required this.loggedMember, required this.sessionService});
+  const TrackPage({super.key, required this.loggedMember});
 
   @override
   State<TrackPage> createState() => _TrackPageState();
 }
 
 class _TrackPageState extends State<TrackPage> {
-
   late Member loggedMember;
   final backgroundColor = Colors.grey.shade300;
-  late final SessionService sessionService;
+
+  late final TrackService _trackService;
 
   final TextEditingController _searchBarController = TextEditingController();
+
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   late List<Track> trackList;
   // list displayed inside the listView
   List<dynamic> _filteredTrackList = [];
 
+  Future<void> _getTracks() async {
+    trackList = await _trackService.getTracks();
+
+    filterListByQuery(_searchBarController.text);
+  }
+
+  Future<void> _refreshState() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    await _getTracks(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+      filterListByQuery(_searchBarController.text);
+    });
+  }
+
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
-
     if (query.isNotEmpty) {
       // event and query
       setState(() {
         _filteredTrackList = trackList
-            .where((element) => element.nome.toLowerCase().contains(query.toLowerCase()))
+            .where((element) =>
+                element.nome.toLowerCase().contains(query.toLowerCase()))
             .toList();
       });
     } else {
@@ -46,64 +67,72 @@ class _TrackPageState extends State<TrackPage> {
     }
   }
 
-  void updateStateTrack() {
-    setState(() {
-      return;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
 
-    sessionService = widget.sessionService;
+    loggedMember = widget.loggedMember;
+    _trackService = TrackService();
+    _dataLoading = _getTracks();
   }
 
   @override
   Widget build(BuildContext context) {
-    loggedMember = widget.loggedMember;
-    trackList = sessionService.listTracks;
-
-
-    setState(() {
-      filterListByQuery(_searchBarController.text);
-    });
-
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: backgroundColor),
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            // SEARCH BAR
-            _searchBar(),
+      body: RefreshIndicator(
+        onRefresh: _refreshState,
+        child: Container(
+          decoration: BoxDecoration(color: backgroundColor),
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              // SEARCH BAR
+              _searchBar(),
 
-            Expanded(
-              child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification:
-                      (OverscrollIndicatorNotification overscroll) {
-                    overscroll
-                        .disallowIndicator(); // Disable the overscroll glow effect
-                    return false;
-                  },
-                  child: ListView.builder(
-                    itemCount: _filteredTrackList.length,
-                    itemBuilder: (context, index) {
-                      final element = _filteredTrackList[index];
-                      return CardTrackListItem(
-                          track: element);
+              Expanded(
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification: (OverscrollIndicatorNotification overscroll) {
+                      overscroll
+                          .disallowIndicator(); // Disable the overscroll glow effect
+                      return false;
                     },
+                    child: FutureBuilder(
+                        future: _dataLoading,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              _isDataLoading) {
+                            // Return a loading indicator if still waiting for data
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('${snapshot.error}'),
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount: _filteredTrackList.length,
+                              itemBuilder: (context, index) {
+                                final element = _filteredTrackList[index];
+                                return CardTrackListItem(
+                                  track: element,
+                                );
+                              },
+                            );
+                          }
+                        }),
                   ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );
   }
-
 
   Container _searchBar() {
     return Container(
@@ -150,5 +179,4 @@ class _TrackPageState extends State<TrackPage> {
       ),
     );
   }
-
 }

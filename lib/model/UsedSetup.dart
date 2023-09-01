@@ -1,4 +1,4 @@
-import 'package:polimarche/model/Session.dart';
+import 'package:polimarche/model/session_model.dart';
 import 'package:polimarche/model/Setup.dart';
 
 class UsedSetup {

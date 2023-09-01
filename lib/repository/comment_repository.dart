@@ -1,12 +1,12 @@
 import '../model/Comment.dart';
-import '../model/Session.dart';
-import '../model/Track.dart';
+import '../model/session_model.dart';
+import '../model/track_model.dart';
 
 class CommentRepository {
   late List<Comment> listComments;
 
   CommentRepository() {
-    listComments = [
+    listComments = []; /*[
       Comment(
         1,
         "Team",
@@ -42,6 +42,7 @@ class CommentRepository {
             "Dry"),
       ),
     ];
+    */
   }
 
   void delete(Comment comment) {

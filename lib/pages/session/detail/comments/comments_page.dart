@@ -2,20 +2,17 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/model/Session.dart';
-import 'package:polimarche/services/session_service.dart';
+import 'package:polimarche/model/session_model.dart';
 import '../../../../model/Comment.dart';
 import 'comment_list_item_card.dart';
 
 class CommentSessionPage extends StatefulWidget {
   final Session session;
-  final SessionService sessionService;
   final Member loggedMember;
 
   const CommentSessionPage(
       {super.key,
       required this.session,
-      required this.sessionService,
       required this.loggedMember});
 
   @override
@@ -28,7 +25,6 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   double blurAdd = 12;
   bool isAddPressed = false;
 
-  late final SessionService sessionService;
   late final Session session;
   late final Member loggedMember;
 
@@ -48,7 +44,6 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   @override
   void initState() {
     session = widget.session;
-    sessionService = widget.sessionService;
     loggedMember = widget.loggedMember;
 
     super.initState();
@@ -56,7 +51,7 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    _listComments = sessionService.getCommentsBySessionId(session.id);
+    //_listComments = sessionService.getCommentsBySessionId(session.uid);
 
     _listCommentsDrivers =
         _listComments.where((element) => element.flag == "Pilota").toList();
@@ -92,7 +87,6 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                           final element = _listCommentsDrivers[index];
                           return CardCommentListItem(
                               comment: element,
-                              sessionService: sessionService,
                               updateStateCommentPage: updateState,
                               loggedMember: loggedMember);
                         })),
@@ -115,7 +109,6 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                         final element = _listCommentsTeam[index];
                         return CardCommentListItem(
                             comment: element,
-                            sessionService: sessionService,
                             updateStateCommentPage: updateState,
                             loggedMember: loggedMember);
                       }),
@@ -278,8 +271,7 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
               onPressed: () {
                 String newFlag = _flagTeam ? "Team" : "Pilota";
 
-                  sessionService.addComment(_textFieldController.text,
-                      newFlag, session);
+                  //sessionService.addComment(_textFieldController.text, newFlag, session);
 
                   updateState();
 
