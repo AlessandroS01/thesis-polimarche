@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/Comment.dart';
+import 'package:polimarche/model/comment_model.dart';
 import 'package:polimarche/model/member_model.dart';
+import 'package:polimarche/service/comment_service.dart';
 
 class CardCommentListItem extends StatefulWidget {
   final Comment comment;
-  final VoidCallback updateStateCommentPage;
+  final Future<void> Function() updateStateCommentPage;
   final Member loggedMember;
 
   const CardCommentListItem(
@@ -21,14 +22,17 @@ class CardCommentListItem extends StatefulWidget {
 class _CardCommentListItemState extends State<CardCommentListItem> {
   bool isModificaPressed = false;
   bool isCancellaPressed = false;
+  final backgroundColor = Colors.grey.shade300;
+
+  TextEditingController _controllerDescription = TextEditingController();
 
   late final Comment comment;
-  late final VoidCallback updateStateCommentPage;
+  late final Future<void> Function() updateStateCommentPage;
   late final Member loggedMember;
 
-  final backgroundColors = Colors.grey.shade300;
+  late final CommentService _commentService;
 
-  late  bool _flagTeam;
+  late bool _flagTeam;
   late bool _flagPilota;
 
   @override
@@ -36,6 +40,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
     comment = widget.comment;
     updateStateCommentPage = widget.updateStateCommentPage;
     loggedMember = widget.loggedMember;
+    _commentService = CommentService();
 
     if (comment.flag == "Pilota") {
       _flagPilota = true;
@@ -45,17 +50,13 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
       _flagTeam = true;
     }
 
+    _controllerDescription.text = comment.descrizione;
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _textFieldController = TextEditingController();
-    TextEditingController _textFieldControllerFlag = TextEditingController();
-    _textFieldController.text = comment.descrizione;
-    _textFieldControllerFlag.text = comment.flag;
-
-    final backgroundColor = Colors.grey.shade300;
     Offset distanceModifica = isModificaPressed ? Offset(5, 5) : Offset(8, 8);
     double blurModifica = isModificaPressed ? 5 : 10;
     Offset distanceCancella = isCancellaPressed ? Offset(5, 5) : Offset(8, 8);
@@ -94,19 +95,10 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _modificaButton(
-                        updateStateCommentPage,
-                        comment,
-                        backgroundColor,
-                        distanceModifica,
-                        blurModifica,
-                        _textFieldController,
-                        _textFieldControllerFlag),
-                    _cancellaButton(
-                        updateStateCommentPage,
-                        comment,
-                        backgroundColor,
-                        distanceCancella,
-                        blurCancella),
+                      distanceModifica,
+                      blurModifica,
+                    ),
+                    _cancellaButton(distanceCancella, blurCancella),
                   ],
                 )
               : Container()
@@ -115,12 +107,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
     );
   }
 
-  Listener _cancellaButton(
-      VoidCallback updateStateAgendaPage,
-      Comment comment,
-      Color backgroundColor,
-      Offset distanceCancella,
-      double blurCancella) {
+  Listener _cancellaButton(Offset distanceCancella, double blurCancella) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isCancellaPressed = true); // Reset the state
@@ -131,21 +118,35 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text("Conferma eliminazione"),
+            title: const Text("CONFERMA ELIMINAZIONE"),
             content: const Text("Sei sicuro di voler eliminare il commento?"),
             actions: <Widget>[
               TextButton(
-                child: Text("Cancella"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: Text(
+                  "INDIETRO",
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text("Conferma"),
-                onPressed: () {
-                  //sessionService.deleteComment(comment);
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.white),
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: Text(
+                  "CONFERMA",
+                  style: TextStyle(color: Colors.black),
+                ),
+                onPressed: () async {
+                  await _commentService.deleteComment(comment.uid);
 
-                  updateStateAgendaPage();
+                  await updateStateCommentPage();
 
                   Navigator.pop(context);
                 },
@@ -189,13 +190,9 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
   }
 
   Listener _modificaButton(
-      VoidCallback updateStateCommentPage,
-      Comment comment,
-      Color backgroundColor,
-      Offset distanceModifica,
-      double blurModifica,
-      TextEditingController _textFieldController,
-      TextEditingController _textFieldControllerFlag) {
+    Offset distanceModifica,
+    double blurModifica,
+  ) {
     return Listener(
       onPointerDown: (_) async {
         setState(() => isModificaPressed = true); // Reset the state
@@ -206,7 +203,7 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
           context: context,
           builder: (context) => StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: const Text("Nuova descrizione"),
+              title: Center(child: const Text("MODIFICA COMMENTO")),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -224,14 +221,14 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
                       hintText: 'Descrizione',
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
-                    controller: _textFieldController,
+                    controller: _controllerDescription,
                   ),
 
                   SizedBox(
                       height:
                           30), // Add some spacing between the text field and radio buttons
 
-                  Column(
+                  Row(
                     children: [
                       Text("Flag"),
                       Row(
@@ -272,23 +269,34 @@ class _CardCommentListItemState extends State<CardCommentListItem> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text("Cancella"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CANCELLA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: () {
-                    //sessionService.deleteComment(comment);
-
-                    updateStateCommentPage;
-
                     Navigator.pop(context);
                   },
                 ),
                 TextButton(
-                  child: Text("Conferma"),
-                  onPressed: () {
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CONFERMA",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () async {
                     String newFlag = _flagTeam ? "Team" : "Pilota";
 
-                    //sessionService.modifyComment(comment, _textFieldController.text, newFlag);
+                    await _commentService.modifyComment(
+                        comment, _controllerDescription.text, newFlag);
 
-                    updateStateCommentPage();
+                    await updateStateCommentPage();
 
                     Navigator.pop(context);
                   },

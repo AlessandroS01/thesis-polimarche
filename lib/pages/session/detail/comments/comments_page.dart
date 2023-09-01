@@ -3,7 +3,8 @@ import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/model/session_model.dart';
-import '../../../../model/Comment.dart';
+import 'package:polimarche/service/comment_service.dart';
+import '../../../../model/comment_model.dart';
 import 'comment_list_item_card.dart';
 
 class CommentSessionPage extends StatefulWidget {
@@ -11,9 +12,7 @@ class CommentSessionPage extends StatefulWidget {
   final Member loggedMember;
 
   const CommentSessionPage(
-      {super.key,
-      required this.session,
-      required this.loggedMember});
+      {super.key, required this.session, required this.loggedMember});
 
   @override
   State<CommentSessionPage> createState() => _CommentSessionPageState();
@@ -27,6 +26,10 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
 
   late final Session session;
   late final Member loggedMember;
+  late final CommentService _commentService;
+
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   late List<Comment> _listComments;
   late List<Comment> _listCommentsDrivers;
@@ -35,9 +38,25 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   bool _flagTeam = true;
   bool _flagPilota = false;
 
-  void updateState() {
+  Future<void> _getComments() async {
+    _listComments = await _commentService.getCommentsBySessionId(session.uid!);
+
+    _listCommentsDrivers =
+        _listComments.where((element) => element.flag == "Pilota").toList();
+
+    _listCommentsTeam =
+        _listComments.where((element) => element.flag == "Team").toList();
+  }
+
+  Future<void> _refreshState() async {
     setState(() {
-      return;
+      _isDataLoading = true;
+    });
+
+    await _getComments(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
     });
   }
 
@@ -45,81 +64,107 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
   void initState() {
     session = widget.session;
     loggedMember = widget.loggedMember;
+    _commentService = CommentService();
+    _dataLoading = _getComments();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    //_listComments = sessionService.getCommentsBySessionId(session.uid);
-
-    _listCommentsDrivers =
-        _listComments.where((element) => element.flag == "Pilota").toList();
-
-    _listCommentsTeam =
-        _listComments.where((element) => element.flag == "Team").toList();
-
     return Scaffold(
       appBar: _appBar(backgroundColor),
-      body: Container(
-          decoration: BoxDecoration(color: backgroundColor),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 40,
+      body: RefreshIndicator(
+        onRefresh: _refreshState,
+        child: Container(
+            decoration: BoxDecoration(color: backgroundColor),
+            child: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification overscroll) {
+                overscroll
+                    .disallowIndicator(); // Disable the overscroll glow effect
+                return false;
+              },
+              child: FutureBuilder(
+                future: _dataLoading,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting ||
+                      _isDataLoading) {
+                    // Return a loading indicator if still waiting for data
+                    return Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.black,
+                    ));
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('${snapshot.error}'),
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Text(
+                          "Piloti",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Expanded(
+                            child: Container(
+                          child: NotificationListener<
+                                  OverscrollIndicatorNotification>(
+                              onNotification:
+                                  (OverscrollIndicatorNotification overscroll) {
+                                overscroll
+                                    .disallowIndicator(); // Disable the overscroll glow effect
+                                return false;
+                              },
+                              child: ListView.builder(
+                                  itemCount: _listCommentsDrivers.length,
+                                  itemBuilder: (context, index) {
+                                    final element = _listCommentsDrivers[index];
+                                    return CardCommentListItem(
+                                        comment: element,
+                                        updateStateCommentPage: _refreshState,
+                                        loggedMember: loggedMember);
+                                  })),
+                        )),
+                        Text(
+                          "Team",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Expanded(
+                            child: Container(
+                          child: NotificationListener<
+                              OverscrollIndicatorNotification>(
+                            onNotification:
+                                (OverscrollIndicatorNotification overscroll) {
+                              overscroll
+                                  .disallowIndicator(); // Disable the overscroll glow effect
+                              return false;
+                            },
+                            child: ListView.builder(
+                                itemCount: _listCommentsTeam.length,
+                                itemBuilder: (context, index) {
+                                  final element = _listCommentsTeam[index];
+                                  return CardCommentListItem(
+                                      comment: element,
+                                      updateStateCommentPage: _refreshState,
+                                      loggedMember: loggedMember);
+                                }),
+                          ),
+                        )),
+                        loggedMember.ruolo == "Caporeparto" ||
+                                loggedMember.ruolo == "Manager"
+                            ? _newCommentButton(
+                                backgroundColor, distanceAdd, blurAdd)
+                            : Container()
+                      ],
+                    );
+                  }
+                },
               ),
-              Text(
-                "Piloti",
-                style: TextStyle(fontSize: 16),
-              ),
-              Expanded(
-                  child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification:
-                        (OverscrollIndicatorNotification overscroll) {
-                      overscroll
-                          .disallowIndicator(); // Disable the overscroll glow effect
-                      return false;
-                    },
-                    child: ListView.builder(
-                        itemCount: _listCommentsDrivers.length,
-                        itemBuilder: (context, index) {
-                          final element = _listCommentsDrivers[index];
-                          return CardCommentListItem(
-                              comment: element,
-                              updateStateCommentPage: updateState,
-                              loggedMember: loggedMember);
-                        })),
-              )),
-              Text(
-                "Team",
-                style: TextStyle(fontSize: 16),
-              ),
-              Expanded(
-                  child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification: (OverscrollIndicatorNotification overscroll) {
-                    overscroll
-                        .disallowIndicator(); // Disable the overscroll glow effect
-                    return false;
-                  },
-                  child: ListView.builder(
-                      itemCount: _listCommentsTeam.length,
-                      itemBuilder: (context, index) {
-                        final element = _listCommentsTeam[index];
-                        return CardCommentListItem(
-                            comment: element,
-                            updateStateCommentPage: updateState,
-                            loggedMember: loggedMember);
-                      }),
-                ),
-              )),
-              loggedMember.ruolo == "Caporeparto" ||
-                      loggedMember.ruolo == "Manager"
-                  ? _newCommentButton(backgroundColor, distanceAdd, blurAdd)
-                  : Container()
-            ],
-          )),
+            )),
+      ),
     );
   }
 
@@ -148,8 +193,7 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
 
   Align _newCommentButton(
       Color backgroundColor, Offset distanceAdd, double blurAdd) {
-    TextEditingController _textFieldController = TextEditingController();
-    TextEditingController _textFieldControllerFlag = TextEditingController();
+    TextEditingController _controllerDescription = TextEditingController();
     return Align(
         alignment: Alignment.bottomRight,
         child: Padding(
@@ -162,7 +206,8 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                 setState(() => isAddPressed = false); // Reset the state,
 
                 _addCommentDialog(
-                    _textFieldController, _textFieldControllerFlag);
+                  _controllerDescription,
+                );
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.all(10),
@@ -191,13 +236,14 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
             )));
   }
 
-  Future<dynamic> _addCommentDialog(TextEditingController _textFieldController,
-      TextEditingController _textFieldControllerFlag) {
+  Future<dynamic> _addCommentDialog(
+    TextEditingController _controllerDescription,
+  ) {
     return showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text("Nuova descrizione"),
+          title: Center(child: const Text("NUOVO COMMENTO")),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -206,21 +252,22 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
                 keyboardType: TextInputType.text,
                 cursorColor: Colors.black,
                 style: const TextStyle(
-                color: Colors.black, fontFamily: 'aleo', letterSpacing: 1),
+                    color: Colors.black, fontFamily: 'aleo', letterSpacing: 1),
                 decoration: InputDecoration(
-              counterText: '',
-              border: InputBorder.none,
-              hintText: 'Descrizione',
-              hintStyle: TextStyle(color: Colors.grey),
+                  counterText: '',
+                  border: InputBorder.none,
+                  hintText: 'Descrizione',
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
-                controller: _textFieldController,
+                controller: _controllerDescription,
               ),
 
               SizedBox(
                   height:
                       30), // Add some spacing between the text field and radio buttons
 
-              Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text("Flag"),
                   Row(
@@ -261,22 +308,37 @@ class _CommentSessionPageState extends State<CommentSessionPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancella"),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+              ),
+              child: Text(
+                "CANCELLA",
+                style: TextStyle(color: Colors.black),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
             TextButton(
-              child: Text("Conferma"),
-              onPressed: () {
-                String newFlag = _flagTeam ? "Team" : "Pilota";
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+              ),
+              child: Text(
+                "CONFERMA",
+                style: TextStyle(color: Colors.black),
+              ),
+              onPressed: () async {
+                String flag = _flagTeam ? "Team" : "Pilota";
 
-                  //sessionService.addComment(_textFieldController.text, newFlag, session);
+                await _commentService.addNewComment(
+                    flag, _controllerDescription.text, session.uid);
 
-                  updateState();
+                _refreshState();
 
-                  Navigator.pop(context);
-                },
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

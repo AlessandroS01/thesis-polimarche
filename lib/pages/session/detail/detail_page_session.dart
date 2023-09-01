@@ -40,7 +40,7 @@ class _DetailSessionState extends State<DetailSession> {
   bool isBreakagesButtonPressed = false;
   bool isSetupButtonPressed = false;
 
-  Future<void> updateDetailSessionState() async {
+  Future<void> _refreshState() async {
     // update the card
     Session newSession = await _sessionService.getSessionById(session.uid);
 
@@ -284,7 +284,7 @@ class _DetailSessionState extends State<DetailSession> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySessionPage(
-                session: session, updateState: updateDetailSessionState),
+                session: session, updateState: _refreshState),
           ),
         );
 
