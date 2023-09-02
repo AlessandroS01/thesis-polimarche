@@ -6,7 +6,7 @@ import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
 import 'package:polimarche/pages/session/detail/setups_used/used_setup_list_item_card.dart';
 
-import '../../../../model/Participation.dart';
+import '../../../../model/participation_model.dart';
 import '../../../../model/Setup.dart';
 import '../../../../model/UsedSetup.dart';
 

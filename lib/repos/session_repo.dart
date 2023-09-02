@@ -61,10 +61,12 @@ class SessionRepo {
     QuerySnapshot<Map<String, dynamic>> snapshot =
         await _firestore.collection('session').get();
 
-    int maxId = 1;
+    int maxId = 0;
     if (snapshot.size != 0) {
       snapshot.docs.forEach((data) {
-        maxId = int.parse(data.id);
+        if (int.parse(data.id) > maxId) {
+           maxId = int.parse(data.id);
+        }
       });
     }
     await _firestore

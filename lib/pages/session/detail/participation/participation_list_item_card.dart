@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/comment_model.dart';
+import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/model/Participation.dart';
+import 'package:polimarche/model/participation_model.dart';
 
 class ParticipationListItem extends StatefulWidget {
   final Participation participation;
   final VoidCallback updateStateParticipationPage;
   final Member loggedMember;
+  final Driver driver;
 
   const ParticipationListItem(
       {required this.participation,
       required this.updateStateParticipationPage,
-      required this.loggedMember});
+      required this.loggedMember,
+      required this.driver});
 
   @override
   State<ParticipationListItem> createState() => _ParticipationListItemState();
@@ -27,6 +29,8 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
   late final VoidCallback updateStateParticipationPage;
   late final Member loggedMember;
 
+  late final Driver driver;
+
   final backgroundColor = Colors.grey.shade300;
 
   @override
@@ -34,13 +38,13 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
     participation = widget.participation;
     updateStateParticipationPage = widget.updateStateParticipationPage;
     loggedMember = widget.loggedMember;
+    driver = widget.driver;
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
@@ -65,7 +69,11 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
       child: Column(
         children: [
           Text(
-            "Pilota: ${participation.pilota.membro.nome} ${participation.pilota.membro.cognome}",
+            "${driver.membro.matricola}",
+            style: TextStyle(fontSize: 17),
+          ),
+          Text(
+            "${driver.membro.nome} ${driver.membro.cognome}",
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 5),
@@ -74,10 +82,12 @@ class _ParticipationListItemState extends State<ParticipationListItem> {
             style: TextStyle(fontSize: 14),
           ),
           SizedBox(height: 5),
-          participation.cambioPilota != "00:00:00.000" ? Text(
-            "Cambio con pilota precedente: ${participation.cambioPilota}",
-            style: TextStyle(fontSize: 12),
-          ) : Container(),
+          participation.cambioPilota != "00:00:00.000"
+              ? Text(
+                  "Cambio con pilota precedente: ${participation.cambioPilota}",
+                  style: TextStyle(fontSize: 12),
+                )
+              : Container(),
           SizedBox(height: 10),
           /*
           loggedMember.ruolo == "Manager" || loggedMember.ruolo == "Caporeparto"

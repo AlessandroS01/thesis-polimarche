@@ -7,7 +7,7 @@ import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/breakages/breakage_list_item_card.dart';
 
 import '../../../../model/Breakage.dart';
-import '../../../../model/Participation.dart';
+import '../../../../model/participation_model.dart';
 
 class BreakagesSessionPage extends StatefulWidget {
   final int sessionId;

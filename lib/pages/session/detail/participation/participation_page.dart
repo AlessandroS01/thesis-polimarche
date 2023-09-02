@@ -4,17 +4,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
+import 'package:polimarche/service/driver_service.dart';
+import 'package:polimarche/service/participation_service.dart';
 
-import '../../../../model/Participation.dart';
+import '../../../../model/participation_model.dart';
 
 class ParticipationSessionPage extends StatefulWidget {
   final int sessionId;
   final Member loggedMember;
 
   const ParticipationSessionPage(
-      {super.key,
-      required this.sessionId,
-      required this.loggedMember});
+      {super.key, required this.sessionId, required this.loggedMember});
 
   @override
   State<ParticipationSessionPage> createState() =>
@@ -30,11 +30,17 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
   late final int sessionId;
   late final Member loggedMember;
 
-  late final List<Driver> listDrivers;
-  late List<Participation> listParticipation;
+  late final ParticipationService _participationService;
+  late final DriverService _driverService;
+
+  late List<Driver> listDrivers;
+  late List<Participation> _listParticipation;
   late List<Driver> nonPartecipatingDrivers;
 
-  late String _newDriverParticipationId;
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
+
+  late String _newDriverParticipationMatricola;
   TextEditingController _controllerNewDriverParticipationCambioHour =
       TextEditingController();
   TextEditingController _controllerNewDriverParticipationCambioMin =
@@ -44,9 +50,41 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
   TextEditingController _controllerNewDriverParticipationCambioMil =
       TextEditingController();
 
-  void updateState() {
+  Future<void> _getParticipationsAndDrivers() async {
+    _listParticipation =
+        await _participationService.getParticipationsBySessionId(sessionId);
+    _listParticipation.sort((a, b) => a.ordine.compareTo(b.ordine));
+
+    listDrivers = await _driverService.getDrivers();
+  }
+
+  Future<void> _refreshState() async {
     setState(() {
-     // nonPartecipatingDrivers = sessionService.findDriversNotParticipatingSession(sessionId);
+      _isDataLoading = true;
+    });
+
+    await _getParticipationsAndDrivers(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+    });
+  }
+
+  Future<void> _findNonParticipatingDrivers() async {
+    List<int> driversParticipatingMatricole = _listParticipation
+        .map((participation) => participation.matricolaPilota)
+        .toList();
+
+    setState(() {
+      nonPartecipatingDrivers = List.from(listDrivers);
+
+      nonPartecipatingDrivers.removeWhere((driver) =>
+          driversParticipatingMatricole.contains(driver.membro.matricola));
+
+      if (nonPartecipatingDrivers.length != 0) {
+        _newDriverParticipationMatricola =
+            nonPartecipatingDrivers.first.membro.matricola.toString();
+      }
     });
   }
 
@@ -55,58 +93,64 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
     super.initState();
     sessionId = widget.sessionId;
     loggedMember = widget.loggedMember;
-   // listDrivers = sessionService.listDrivers;
+    _participationService = ParticipationService();
+    _driverService = DriverService();
+    _dataLoading = _getParticipationsAndDrivers();
 
     _controllerNewDriverParticipationCambioHour.text = "00";
     _controllerNewDriverParticipationCambioMin.text = "00";
     _controllerNewDriverParticipationCambioSec.text = "00";
     _controllerNewDriverParticipationCambioMil.text = "000";
-
-    //nonPartecipatingDrivers = sessionService.findDriversNotParticipatingSession(sessionId);
-    if (nonPartecipatingDrivers.isNotEmpty) {
-      //_newDriverParticipationId = nonPartecipatingDrivers.first.id.toString();
-    } else {
-      _newDriverParticipationId = "";
-    }
   }
 
-  void _addNewDriverParticipation() {
-    if (_newDriverParticipationId != "") {
-      if (int.tryParse(_controllerNewDriverParticipationCambioHour.text) !=
-              null &&
-          int.tryParse(_controllerNewDriverParticipationCambioMin.text) !=
-              null &&
-          int.tryParse(_controllerNewDriverParticipationCambioSec.text) !=
-              null &&
-          int.tryParse(_controllerNewDriverParticipationCambioMil.text) !=
-              null) {
-        /*
-        sessionService.addNewParticipation(
-            _controllerNewDriverParticipationCambioHour.text,
-            _controllerNewDriverParticipationCambioMin.text,
-            _controllerNewDriverParticipationCambioSec.text,
-            _controllerNewDriverParticipationCambioMil.text,
-            _newDriverParticipationId,
-            sessionId);
+  void _addNewDriverParticipation() async {
+    int? cambioHour =
+        int.tryParse(_controllerNewDriverParticipationCambioHour.text);
+    int? cambioMin =
+        int.tryParse(_controllerNewDriverParticipationCambioMin.text);
+    int? cambioSec =
+        int.tryParse(_controllerNewDriverParticipationCambioSec.text);
+    int? cambioMil =
+        int.tryParse(_controllerNewDriverParticipationCambioMil.text);
 
-         */
+    if (_newDriverParticipationMatricola != "") {
+      if (cambioHour != null &&
+          cambioMin != null &&
+          cambioSec != null &&
+          cambioMil != null) {
+        if (cambioHour >= 0 && cambioMin >= 0 && cambioSec >= 0 && cambioMil >= 0) {
+          String cambioPilota = cambioHour.toString() +
+              ":" +
+              cambioMin.toString() +
+              ":" +
+              cambioSec.toString() +
+              "." +
+              cambioMil.toString();
+
+          await _participationService.addNewParticipation(
+              _newDriverParticipationMatricola, sessionId, cambioPilota);
+
+          _controllerNewDriverParticipationCambioHour.text = "00";
+          _controllerNewDriverParticipationCambioMin.text = "00";
+          _controllerNewDriverParticipationCambioSec.text = "00";
+          _controllerNewDriverParticipationCambioMil.text = "000";
+
+          _refreshState();
+
+          Navigator.pop(context);
+        } else {
+          showToast("I valori devono essere tutti non negativi");
+        }
       } else {
         showToast("Ricontrollare i valori immessi per il cambio pilota");
       }
     } else {
       showToast("Selezionare il pilota");
     }
-
-    updateState();
-
-    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    //listParticipation = sessionService.findParticipationsBySessionId(sessionId);
-    listParticipation.sort((a, b) => a.ordine.compareTo(b.ordine));
-
     return Scaffold(
       appBar: _appBar(backgroundColor),
       body: Container(
@@ -114,23 +158,49 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
           child: Column(
             children: [
               Expanded(
-                  child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification:
-                        (OverscrollIndicatorNotification overscroll) {
-                      overscroll
-                          .disallowIndicator(); // Disable the overscroll glow effect
-                      return false;
-                    },
-                    child: ListView.builder(
-                        itemCount: listParticipation.length,
-                        itemBuilder: (context, index) {
-                          final element = listParticipation[index];
-                          return ParticipationListItem(
-                              participation: element,
-                              updateStateParticipationPage: updateState,
-                              loggedMember: loggedMember);
-                        })),
+                  child: RefreshIndicator(
+                onRefresh: _refreshState,
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                      onNotification:
+                          (OverscrollIndicatorNotification overscroll) {
+                        overscroll
+                            .disallowIndicator(); // Disable the overscroll glow effect
+                        return false;
+                      },
+                      child: FutureBuilder(
+                        future: _dataLoading,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              _isDataLoading) {
+                            // Return a loading indicator if still waiting for data
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('${snapshot.error}'),
+                            );
+                          } else {
+                            return ListView.builder(
+                                itemCount: _listParticipation.length,
+                                itemBuilder: (context, index) {
+                                  final element = _listParticipation[index];
+                                  return ParticipationListItem(
+                                      participation: element,
+                                      driver: listDrivers.firstWhere((driver) =>
+                                          driver.membro.matricola ==
+                                          element.matricolaPilota),
+                                      updateStateParticipationPage:
+                                          _refreshState,
+                                      loggedMember: loggedMember);
+                                });
+                          }
+                        },
+                      )),
+                ),
               )),
               loggedMember.ruolo == "Caporeparto" ||
                       loggedMember.ruolo == "Manager"
@@ -177,6 +247,9 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
                 await Future.delayed(
                     const Duration(milliseconds: 200)); // Wait for animation
                 setState(() => isAddPressed = false); // Reset the state,
+
+                await _findNonParticipatingDrivers();
+
                 if (nonPartecipatingDrivers.isEmpty) {
                   showToast("Tutti i piloti hanno partecipato alla sessione");
                 } else {
@@ -216,8 +289,9 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: const Text("Nuova partecipazione"),
+              title: Center(child: const Text("NUOVA PARTECIPAZIONE")),
               content: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonHideUnderline(
@@ -225,18 +299,24 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
                         padding: EdgeInsets.all(10),
                         borderRadius: BorderRadius.circular(10),
                         dropdownColor: backgroundColor,
-                        value: nonPartecipatingDrivers.first.toString(),
+                        value: _newDriverParticipationMatricola,
                         items: nonPartecipatingDrivers
                             .map<DropdownMenuItem<String>>((Driver value) {
                           return DropdownMenuItem<String>(
-                            value: value.toString(),
-                            child: Text(
-                                "${value.membro.nome} ${value.membro.cognome}"),
+                            value: value.membro.matricola.toString(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("${value.membro.matricola}"),
+                                Text(
+                                    "${value.membro.nome} ${value.membro.cognome}"),
+                              ],
+                            ),
                           );
                         }).toList(),
-                        onChanged: (String? driverId) {
+                        onChanged: (String? driverMatricola) {
                           setState(() {
-                            _newDriverParticipationId = driverId!;
+                            _newDriverParticipationMatricola = driverMatricola!;
                           });
                         }),
                   ),
@@ -333,13 +413,27 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text("Cancella"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CANCELLA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
                 TextButton(
-                  child: Text("Conferma"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CONFERMA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: _addNewDriverParticipation,
                 ),
               ],
