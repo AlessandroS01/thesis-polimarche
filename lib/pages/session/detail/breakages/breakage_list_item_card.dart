@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/BreakageHappen.dart';
+import 'package:polimarche/model/breakage_model.dart';
 import 'package:polimarche/model/member_model.dart';
 
 class BreakageListItem extends StatefulWidget {
-  final BreakageHappen breakageHappened;
-  final VoidCallback updateStateBreakagePage;
+  final Breakage breakageHappened;
   final Member loggedMember;
+  final Future<void> Function() updateStateBreakagePage;
 
   const BreakageListItem(
       {required this.breakageHappened,
-      required this.updateStateBreakagePage,
-      required this.loggedMember});
+      required this.loggedMember,
+      required this.updateStateBreakagePage});
 
   @override
   State<BreakageListItem> createState() => _BreakageListItemState();
 }
 
 class _BreakageListItemState extends State<BreakageListItem> {
-
-  late final BreakageHappen breakageHappened;
-  late final VoidCallback updateStateParticipationPage;
+  late final Breakage breakageHappened;
+  late final Future<void> Function() updateStateParticipationPage;
   late final Member loggedMember;
 
   final backgroundColor = Colors.grey.shade300;
@@ -37,7 +36,6 @@ class _BreakageListItemState extends State<BreakageListItem> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
@@ -64,20 +62,18 @@ class _BreakageListItemState extends State<BreakageListItem> {
           Text(
             "Descrizione rottura avvenuta:",
             style: TextStyle(fontSize: 16),
-          ),Text(
+          ),
+          Text(
             "${breakageHappened.descrizione}",
             style: TextStyle(fontSize: 15),
           ),
-          SizedBox(height: 15),
-          Text(
-            "Tipo di rottura: ${breakageHappened.rottura.descrizione}",
-            style: TextStyle(fontSize: 14),
-          ),
           SizedBox(height: 10),
-          breakageHappened.colpaPilota ? Text(
-            "Rottura avvenuta per colpa del pilota",
-            style: TextStyle(fontSize: 12),
-          ) : Container(),
+          breakageHappened.colpaPilota
+              ? Text(
+                  "Rottura avvenuta per colpa del pilota",
+                  style: TextStyle(fontSize: 12),
+                )
+              : Container(),
           SizedBox(height: 5),
           /*
           loggedMember.ruolo == "Manager" || loggedMember.ruolo == "Caporeparto"

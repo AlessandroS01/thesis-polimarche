@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/BreakageHappen.dart';
+import 'package:polimarche/model/breakage_model.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/session/detail/breakages/breakage_list_item_card.dart';
-
-import '../../../../model/Breakage.dart';
+import 'package:polimarche/service/breakage_service.dart';
 
 class BreakagesSessionPage extends StatefulWidget {
   final int sessionId;
   final Member loggedMember;
 
   const BreakagesSessionPage(
-      {super.key,
-      required this.sessionId,
-      required this.loggedMember});
+      {super.key, required this.sessionId, required this.loggedMember});
 
   @override
   State<BreakagesSessionPage> createState() => _BreakagesSessionPageState();
@@ -26,20 +23,33 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
   double blurAdd = 12;
   bool isAddPressed = false;
 
-  late final int sessionId;
-  late final Member loggedMember;
-
-  late List<BreakageHappen> listBreakagesHappened;
-  late final List<Breakage> listBreakages;
-
-  late String _newBreakageHappenedBreakageId;
   TextEditingController _controllerDescriptionNewBreakageHappened =
       TextEditingController();
   bool _colpaPilota = false;
 
-  void updateState() {
+  late final int sessionId;
+  late final Member loggedMember;
+
+  late final BreakageService _breakageService;
+
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
+
+  late List<Breakage> _listBreakages;
+
+  Future<void> _getBreakages() async {
+    _listBreakages = await _breakageService.getBreakagesBySessionId(sessionId);
+  }
+
+  Future<void> _refreshState() async {
     setState(() {
-     // listBreakagesHappened = sessionService.findBreakagesHappenedDuringSession(sessionId);
+      _isDataLoading = true;
+    });
+
+    await _getBreakages(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
     });
   }
 
@@ -48,26 +58,25 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
     super.initState();
     sessionId = widget.sessionId;
     loggedMember = widget.loggedMember;
-    //listBreakages = sessionService.listBreakages;
-
-    _newBreakageHappenedBreakageId = listBreakages.first.id.toString();
+    _breakageService = BreakageService();
+    _dataLoading = _getBreakages();
   }
 
-  void _addNewBreakageHappened() {
+  Future<void> _addNewBreakageHappened() async {
     String _description = "";
 
     if (_controllerDescriptionNewBreakageHappened.text.isNotEmpty) {
       _description = _controllerDescriptionNewBreakageHappened.text;
     }
 
-    //sessionService.addNewBreakageHappened(_newBreakageHappenedBreakageId, _description, _colpaPilota, sessionId);
+    await _breakageService.addNewBreakage(
+        sessionId, _colpaPilota, _description);
 
-    updateState();
+    _refreshState();
 
     Navigator.pop(context);
 
     _controllerDescriptionNewBreakageHappened.clear();
-    _newBreakageHappenedBreakageId = listBreakages.first.id.toString();
     _colpaPilota = false;
 
     showToast("La nuova rottura verifica è stata aggiunta");
@@ -84,23 +93,45 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
           child: Column(
             children: [
               Expanded(
-                  child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification:
-                        (OverscrollIndicatorNotification overscroll) {
-                      overscroll
-                          .disallowIndicator(); // Disable the overscroll glow effect
-                      return false;
-                    },
-                    child: ListView.builder(
-                        itemCount: listBreakagesHappened.length,
-                        itemBuilder: (context, index) {
-                          final element = listBreakagesHappened[index];
-                          return BreakageListItem(
-                              breakageHappened: element,
-                              updateStateBreakagePage: updateState,
-                              loggedMember: loggedMember);
-                        })),
+                  child: RefreshIndicator(
+                onRefresh: _refreshState,
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                      onNotification:
+                          (OverscrollIndicatorNotification overscroll) {
+                        overscroll
+                            .disallowIndicator(); // Disable the overscroll glow effect
+                        return false;
+                      },
+                      child: FutureBuilder(
+                        future: _dataLoading,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              _isDataLoading) {
+                            // Return a loading indicator if still waiting for data
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('${snapshot.error}'),
+                            );
+                          } else {
+                            return ListView.builder(
+                                itemCount: _listBreakages.length,
+                                itemBuilder: (context, index) {
+                                  final element = _listBreakages[index];
+                                  return BreakageListItem(
+                                      breakageHappened: element,
+                                      updateStateBreakagePage: _refreshState,
+                                      loggedMember: loggedMember);
+                                });
+                          }
+                        },
+                      )),
+                ),
               )),
               loggedMember.ruolo == "Caporeparto" ||
                       loggedMember.ruolo == "Manager"
@@ -183,45 +214,10 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: const Text("Nuova rottura avvenuta"),
+              title: const Text("NUOVA ROTTURA"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                          child: Text(
-                        "Tipo di rottura",
-                        style: TextStyle(fontSize: 14),
-                      )),
-                      Expanded(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                              padding: EdgeInsets.all(10),
-                              borderRadius: BorderRadius.circular(10),
-                              dropdownColor: backgroundColor,
-                              value: listBreakages.first.id.toString(),
-                              items: listBreakages
-                                  .map<DropdownMenuItem<String>>(
-                                      (Breakage value) {
-                                return DropdownMenuItem<String>(
-                                  value: value.id.toString(),
-                                  child: Text("${value.descrizione}"),
-                                );
-                              }).toList(),
-                              onChanged: (String? breakageId) {
-                                setState(() {
-                                  _newBreakageHappenedBreakageId = breakageId!;
-                                });
-                              }),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                      height:
-                          10), // Add some spacing between the text field and radio buttons
-
                   TextField(
                     maxLines: 4,
                     keyboardType: TextInputType.text,
@@ -237,7 +233,6 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
                     ),
                     controller: _controllerDescriptionNewBreakageHappened,
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -257,13 +252,27 @@ class _BreakagesSessionPageState extends State<BreakagesSessionPage> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text("Cancella"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CANCELLA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
                 TextButton(
-                  child: Text("Conferma"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CONFERMA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: _addNewBreakageHappened,
                 ),
               ],
