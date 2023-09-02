@@ -24,8 +24,13 @@ class CardSessionListItem extends StatefulWidget {
 
 class _CardSessionListItemState extends State<CardSessionListItem> {
   bool isVisualizzaPressed = false;
+  final backgroundColor = Colors.grey.shade300;
+  Offset distance = Offset(5, 5);
+  double blur = 10;
 
   late final Future<void> Function() updateStateSessionPage;
+
+  late Session session;
 
   DateTime _fromTimeOfDayToDatetime(TimeOfDay time) {
     DateTime currentDate =
@@ -46,17 +51,19 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
     // TODO: implement initState
     super.initState();
     updateStateSessionPage = widget.updateStateSessionPage;
+    session = widget.session;
+  }
+
+  @override
+  void didUpdateWidget(covariant CardSessionListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.session.uid != oldWidget.session.uid) {
+      session = widget.session;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final session = widget.session;
-
-    final backgroundColor = Colors.grey.shade300;
-    Offset distance = Offset(5, 5);
-    double blur = 10;
-
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30, vertical: 18),
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),

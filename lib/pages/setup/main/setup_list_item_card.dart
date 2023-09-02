@@ -32,12 +32,19 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    setup = widget.setup;
+  }
+
+  @override
+  void didUpdateWidget(covariant CardSetupListItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.setup.id != oldWidget.setup.id) {
+      setup = widget.setup;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    setup = widget.setup;
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 60, vertical: 18),
       padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
@@ -81,8 +88,6 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
         setState(() => isVisualizzaPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
-
-
 
         // PASS THE SETUP TO THE NEXT WIDGET
         Navigator.push(

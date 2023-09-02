@@ -4,6 +4,7 @@ import 'package:polimarche/model/setup_model.dart';
 import 'package:polimarche/pages/setup/main/setup_list_item_card.dart';
 
 import '../../../model/member_model.dart';
+import '../../../service/setup_service.dart';
 
 class SetupPage extends StatefulWidget {
   final Member loggedMember;
@@ -18,17 +19,38 @@ class _SetupPageState extends State<SetupPage> {
   final backgroundColor = Colors.grey.shade300;
 
   late final Member loggedMember;
-  //late final SetupService setupService;
+  late final SetupService _setupService;
 
   final TextEditingController _searchBarController = TextEditingController();
+
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   late List<Setup> setupList;
   // list displayed inside the listView
   List<dynamic> _filteredSetupList = [];
 
+  Future<void> _getSetups() async {
+    setupList = await _setupService.getSetups();
+
+    filterListByQuery(_searchBarController.text);
+  }
+
+  Future<void> _refreshState() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+
+    await _getSetups(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+      filterListByQuery(_searchBarController.text);
+    });
+  }
+
   // called whenever the input inside the search bar changes
   void filterListByQuery(String query) {
-
     if (query.isNotEmpty) {
       setState(() {
         _filteredSetupList = setupList
@@ -40,22 +62,24 @@ class _SetupPageState extends State<SetupPage> {
         _filteredSetupList = setupList;
       });
     }
-
   }
 
   @override
   void initState() {
     super.initState();
-    //setupService = widget.setupService;
+    _setupService = SetupService();
     loggedMember = widget.loggedMember;
+    _dataLoading = _getSetups();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _searchBarController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    //setupList = setupService.listSetups;
-    filterListByQuery(_searchBarController.text);
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(color: backgroundColor),
@@ -66,23 +90,42 @@ class _SetupPageState extends State<SetupPage> {
             _searchBar(),
 
             Expanded(
-              child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                  onNotification:
-                      (OverscrollIndicatorNotification overscroll) {
-                    overscroll
-                        .disallowIndicator(); // Disable the overscroll glow effect
-                    return false;
-                  },
-                  child: ListView.builder(
-                    itemCount: _filteredSetupList.length,
-                    itemBuilder: (context, index) {
-                      final element = _filteredSetupList[index];
-                      return CardSetupListItem(
-                          setup: element,
-                          loggedMember: loggedMember
-                      );
+              child: RefreshIndicator(
+                onRefresh: _refreshState,
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
+                      overscroll
+                          .disallowIndicator(); // Disable the overscroll glow effect
+                      return false;
                     },
+                    child: FutureBuilder(
+                        future: _dataLoading,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                                  ConnectionState.waiting ||
+                              _isDataLoading) {
+                            // Return a loading indicator if still waiting for data
+                            return Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            ));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Text('${snapshot.error}'),
+                            );
+                          } else {
+                            return ListView.builder(
+                              itemCount: _filteredSetupList.length,
+                              itemBuilder: (context, index) {
+                                final element = _filteredSetupList[index];
+                                return CardSetupListItem(
+                                    setup: element, loggedMember: loggedMember);
+                              },
+                            );
+                          }
+                        }),
                   ),
                 ),
               ),
@@ -92,7 +135,6 @@ class _SetupPageState extends State<SetupPage> {
       ),
     );
   }
-
 
   Padding _searchBar() {
     return Padding(
@@ -136,5 +178,4 @@ class _SetupPageState extends State<SetupPage> {
           )),
     );
   }
-
 }
