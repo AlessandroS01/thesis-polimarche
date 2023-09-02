@@ -1,11 +1,4 @@
-import 'package:polimarche/model/UsedSetup.dart';
-import '../model/session_model.dart';
-import '../model/track_model.dart';
-import '../model/Balance.dart';
-import '../model/Damper.dart';
-import '../model/Setup.dart';
-import '../model/Spring.dart';
-import '../model/Wheel.dart';
+import 'package:polimarche/model/used_setup_model.dart';
 
 class UsedSetupRepository {
   late List<UsedSetup> listSetupsUsed;

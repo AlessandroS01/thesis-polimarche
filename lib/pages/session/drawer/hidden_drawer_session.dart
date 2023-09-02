@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-import 'package:polimarche/pages/session/plan/plan_session_page.dart';
 import 'package:polimarche/pages/session/main/session_page.dart';
+import 'package:polimarche/pages/session/plan/plan_session_page.dart';
+
 import '../../../model/member_model.dart';
 import '../tracks/track_page.dart';
 

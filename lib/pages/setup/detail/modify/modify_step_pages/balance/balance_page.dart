@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Balance.dart';
+import '../../../../../../model/balance_model.dart';
 
 class BalancePage extends StatefulWidget {
-  final SetupService setupService;
 
   const BalancePage(
-      {super.key, required this.setupService});
+      {super.key});
 
   static List<Balance?> balanceOf(BuildContext context) {
     final balanceProvider =
@@ -30,7 +28,7 @@ class BalancePage extends StatefulWidget {
 
 class _BalancePageState extends State<BalancePage> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late BalanceProvider balanceProvider;
   bool _isDataInitialized = false;
@@ -75,7 +73,7 @@ class _BalancePageState extends State<BalancePage> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontBalance = setupService.findFrontBalanceParams().first;
+        //frontBalance = setupService.findFrontBalanceParams().first;
 
         _controllerFrontPeso.text = frontBalance.peso.toString();
         _controllerFrontFrenata.text = frontBalance.frenata.toString();
@@ -92,7 +90,7 @@ class _BalancePageState extends State<BalancePage> {
     });
   }
 
-  _checkNewValuesUsedFront(String? text) {
+  _checkNewValuesUsedFront(String? text){}/* {
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -110,8 +108,7 @@ class _BalancePageState extends State<BalancePage> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontFrenata.text) != null) {
         if (double.tryParse(_controllerFrontPeso.text) != null) {
-          var result = setupService.findFrontBalanceFromExistingParams(
-              _controllerFrontPeso.text, _controllerFrontFrenata.text);
+          var result = setupService.findFrontBalanceFromExistingParams(_controllerFrontPeso.text, _controllerFrontFrenata.text);
 
           Balance balance;
 
@@ -138,6 +135,8 @@ class _BalancePageState extends State<BalancePage> {
       }
     }
   }
+  */
+
 
   // REAR DATA
   late bool _useExistingParamsRear;
@@ -167,7 +166,7 @@ class _BalancePageState extends State<BalancePage> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearBalance = setupService.findRearBalanceParams().first;
+        //rearBalance = setupService.findRearBalanceParams().first;
 
         _controllerRearPeso.text = rearBalance.peso.toString();
         _controllerRearFrenata.text = rearBalance.frenata.toString();
@@ -185,6 +184,7 @@ class _BalancePageState extends State<BalancePage> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -229,6 +229,8 @@ class _BalancePageState extends State<BalancePage> {
         showToast("La frenata posteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
 
@@ -239,7 +241,7 @@ class _BalancePageState extends State<BalancePage> {
     // TODO: implement initState
     super.initState();
 
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       balanceProvider = Provider.of<BalanceProvider>(context, listen: false);
@@ -247,7 +249,7 @@ class _BalancePageState extends State<BalancePage> {
       // FRONT BALANCE DATA
       _useExistingParamsFront = balanceProvider.existingFront;
       frontBalance = balanceProvider.front!;
-      frontBalanceParams = setupService.findFrontBalanceParams();
+      //frontBalanceParams = setupService.findFrontBalanceParams();
       frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
       _controllerFrontPeso.text = frontBalance.peso.toString();
       _controllerFrontFrenata.text = frontBalance.frenata.toString();
@@ -255,7 +257,7 @@ class _BalancePageState extends State<BalancePage> {
       // REAR BALANCE DATA
       _useExistingParamsRear = balanceProvider.existingRear;
       rearBalance = balanceProvider.rear!;
-      rearBalanceParams = setupService.findRearBalanceParams();
+      //rearBalanceParams = setupService.findRearBalanceParams();
       rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
       _controllerRearPeso.text = rearBalance.peso.toString();
       _controllerRearFrenata.text = rearBalance.frenata.toString();

@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/inherited_widgets/setup_state.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/pages/session/detail/detail_page_session.dart';
 import 'package:polimarche/pages/setup/detail/detail_page_setup.dart';
-import 'package:intl/intl.dart';
-import 'package:polimarche/services/setup_service.dart';
 
-import '../../../model/session_model.dart';
-import '../../../model/Setup.dart';
+import '../../../model/setup_model.dart';
 
 class CardSetupListItem extends StatefulWidget {
   final Setup setup;
@@ -87,7 +82,7 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
 
-        SetupService setupService = SetupInheritedState.of(context)!.setupService;
+
 
         // PASS THE SETUP TO THE NEXT WIDGET
         Navigator.push(
@@ -95,8 +90,7 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
             MaterialPageRoute(
                 builder: (context) => DetailSetup(
                       loggedMember: widget.loggedMember,
-                      setup: setup,
-                      setupService: setupService,
+                      setup: setup
                     )));
 
         setState(() => isVisualizzaPressed = false); // Reset the state,

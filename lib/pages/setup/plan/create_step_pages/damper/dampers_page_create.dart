@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/Wheel.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/damper/damper_provider_create.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Damper.dart';
+import '../../../../../../model/damper_model.dart';
 
 class DampersPageCreate extends StatefulWidget {
-  final SetupService setupService;
 
-  const DampersPageCreate({super.key, required this.setupService});
+  const DampersPageCreate({super.key});
 
   static List<Damper?> damperOf(BuildContext context) {
     final damperProvider =
@@ -27,7 +24,7 @@ class DampersPageCreate extends StatefulWidget {
 
 class _DampersPageCreateState extends State<DampersPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late DamperProviderCreate damperProvider;
   bool _isDataInitialized = false;
@@ -76,7 +73,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontDamper = setupService.findFrontDamperParams().first;
+        //frontDamper = setupService.findFrontDamperParams().first;
 
         _controllerFrontLsr.text = frontDamper.lsr.toString();
         _controllerFrontHsr.text = frontDamper.hsr.toString();
@@ -98,6 +95,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
   }
 
   _checkNewValuesUsedFront(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -144,6 +142,8 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
             "Hsr degli ammortizzatori anteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   // REAR DATA
@@ -178,7 +178,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearDamper = setupService.findRearDamperParams().first;
+        //rearDamper = setupService.findRearDamperParams().first;
 
         _controllerRearLsr.text = rearDamper.lsr.toString();
         _controllerRearHsr.text = rearDamper.hsr.toString();
@@ -200,6 +200,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -246,13 +247,15 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
             "Hsr degli ammortizzatori posteriori deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       damperProvider =
@@ -260,7 +263,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
 
       // FRONT Damper DATA
       _useExistingParamsFront = damperProvider.existingFront;
-      frontDamperParams = setupService.findFrontDamperParams();
+      //frontDamperParams = setupService.findFrontDamperParams();
       frontDamperIds = frontDamperParams.map((param) => param.id).toList();
       if (damperProvider.front != null) {
         frontDamper = damperProvider.front!;
@@ -272,7 +275,7 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
 
       // REAR Damper DATA
       _useExistingParamsRear = damperProvider.existingRear;
-      rearDamperParams = setupService.findRearDamperParams();
+      //rearDamperParams = setupService.findRearDamperParams();
       rearDamperIds = rearDamperParams.map((param) => param.id).toList();
       if (damperProvider.rear != null) {
         rearDamper = damperProvider.rear!;

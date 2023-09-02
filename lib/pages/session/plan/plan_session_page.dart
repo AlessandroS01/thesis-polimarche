@@ -2,10 +2,10 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:polimarche/model/track_model.dart';
 import 'package:polimarche/service/session_service.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:intl/intl.dart';
 
 import '../../../service/track_service.dart';
 

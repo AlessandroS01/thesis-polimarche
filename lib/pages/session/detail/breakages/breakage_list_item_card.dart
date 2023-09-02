@@ -2,9 +2,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/BreakageHappen.dart';
-import 'package:polimarche/model/comment_model.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/model/participation_model.dart';
 
 class BreakageListItem extends StatefulWidget {
   final BreakageHappen breakageHappened;

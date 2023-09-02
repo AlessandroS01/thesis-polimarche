@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/note_model.dart';
 import 'package:intl/intl.dart';
+import 'package:polimarche/model/note_model.dart';
 import 'package:polimarche/service/agenda_service.dart';
 
 class CardNoteListItem extends StatefulWidget {

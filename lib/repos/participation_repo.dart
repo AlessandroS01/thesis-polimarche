@@ -1,9 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:polimarche/model/participation_model.dart';
-
-import '../core/firestore/converter_int_time_of_day.dart';
-import '../model/note_model.dart';
 
 class ParticipationRepo {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

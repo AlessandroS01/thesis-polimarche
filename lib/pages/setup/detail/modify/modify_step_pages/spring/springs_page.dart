@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Spring.dart';
+import '../../../../../../model/spring_model.dart';
 
 class SpringsPage extends StatefulWidget {
-  final SetupService setupService;
 
   const SpringsPage(
-      {super.key, required this.setupService});
+      {super.key});
 
   static List<Spring?> springOf(BuildContext context) {
     final springProvider = Provider.of<SpringProvider>(context, listen: false);
@@ -26,7 +24,7 @@ class SpringsPage extends StatefulWidget {
 
 class _SpringsPageState extends State<SpringsPage> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late SpringProvider springProvider;
   bool _isDataInitialized = false;
@@ -75,7 +73,7 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontSpring = setupService.findFrontSpringParams().first;
+        //frontSpring = setupService.findFrontSpringParams().first;
 
         _controllerFrontCodifica.text = frontSpring.codifica;
         _controllerFrontAltezza.text = frontSpring.altezza.toString();
@@ -97,6 +95,7 @@ class _SpringsPageState extends State<SpringsPage> {
   }
 
   _checkNewValuesUsedFront(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -141,6 +140,8 @@ class _SpringsPageState extends State<SpringsPage> {
             "L'altezza della molla anteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
 
@@ -176,7 +177,7 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearSpring = setupService.findRearSpringParams().first;
+        //rearSpring = setupService.findRearSpringParams().first;
 
         _controllerRearCodifica.text = rearSpring.codifica;
         _controllerRearAltezza.text = rearSpring.altezza.toString();
@@ -198,6 +199,7 @@ class _SpringsPageState extends State<SpringsPage> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -242,13 +244,15 @@ class _SpringsPageState extends State<SpringsPage> {
             "L'altezza della molla posteriori deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       springProvider = Provider.of<SpringProvider>(context, listen: false);
@@ -256,7 +260,7 @@ class _SpringsPageState extends State<SpringsPage> {
       // FRONT SPRING DATA
       _useExistingParamsFront = springProvider.existingFront;
       frontSpring = springProvider.front!;
-      frontSpringParams = setupService.findFrontSpringParams();
+      //frontSpringParams = setupService.findFrontSpringParams();
       frontSpringIds = frontSpringParams.map((param) => param.id).toList();
       _controllerFrontCodifica.text = frontSpring.codifica;
       _controllerFrontAltezza.text = frontSpring.altezza.toString();
@@ -268,7 +272,7 @@ class _SpringsPageState extends State<SpringsPage> {
       // REAR SPRING DATA
       _useExistingParamsRear = springProvider.existingRear;
       rearSpring = springProvider.rear!;
-      rearSpringParams = setupService.findRearSpringParams();
+      //rearSpringParams = setupService.findRearSpringParams();
       rearSpringIds = rearSpringParams.map((param) => param.id).toList();
       _controllerRearCodifica.text = rearSpring.codifica;
       _controllerRearAltezza.text = rearSpring.altezza.toString();

@@ -1,18 +1,14 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Wheel.dart';
+import '../../../../../../model/wheel_model.dart';
 
 class WheelsPage extends StatefulWidget {
-  final SetupService setupService;
 
   const WheelsPage(
-      {super.key, required this.setupService});
+      {super.key});
 
   static List<Wheel?> wheelsOf(BuildContext context) {
     final wheelProvider = Provider.of<WheelProvider>(context, listen: false);
@@ -33,7 +29,7 @@ class WheelsPage extends StatefulWidget {
 
 class _WheelsPageState extends State<WheelsPage> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late WheelProvider wheelProvider;
   bool _isDataInitialized = false;
@@ -83,7 +79,7 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsFrontRight = newValue!;
       if (_useExistingParamsFrontRight) {
-        frontRightWheel = setupService.findFrontRightWheelParams().first;
+       // frontRightWheel = setupService.findFrontRightWheelParams().first;
 
         _controllerFrontRightCodifica.text = frontRightWheel.codifica;
         _controllerFrontRightPressure.text =
@@ -106,6 +102,7 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedFrontRight(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -154,6 +151,8 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
+
+     */
   }
 
 
@@ -191,7 +190,7 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsFrontLeft = newValue!;
       if (_useExistingParamsFrontLeft) {
-        frontLeftWheel = setupService.findFrontLeftWheelParams().first;
+        //frontLeftWheel = setupService.findFrontLeftWheelParams().first;
 
         _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
         _controllerFrontLeftPressure.text =
@@ -214,6 +213,7 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedFrontLeft(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -262,6 +262,8 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   // REAR RIGHT DATA
@@ -297,7 +299,7 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsRearRight = newValue!;
       if (_useExistingParamsRearRight) {
-        rearRightWheel = setupService.findRearRightWheelParams().first;
+        //rearRightWheel = setupService.findRearRightWheelParams().first;
 
         _controllerRearRightCodifica.text = rearRightWheel.codifica;
         _controllerRearRightPressure.text =
@@ -320,6 +322,7 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedRearRight(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -368,6 +371,8 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
+
+     */
   }
 
 
@@ -404,7 +409,7 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsRearLeft = newValue!;
       if (_useExistingParamsRearLeft) {
-        rearLeftWheel = setupService.findRearLeftWheelParams().first;
+        //rearLeftWheel = setupService.findRearLeftWheelParams().first;
 
         _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
         _controllerRearLeftPressure.text =
@@ -427,6 +432,7 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedRearLeft(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -475,6 +481,8 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
@@ -482,7 +490,7 @@ class _WheelsPageState extends State<WheelsPage> {
     // TODO: implement initState
     super.initState();
 
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       wheelProvider = Provider.of<WheelProvider>(context, listen: false);
@@ -490,7 +498,7 @@ class _WheelsPageState extends State<WheelsPage> {
       // FRONT RIGHT WHEEL DATA
       _useExistingParamsFrontRight = wheelProvider.existingFrontRight;
       frontRightWheel = wheelProvider.frontRight!;
-      frontRightWheelParams = setupService.findFrontRightWheelParams();
+      //frontRightWheelParams = setupService.findFrontRightWheelParams();
       frontRightWheelIds =
           frontRightWheelParams.map((param) => param.id).toList();
       _controllerFrontRightCodifica.text = frontRightWheel.codifica;
@@ -501,7 +509,7 @@ class _WheelsPageState extends State<WheelsPage> {
       // FRONT LEFT WHEEL DATA
       _useExistingParamsFrontLeft = wheelProvider.existingFrontLeft;
       frontLeftWheel = wheelProvider.frontLeft!;
-      frontLeftWheelParams = setupService.findFrontLeftWheelParams();
+      //frontLeftWheelParams = setupService.findFrontLeftWheelParams();
       frontLeftWheelIds =
           frontLeftWheelParams.map((param) => param.id).toList();
       _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
@@ -512,7 +520,7 @@ class _WheelsPageState extends State<WheelsPage> {
       // REAR RIGHT WHEEL DATA
       _useExistingParamsRearRight = wheelProvider.existingRearRight;
       rearRightWheel = wheelProvider.rearRight!;
-      rearRightWheelParams = setupService.findRearRightWheelParams();
+      //rearRightWheelParams = setupService.findRearRightWheelParams();
       rearRightWheelIds =
           rearRightWheelParams.map((param) => param.id).toList();
       _controllerRearRightCodifica.text = rearRightWheel.codifica;
@@ -523,7 +531,7 @@ class _WheelsPageState extends State<WheelsPage> {
       // REAR LEFT WHEEL DATA
       _useExistingParamsRearLeft = wheelProvider.existingRearLeft;
       rearLeftWheel = wheelProvider.rearLeft!;
-      rearLeftWheelParams = setupService.findRearLeftWheelParams();
+      //rearLeftWheelParams = setupService.findRearLeftWheelParams();
       rearLeftWheelIds =
           rearLeftWheelParams.map((param) => param.id).toList();
       _controllerRearLeftCodifica.text = rearLeftWheel.codifica;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:polimarche/model/Wheel.dart';
+import 'package:polimarche/model/wheel_model.dart';
 
 class WheelProviderCreate with ChangeNotifier {
   Wheel? _frontRight = null;

@@ -1,4 +1,4 @@
-import '../model/Spring.dart';
+import '../model/spring_model.dart';
 
 class SpringRepository {
   late List<Spring> listSprings;

@@ -2,12 +2,9 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:polimarche/model/Balance.dart';
-import 'package:polimarche/model/session_model.dart';
-import 'package:polimarche/model/Setup.dart';
-import 'package:polimarche/model/Spring.dart';
-import 'package:polimarche/model/track_model.dart';
-import 'package:polimarche/model/Wheel.dart';
+import 'package:polimarche/model/balance_model.dart';
+import 'package:polimarche/model/spring_model.dart';
+import 'package:polimarche/model/wheel_model.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/balance/balance_page_create.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/damper/damper_provider_create.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/damper/dampers_page_create.dart';
@@ -16,23 +13,19 @@ import 'package:polimarche/pages/setup/plan/create_step_pages/spring/spring_prov
 import 'package:polimarche/pages/setup/plan/create_step_pages/spring/springs_page_create.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/wheel/wheel_provider_create.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/wheel/wheels_page_create.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
-
-import '../../../../model/Damper.dart';
+import '../../../../model/damper_model.dart';
 import '../../../../model/member_model.dart';
 import 'balance/balance_provider_create.dart';
 import 'general_informations/general_information_provider_create.dart';
 
 class PlanSetupPage extends StatefulWidget {
-  final SetupService setupService;
   final Member loggedMember;
 
   const PlanSetupPage(
-      {super.key,
-      required this.setupService, required this.loggedMember});
+      {super.key, required this.loggedMember});
 
   @override
   State<PlanSetupPage> createState() => _PlanSetupPageState();
@@ -43,7 +36,7 @@ class _PlanSetupPageState extends State<PlanSetupPage>
   // GENERAL DATA
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   int _progress = 1;
   final _totalSteps = 5;
@@ -288,14 +281,14 @@ class _PlanSetupPageState extends State<PlanSetupPage>
       vsync: this,
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     // PAGES
     _stepPages = [
-      WheelsPageCreate(setupService: setupService),
-      BalancePageCreate(setupService: setupService),
-      SpringsPageCreate(setupService: setupService),
-      DampersPageCreate(setupService: setupService),
+      WheelsPageCreate(),
+      BalancePageCreate(),
+      SpringsPageCreate(),
+      DampersPageCreate(),
       GeneralInformationPageCreate()
     ];
   }
@@ -481,7 +474,7 @@ class _PlanSetupPageState extends State<PlanSetupPage>
 
     print("object");
 
-    setupService.createSetup(wheels, balance, springs, dampers, genInfos);
+    //setupService.createSetup(wheels, balance, springs, dampers, genInfos);
 
     showToast("Setup creato con successo");
 

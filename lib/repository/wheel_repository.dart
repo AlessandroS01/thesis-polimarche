@@ -1,4 +1,4 @@
-import '../model/Wheel.dart';
+import '../model/wheel_model.dart';
 
 class WheelRepository {
   late List<Wheel> listWheels;

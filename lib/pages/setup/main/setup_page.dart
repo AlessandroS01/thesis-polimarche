@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:polimarche/model/session_model.dart';
-import 'package:polimarche/model/Setup.dart';
-import 'package:polimarche/pages/session/main/session_list_item_card.dart';
+import 'package:polimarche/model/setup_model.dart';
 import 'package:polimarche/pages/setup/main/setup_list_item_card.dart';
-import 'package:polimarche/services/setup_service.dart';
 
 import '../../../model/member_model.dart';
 
 class SetupPage extends StatefulWidget {
   final Member loggedMember;
-  final SetupService setupService;
 
-  const SetupPage({super.key, required this.loggedMember, required this.setupService});
+  const SetupPage({super.key, required this.loggedMember});
 
   @override
   State<SetupPage> createState() => _SetupPageState();
@@ -22,7 +18,7 @@ class _SetupPageState extends State<SetupPage> {
   final backgroundColor = Colors.grey.shade300;
 
   late final Member loggedMember;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   final TextEditingController _searchBarController = TextEditingController();
 
@@ -50,14 +46,14 @@ class _SetupPageState extends State<SetupPage> {
   @override
   void initState() {
     super.initState();
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
     loggedMember = widget.loggedMember;
   }
 
   @override
   Widget build(BuildContext context) {
 
-    setupList = setupService.listSetups;
+    //setupList = setupService.listSetups;
     filterListByQuery(_searchBarController.text);
 
     return Scaffold(

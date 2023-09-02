@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../../model/Damper.dart';
 
 class GeneralInformationProvider with ChangeNotifier {
   late String _ala;

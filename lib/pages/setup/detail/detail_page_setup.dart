@@ -2,22 +2,19 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/pages/setup/main/setup_card.dart';
-import 'package:polimarche/services/setup_service.dart';
 
-import '../../../model/Setup.dart';
+import '../../../model/setup_model.dart';
+import 'setup_card.dart';
 import 'modify/modify_setup_page.dart';
 
 class DetailSetup extends StatefulWidget {
   final Setup setup;
   final Member loggedMember;
-  final SetupService setupService;
 
   const DetailSetup({
     super.key,
     required this.setup,
     required this.loggedMember,
-    required this.setupService,
   });
 
   @override
@@ -28,7 +25,7 @@ class _DetailSetupState extends State<DetailSetup> {
   final backgroundColor = Colors.grey.shade300;
   late final Member loggedMember;
   late final Setup setup;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
 
   bool isModifyButtonPressed = false;
@@ -45,7 +42,7 @@ class _DetailSetupState extends State<DetailSetup> {
 
     loggedMember = widget.loggedMember;
     setup = widget.setup;
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
   }
 
   @override
@@ -68,7 +65,7 @@ class _DetailSetupState extends State<DetailSetup> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // SETUP CARD
-            CardSetup(setup: setup, setupService: setupService,),
+            CardSetup(setup: setup),
 
             loggedMember.ruolo == "Manager" ||
                     loggedMember.ruolo == "Caporeparto"
@@ -133,7 +130,6 @@ class _DetailSetupState extends State<DetailSetup> {
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySetupPage(
               setup: setup,
-              setupService: setupService,
               updateStateDetailSetup: updateDetailSessionState,
                 ),
           ),

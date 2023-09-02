@@ -1,9 +1,5 @@
 import 'package:polimarche/model/BreakageHappen.dart';
 
-import '../model/Breakage.dart';
-import '../model/session_model.dart';
-import '../model/track_model.dart';
-
 class BreakageHappenRepository {
   late List<BreakageHappen> listBreakagesHappened;
 

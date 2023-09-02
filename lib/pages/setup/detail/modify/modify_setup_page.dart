@@ -2,13 +2,10 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:polimarche/model/Balance.dart';
-import 'package:polimarche/model/session_model.dart';
-import 'package:polimarche/model/Setup.dart';
-import 'package:polimarche/model/Spring.dart';
-import 'package:polimarche/model/track_model.dart';
-import 'package:polimarche/model/Wheel.dart';
-import 'package:polimarche/pages/home/home_page.dart';
+import 'package:polimarche/model/balance_model.dart';
+import 'package:polimarche/model/setup_model.dart';
+import 'package:polimarche/model/spring_model.dart';
+import 'package:polimarche/model/wheel_model.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/balance/balance_provider.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/damper_provider.dart';
@@ -19,23 +16,18 @@ import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/sp
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/springs_page.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheels_page.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:intl/intl.dart';
 
-import '../../../../model/Damper.dart';
-import 'modify_step_pages/wheel/wheel_provider.dart';
+import '../../../../model/damper_model.dart';
 
 class ModifySetupPage extends StatefulWidget {
   final Setup setup;
-  final SetupService setupService;
   final VoidCallback updateStateDetailSetup;
 
   const ModifySetupPage(
       {super.key,
       required this.setup,
-      required this.setupService,
       required this.updateStateDetailSetup});
 
   @override
@@ -48,7 +40,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
   late final Setup setup;
-  late final SetupService setupService;
+  //late final SetupService setupService;
   late final VoidCallback updateStateDetailSetup;
 
   int _progress = 1;
@@ -294,7 +286,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
     setup = widget.setup;
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
     updateStateDetailSetup = widget.updateStateDetailSetup;
 
     // FIRST STEP DATA
@@ -321,10 +313,10 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
     // PAGES
     _stepPages = [
-      WheelsPage(setupService: setupService),
-      BalancePage(setupService: setupService),
-      SpringsPage(setupService: setupService),
-      DampersPage(setupService: setupService),
+      //WheelsPage(setupService: setupService),
+      //BalancePage(setupService: setupService),
+      //SpringsPage(setupService: setupService),
+      //DampersPage(setupService: setupService),
       GeneralInformationPage()
     ];
   }
@@ -533,7 +525,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
       note
     ];
 
-    setupService.modifySetup(setup, wheels, balance, springs, dampers, genInfos);
+    //setupService.modifySetup(setup, wheels, balance, springs, dampers, genInfos);
 
     showToast("Setup modificata con successo");
 

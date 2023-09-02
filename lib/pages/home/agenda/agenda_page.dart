@@ -4,7 +4,7 @@ import 'package:polimarche/model/note_model.dart';
 import 'package:polimarche/pages/home/agenda/note_list_item_card.dart';
 import 'package:polimarche/service/agenda_service.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../../inherited_widgets/authorization_provider.dart';
+
 import '../../../model/member_model.dart';
 
 class AgendaPage extends StatefulWidget {

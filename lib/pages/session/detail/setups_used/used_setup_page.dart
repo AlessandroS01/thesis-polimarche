@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
 import 'package:polimarche/pages/session/detail/setups_used/used_setup_list_item_card.dart';
+import 'package:polimarche/pages/session/detail/setups_used/visualize_setup.dart';
+import 'package:polimarche/service/setup_service.dart';
+import 'package:polimarche/service/used_setup_service.dart';
 
-import '../../../../model/participation_model.dart';
-import '../../../../model/Setup.dart';
-import '../../../../model/UsedSetup.dart';
+import '../../../../model/setup_model.dart';
+import '../../../../model/used_setup_model.dart';
 
 class UsedSetupDuringSessionPage extends StatefulWidget {
   final int sessionId;
   final Member loggedMember;
 
   const UsedSetupDuringSessionPage(
-      {super.key,
-      required this.sessionId,
-      required this.loggedMember});
+      {super.key, required this.sessionId, required this.loggedMember});
 
   @override
   State<UsedSetupDuringSessionPage> createState() =>
@@ -30,39 +28,68 @@ class _UsedSetupDuringSessionPageState
   Offset distanceAdd = Offset(5, 5);
   double blurAdd = 12;
   bool isAddPressed = false;
+  bool isVisualizzaPressed = false;
+
+  late final UsedSetupService _usedSetupService;
+  late final SetupService _setupService;
 
   late final int sessionId;
   late final Member loggedMember;
 
-  late List<UsedSetup> listUsedSetups;
+  late List<Setup> _listSetups;
+  late List<UsedSetup> _listUsedSetups;
   late List<Setup> nonUsedSetups;
-  late String _newSetupUsedId;
+  late int _newSetupUsedId;
 
-  bool isVisualizzaPressed = false;
+  Future<void>? _dataLoading;
+  bool _isDataLoading = false;
 
   TextEditingController _controllerComment = TextEditingController();
 
-  void updateState() {
+  Future<void> _getUsedSetups() async {
+    _listUsedSetups =
+        await _usedSetupService.getUsedSetupsBySessionId(sessionId);
+
+    _listSetups = await _setupService.getSetups();
+  }
+
+  Future<void> _refreshState() async {
     setState(() {
-      //nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
-      if (nonUsedSetups.isNotEmpty) {
-        _newSetupUsedId = nonUsedSetups.first.id.toString();
-      } else {
-        _newSetupUsedId = "";
+      _isDataLoading = true;
+    });
+
+    await _getUsedSetups(); // Await here to ensure data is loaded
+
+    setState(() {
+      _isDataLoading = false;
+    });
+  }
+
+  Future<void> _findNonUsedSetups() async {
+    List<int> setupUsedIds =
+        _listUsedSetups.map((usedSetup) => usedSetup.setupId).toList();
+
+    setState(() {
+      nonUsedSetups = List.from(_listSetups);
+
+      nonUsedSetups.removeWhere((setup) => setupUsedIds.contains(setup.id));
+
+      if (nonUsedSetups.length != 0) {
+        _newSetupUsedId = nonUsedSetups.first.id;
       }
     });
   }
 
-  void _addNewSetupUsed() {
+  Future<void> _addNewSetupUsed() async {
     String newComment =
         _controllerComment.text.isNotEmpty ? _controllerComment.text : "";
 
-
-    //sessionService.addNewUsedSetup(sessionId, _newSetupUsedId, newComment);
+    await _usedSetupService.addNewUsedSetup(
+        sessionId, _newSetupUsedId, newComment);
 
     _controllerComment.clear();
 
-    updateState();
+    _refreshState();
 
     showToast(
         "Il setup è aggiunto alla lista dei setup utilizzati per la sessione corrente");
@@ -75,13 +102,9 @@ class _UsedSetupDuringSessionPageState
     super.initState();
     sessionId = widget.sessionId;
     loggedMember = widget.loggedMember;
-
-    //nonUsedSetups = sessionService.findSetupNotUsedDuringSession(sessionId);
-    if (nonUsedSetups.isNotEmpty) {
-      _newSetupUsedId = nonUsedSetups.first.id.toString();
-    } else {
-      _newSetupUsedId = "";
-    }
+    _usedSetupService = UsedSetupService();
+    _setupService = SetupService();
+    _dataLoading = _getUsedSetups();
   }
 
   @override
@@ -99,29 +122,51 @@ class _UsedSetupDuringSessionPageState
           child: Column(
             children: [
               Expanded(
-                  child: Container(
-                child: NotificationListener<OverscrollIndicatorNotification>(
-                    onNotification:
-                        (OverscrollIndicatorNotification overscroll) {
-                      overscroll
-                          .disallowIndicator(); // Disable the overscroll glow effect
-                      return false;
-                    },
-                    child: ListView.builder(
-                      itemCount: listUsedSetups.length,
-                      itemBuilder: (context, index) {
-                        final element = listUsedSetups[index];
-                        return UsedSetupListItem(
-                            loggedMember: loggedMember,
-                            usedSetup: element,
-                            updateStateUsedSetupPage: updateState);
+                  child: RefreshIndicator(
+                onRefresh: _refreshState,
+                child: Container(
+                  child: NotificationListener<OverscrollIndicatorNotification>(
+                      onNotification:
+                          (OverscrollIndicatorNotification overscroll) {
+                        overscroll
+                            .disallowIndicator(); // Disable the overscroll glow effect
+                        return false;
                       },
-                    )),
+                      child: FutureBuilder(
+                          future: _dataLoading,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.waiting ||
+                                _isDataLoading) {
+                              // Return a loading indicator if still waiting for data
+                              return Center(
+                                  child: CircularProgressIndicator(
+                                color: Colors.black,
+                              ));
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text('${snapshot.error}'),
+                              );
+                            } else {
+                              return ListView.builder(
+                                itemCount: _listUsedSetups.length,
+                                itemBuilder: (context, index) {
+                                  final element = _listUsedSetups[index];
+                                  return UsedSetupListItem(
+                                      loggedMember: loggedMember,
+                                      usedSetup: element,
+                                      setup: _listSetups.firstWhere((setup) =>
+                                          setup.id == element.setupId),
+                                      updateStateUsedSetupPage: _refreshState);
+                                },
+                              );
+                            }
+                          })),
+                ),
               )),
               loggedMember.ruolo == "Caporeparto" ||
                       loggedMember.ruolo == "Manager"
-                  ? _newSetupUsedButton(backgroundColor, distanceAdd, blurAdd,
-                      distanceVisualizza, blurVisualizza)
+                  ? _newSetupUsedButton(distanceVisualizza, blurVisualizza)
                   : Container()
             ],
           )),
@@ -151,8 +196,7 @@ class _UsedSetupDuringSessionPageState
     );
   }
 
-  Align _newSetupUsedButton(Color backgroundColor, Offset distanceAdd,
-      double blurAdd, Offset distanceVisualizza, double blurVisualizza) {
+  Align _newSetupUsedButton(Offset distanceVisualizza, double blurVisualizza) {
     return Align(
         alignment: Alignment.bottomRight,
         child: Padding(
@@ -162,6 +206,8 @@ class _UsedSetupDuringSessionPageState
                 setState(() => isAddPressed = true); // Reset the state
                 await Future.delayed(
                     const Duration(milliseconds: 200)); // Wait for animation
+
+                await _findNonUsedSetups();
 
                 if (nonUsedSetups.isEmpty) {
                   showToast(
@@ -206,7 +252,7 @@ class _UsedSetupDuringSessionPageState
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: const Text("Nuova partecipazione"),
+              title: const Text("NUOVO UTILIZZO"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -220,7 +266,7 @@ class _UsedSetupDuringSessionPageState
                                 padding: EdgeInsets.all(10),
                                 borderRadius: BorderRadius.circular(10),
                                 dropdownColor: backgroundColor,
-                                value: _newSetupUsedId,
+                                value: _newSetupUsedId.toString(),
                                 items: nonUsedSetups
                                     .map<DropdownMenuItem<String>>(
                                         (Setup value) {
@@ -232,7 +278,7 @@ class _UsedSetupDuringSessionPageState
                                 onChanged: (String? setupId) {
                                   if (setupId != null) {
                                     setState(() {
-                                      _newSetupUsedId = setupId;
+                                      _newSetupUsedId = int.parse(setupId);
                                     });
                                   }
                                 }),
@@ -246,6 +292,15 @@ class _UsedSetupDuringSessionPageState
                               isVisualizzaPressed = true); // Reset the state
                           await Future.delayed(const Duration(
                               milliseconds: 200)); // Wait for animation
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => VisualizeSetup(
+                                  setup: _listSetups.firstWhere(
+                                      (setup) => setup.id == _newSetupUsedId)),
+                            ),
+                          );
 
                           setState(() =>
                               isVisualizzaPressed = false); // Reset the state,
@@ -313,13 +368,27 @@ class _UsedSetupDuringSessionPageState
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text("Cancella"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CANCELLA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                 ),
                 TextButton(
-                  child: Text("Conferma"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CONFERMA",
+                    style: TextStyle(color: Colors.black),
+                  ),
                   onPressed: _addNewSetupUsed,
                 ),
               ],

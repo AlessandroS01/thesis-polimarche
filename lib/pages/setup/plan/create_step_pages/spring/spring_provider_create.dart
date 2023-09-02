@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../model/Spring.dart';
+
+import '../../../../../../model/spring_model.dart';
 
 class SpringProviderCreate with ChangeNotifier {
   Spring? _front = null;

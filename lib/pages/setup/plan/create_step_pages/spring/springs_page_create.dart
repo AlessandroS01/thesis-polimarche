@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/spring/spring_provider_create.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Spring.dart';
+import '../../../../../../model/spring_model.dart';
 
 class SpringsPageCreate extends StatefulWidget {
-  final SetupService setupService;
 
-  const SpringsPageCreate({super.key, required this.setupService});
+  const SpringsPageCreate({super.key});
 
   static List<Spring?> springOf(BuildContext context) {
     final springProvider =
@@ -26,7 +24,7 @@ class SpringsPageCreate extends StatefulWidget {
 
 class _SpringsPageCreateState extends State<SpringsPageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late SpringProviderCreate springProvider;
   bool _isDataInitialized = false;
@@ -75,7 +73,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontSpring = setupService.findFrontSpringParams().first;
+        //frontSpring = setupService.findFrontSpringParams().first;
 
         _controllerFrontCodifica.text = frontSpring.codifica;
         _controllerFrontAltezza.text = frontSpring.altezza.toString();
@@ -97,6 +95,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
   }
 
   _checkNewValuesUsedFront(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -143,6 +142,8 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
             "L'altezza della molla anteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   // REAR DATA
@@ -177,7 +178,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearSpring = setupService.findRearSpringParams().first;
+        //rearSpring = setupService.findRearSpringParams().first;
 
         _controllerRearCodifica.text = rearSpring.codifica;
         _controllerRearAltezza.text = rearSpring.altezza.toString();
@@ -199,6 +200,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -245,13 +247,15 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
             "L'altezza della molla posteriori deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       springProvider =
@@ -259,7 +263,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
 
       // FRONT SPRING DATA
       _useExistingParamsFront = springProvider.existingFront;
-      frontSpringParams = setupService.findFrontSpringParams();
+      //frontSpringParams = setupService.findFrontSpringParams();
       frontSpringIds = frontSpringParams.map((param) => param.id).toList();
       if (springProvider.front != null) {
         frontSpring = springProvider.front!;
@@ -271,7 +275,7 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
 
       // REAR SPRING DATA
       _useExistingParamsRear = springProvider.existingRear;
-      rearSpringParams = setupService.findRearSpringParams();
+      //rearSpringParams = setupService.findRearSpringParams();
       rearSpringIds = rearSpringParams.map((param) => param.id).toList();
       if (springProvider.rear != null) {
         rearSpring = springProvider.rear!;

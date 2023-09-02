@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/pages/session/main/session_page.dart';
 
 import '../../inherited_widgets/authorization_provider.dart';
 

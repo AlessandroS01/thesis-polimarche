@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../model/Balance.dart';
+
+import '../../../../../../model/balance_model.dart';
 
 class BalanceProviderCreate with ChangeNotifier {
   Balance? _front = null;

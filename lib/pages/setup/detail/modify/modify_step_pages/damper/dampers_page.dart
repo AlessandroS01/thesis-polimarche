@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/Wheel.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/damper/damper_provider.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Damper.dart';
+import '../../../../../../model/damper_model.dart';
 
 class DampersPage extends StatefulWidget {
-  final SetupService setupService;
 
-  const DampersPage({super.key, required this.setupService});
+  const DampersPage({super.key});
 
   static List<Damper?> damperOf(BuildContext context) {
     final damperProvider = Provider.of<DamperProvider>(context, listen: false);
@@ -26,7 +23,7 @@ class DampersPage extends StatefulWidget {
 
 class _DampersPageState extends State<DampersPage> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late DamperProvider damperProvider;
   bool _isDataInitialized = false;
@@ -75,7 +72,7 @@ class _DampersPageState extends State<DampersPage> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontDamper = setupService.findFrontDamperParams().first;
+        //frontDamper = setupService.findFrontDamperParams().first;
 
         _controllerFrontLsr.text = frontDamper.lsr.toString();
       _controllerFrontHsr.text = frontDamper.hsr.toString();
@@ -97,6 +94,7 @@ class _DampersPageState extends State<DampersPage> {
   }
 
   _checkNewValuesUsedFront(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -141,6 +139,8 @@ class _DampersPageState extends State<DampersPage> {
             "Hsr degli ammortizzatori anteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
 
@@ -176,7 +176,7 @@ class _DampersPageState extends State<DampersPage> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearDamper = setupService.findRearDamperParams().first;
+        //rearDamper = setupService.findRearDamperParams().first;
 
         _controllerRearLsr.text = rearDamper.lsr.toString();
       _controllerRearHsr.text = rearDamper.hsr.toString();
@@ -198,6 +198,7 @@ class _DampersPageState extends State<DampersPage> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -242,13 +243,15 @@ class _DampersPageState extends State<DampersPage> {
             "Hsr degli ammortizzatori posteriori deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       damperProvider = Provider.of<DamperProvider>(context, listen: false);
@@ -256,7 +259,7 @@ class _DampersPageState extends State<DampersPage> {
       // FRONT Damper DATA
       _useExistingParamsFront = damperProvider.existingFront;
       frontDamper = damperProvider.front!;
-      frontDamperParams = setupService.findFrontDamperParams();
+      //frontDamperParams = setupService.findFrontDamperParams();
       frontDamperIds = frontDamperParams.map((param) => param.id).toList();
       _controllerFrontLsr.text = frontDamper.lsr.toString();
       _controllerFrontHsr.text = frontDamper.hsr.toString();
@@ -268,7 +271,7 @@ class _DampersPageState extends State<DampersPage> {
       // REAR Damper DATA
       _useExistingParamsRear = damperProvider.existingRear;
       rearDamper = damperProvider.rear!;
-      rearDamperParams = setupService.findRearDamperParams();
+      //rearDamperParams = setupService.findRearDamperParams();
       rearDamperIds = rearDamperParams.map((param) => param.id).toList();
       _controllerRearLsr.text = rearDamper.lsr.toString();
       _controllerRearHsr.text = rearDamper.hsr.toString();

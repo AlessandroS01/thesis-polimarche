@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../model/Damper.dart';
+
+import '../../../../../../model/damper_model.dart';
 
 class DamperProvider with ChangeNotifier {
   late Damper? _front;

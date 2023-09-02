@@ -1,4 +1,4 @@
-import '../model/Damper.dart';
+import '../model/damper_model.dart';
 
 class DamperRepository {
   late List<Damper> listDampers;

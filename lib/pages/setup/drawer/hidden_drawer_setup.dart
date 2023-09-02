@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
-import 'package:polimarche/pages/session/plan/plan_session_page.dart';
-import 'package:polimarche/pages/session/main/session_page.dart';
 import 'package:polimarche/pages/setup/main/setup_page.dart';
-import 'package:polimarche/services/setup_service.dart';
-import '../../../inherited_widgets/setup_state.dart';
+
 import '../../../model/member_model.dart';
 import '../plan/create_step_pages/create_setup_page.dart';
 
@@ -20,7 +17,6 @@ class HiddenDrawerSetup extends StatefulWidget {
 class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
   final backgroundColorMenu = Colors.grey.shade700;
   final backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
 
   final TextStyle textStyle = TextStyle(color: Colors.white, fontSize: 18);
 
@@ -30,7 +26,6 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setupService = SetupService();
 
     _pages = [
       ScreenHiddenDrawer(
@@ -40,8 +35,7 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
               selectedStyle: textStyle,
               colorLineSelected: Colors.white),
           SetupPage(
-            loggedMember: widget.loggedMember,
-            setupService: setupService,
+            loggedMember: widget.loggedMember
           )),
       if (widget.loggedMember.ruolo == "Manager" ||
           widget.loggedMember.ruolo == "Caporeparto")
@@ -52,7 +46,6 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
                 selectedStyle: textStyle,
                 colorLineSelected: Colors.white),
             PlanSetupPage(
-              setupService: setupService,
               loggedMember: widget.loggedMember,
             )),
     ];
@@ -60,9 +53,7 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
 
   @override
   Widget build(BuildContext context) {
-    return SetupInheritedState(
-      setupService: setupService,
-      child: HiddenDrawerMenu(
+    return HiddenDrawerMenu(
         actionsAppBar: [
           Listener(
             onPointerDown: (_) => Navigator.pop(context),
@@ -94,7 +85,6 @@ class _HiddenDrawerSetupState extends State<HiddenDrawerSetup> {
             blurRadius: 40
           )
         ],
-      ),
     );
   }
 }

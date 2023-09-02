@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/plan/create_step_pages/balance/balance_provider_create.dart';
-import 'package:polimarche/services/setup_service.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../../model/Balance.dart';
+import '../../../../../../model/balance_model.dart';
 
 class BalancePageCreate extends StatefulWidget {
-  final SetupService setupService;
 
-  const BalancePageCreate({super.key, required this.setupService});
+  const BalancePageCreate({super.key});
 
   static List<Balance?> balanceOf(BuildContext context) {
     final balanceProvider =
@@ -29,7 +27,7 @@ class BalancePageCreate extends StatefulWidget {
 
 class _BalancePageCreateState extends State<BalancePageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
-  late final SetupService setupService;
+  //late final SetupService setupService;
 
   late BalanceProviderCreate balanceProvider;
   bool _isDataInitialized = false;
@@ -74,7 +72,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        frontBalance = setupService.findFrontBalanceParams().first;
+        //frontBalance = setupService.findFrontBalanceParams().first;
 
         _controllerFrontPeso.text = frontBalance.peso.toString();
         _controllerFrontFrenata.text = frontBalance.frenata.toString();
@@ -92,6 +90,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
   }
 
   _checkNewValuesUsedFront(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -137,6 +136,8 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
         showToast("La frenata anteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   // REAR DATA
@@ -167,7 +168,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        rearBalance = setupService.findRearBalanceParams().first;
+        //rearBalance = setupService.findRearBalanceParams().first;
 
         _controllerRearPeso.text = rearBalance.peso.toString();
         _controllerRearFrenata.text = rearBalance.frenata.toString();
@@ -185,6 +186,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
   }
 
   _checkNewValuesUsedRear(String? text) {
+    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -229,6 +231,8 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
         showToast("La frenata posteriore deve rappresentare un numero");
       }
     }
+
+     */
   }
 
   @override
@@ -236,7 +240,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     // TODO: implement initState
     super.initState();
 
-    setupService = widget.setupService;
+    //setupService = widget.setupService;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       balanceProvider =
@@ -244,7 +248,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
 
       // FRONT BALANCE DATA
       _useExistingParamsFront = balanceProvider.existingFront;
-      frontBalanceParams = setupService.findFrontBalanceParams();
+      //frontBalanceParams = setupService.findFrontBalanceParams();
       frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
       if (balanceProvider.front != null) {
         frontBalance = balanceProvider.front!;
@@ -254,7 +258,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
 
       // REAR BALANCE DATA
       _useExistingParamsRear = balanceProvider.existingRear;
-      rearBalanceParams = setupService.findRearBalanceParams();
+      //rearBalanceParams = setupService.findRearBalanceParams();
       rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
       if (balanceProvider.rear != null) {
         rearBalance = balanceProvider.rear!;

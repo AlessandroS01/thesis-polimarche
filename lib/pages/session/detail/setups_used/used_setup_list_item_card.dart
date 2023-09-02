@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/comment_model.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/model/participation_model.dart';
-import 'package:polimarche/model/UsedSetup.dart';
+import 'package:polimarche/model/setup_model.dart';
+import 'package:polimarche/model/used_setup_model.dart';
+import 'package:polimarche/pages/session/detail/setups_used/visualize_setup.dart';
 
 class UsedSetupListItem extends StatefulWidget {
   final UsedSetup usedSetup;
+  final Setup setup;
   final VoidCallback updateStateUsedSetupPage;
   final Member loggedMember;
 
   const UsedSetupListItem(
       {required this.usedSetup,
       required this.updateStateUsedSetupPage,
-      required this.loggedMember});
+      required this.loggedMember,
+      required this.setup});
 
   @override
   State<UsedSetupListItem> createState() => _UsedSetupListItemState();
@@ -22,6 +23,7 @@ class UsedSetupListItem extends StatefulWidget {
 
 class _UsedSetupListItemState extends State<UsedSetupListItem> {
   late final UsedSetup usedSetup;
+  late final Setup setup;
   late final VoidCallback updateStateUsedSetupPage;
   late final Member loggedMember;
 
@@ -33,6 +35,7 @@ class _UsedSetupListItemState extends State<UsedSetupListItem> {
     usedSetup = widget.usedSetup;
     updateStateUsedSetupPage = widget.updateStateUsedSetupPage;
     loggedMember = widget.loggedMember;
+    setup = widget.setup;
 
     super.initState();
   }
@@ -72,7 +75,7 @@ class _UsedSetupListItemState extends State<UsedSetupListItem> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    "Setup: ${usedSetup.setup.id}",
+                    "Setup: ${usedSetup.setupId}",
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -98,6 +101,14 @@ class _UsedSetupListItemState extends State<UsedSetupListItem> {
         setState(() => isVisualizzaPressed = true); // Reset the state
         await Future.delayed(
             const Duration(milliseconds: 200)); // Wait for animation
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) =>
+                VisualizeSetup(setup: setup),
+          ),
+        );
 
         setState(() => isVisualizzaPressed = false); // Reset the state,
       },

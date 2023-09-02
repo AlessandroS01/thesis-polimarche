@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
-import '../core/firestore/converter_int_time_of_day.dart';
-import '../model/note_model.dart';
 import '../model/track_model.dart';
 
 class TrackRepo {

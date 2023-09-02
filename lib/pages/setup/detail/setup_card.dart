@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-import 'package:intl/intl.dart';
-import 'package:polimarche/model/Balance.dart';
-import 'package:polimarche/services/setup_service.dart';
-import '../../../model/Damper.dart';
-import '../../../model/session_model.dart';
-import '../../../model/Setup.dart';
-import '../../../model/Spring.dart';
-import '../../../model/Wheel.dart';
+import 'package:polimarche/model/balance_model.dart';
+
+import '../../../model/damper_model.dart';
+import '../../../model/setup_model.dart';
+import '../../../model/spring_model.dart';
+import '../../../model/wheel_model.dart';
 
 class CardSetup extends StatelessWidget {
   final Setup setup;
-  final SetupService setupService;
 
-  CardSetup({super.key, required this.setup, required this.setupService});
+  CardSetup({super.key, required this.setup});
 
   @override
   Widget build(BuildContext context) {

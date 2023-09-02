@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:polimarche/model/Wheel.dart';
 
-import '../../../../../../model/Balance.dart';
+import '../../../../../../model/balance_model.dart';
 
 class BalanceProvider with ChangeNotifier {
   late Balance? _front;

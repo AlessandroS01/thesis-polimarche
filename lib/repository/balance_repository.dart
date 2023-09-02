@@ -1,4 +1,4 @@
-import '../model/Balance.dart';
+import '../model/balance_model.dart';
 
 class BalanceRepository {
   late List<Balance> listBalances;

@@ -1,11 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../core/firestore/converter_int_time_of_day.dart';
 import '../model/comment_model.dart';
-import '../model/note_model.dart';
-import '../model/track_model.dart';
 
 class CommentRepo {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

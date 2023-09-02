@@ -103,7 +103,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
     _controllerNewDriverParticipationCambioMil.text = "000";
   }
 
-  void _addNewDriverParticipation() async {
+  Future<void> _addNewDriverParticipation() async {
     int? cambioHour =
         int.tryParse(_controllerNewDriverParticipationCambioHour.text);
     int? cambioMin =

@@ -1,11 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/service/driver_service.dart';
 
 import '../../../model/member_model.dart';
-import '../../../model/Workshop.dart';
 import '../../auth/auth.dart';
+import '../../model/balance_model.dart';
+import '../../model/damper_model.dart';
+import '../../model/setup_model.dart';
+import '../../model/spring_model.dart';
+import '../../model/wheel_model.dart';
 import '../../service/member_service.dart';
 
 class LoginForm extends StatefulWidget {
@@ -22,12 +26,10 @@ class _LoginFormState extends State<LoginForm> {
 
   late final Member loggedMember;
 
-
   String? errorMessage = '';
 
   bool _isPasswordVisible = false;
   bool isLoginPressed = false;
-
 
   void _togglePasswordVisibility() async {
     setState(() {
@@ -35,28 +37,150 @@ class _LoginFormState extends State<LoginForm> {
     });
   }
 
+  /*Future<void> creaSetup() async {
+    List<Wheel> wheels = [
+      Wheel(
+        id: 1,
+        codifica: 'setup ant dxsdfsdfsdfsdfds',
+        posizione: 'Ant dx',
+        frontale: 'setup ant dx',
+        superiore: 'setup ant dx',
+        pressione: 2,
+      ),
+      Wheel(
+        id: 2,
+        codifica: 'setup ant sx',
+        posizione: 'Ant sx',
+        frontale: 'setup ant sx',
+        superiore: 'setup ant sx',
+        pressione: 11111.0000,
+      ),
+      Wheel(
+        id: 3,
+        codifica: 'setup post dx',
+        posizione: 'Post dx',
+        frontale: 'setup post dx',
+        superiore: 'setup post dx',
+        pressione: 123.4500,
+      ),
+      Wheel(
+        id: 4,
+        codifica: 'setup post sx',
+        posizione: 'Post sx',
+        frontale: 'setup post sx',
+        superiore: 'setup post sx',
+        pressione: 123.4500,
+      ),
+    ];
+    List<Balance> balance = [
+      Balance(
+        id: 1,
+        posizione: 'Ant',
+        frenata: 48.2,
+        peso: 53,
+      ),
+      Balance(
+        id: 2,
+        posizione: 'Post',
+        frenata: 51.8,
+        peso: 47,
+      ),
+
+    ];
+    List<Spring> spring = [
+      Spring(
+        id: 1,
+        posizione: 'Ant',
+        codifica: 'anteriiore',
+        posizioneArb: 'Ant',
+        rigidezzaArb: 'ABCD1234',
+        altezza: 30.0000,
+      ),
+      Spring(
+        id: 2,
+        posizione: 'Post',
+        codifica: 'reaasdr',
+        posizioneArb: 'Ant',
+        rigidezzaArb: 'ABCD1234',
+        altezza: 30.0000,
+      ),
+    ];
+    List<Damper> damper = [
+      Damper(
+        id: 1,
+        posizione: 'Ant',
+        lsr: 9.10,
+        hsr: 10.00,
+        lsc: 10.00,
+        hsc: 10.00,
+      ),
+      Damper(
+        id: 2,
+        posizione: 'Post',
+        lsr: 9.10,
+        hsr: 10.00,
+        lsc: 10.00,
+        hsc: 10.00,
+      ),
+    ];
+    Setup setup = Setup(
+      id: 1,
+      ala: 'ala',
+      note: 'note',
+      wheelAntDx: wheels[0],
+      wheelAntSx: wheels[1],
+      wheelPostDx: wheels[2],
+      wheelPostSx: wheels[3],
+      balanceAnt: balance[0],
+      balancePost: balance[1],
+      springAnt: spring[0],
+      springPost: spring[1],
+      damperAnt: damper[0],
+      damperPost: damper[1],
+    );
+
+    FirebaseFirestore.instance.collection('setup').doc("2").set(setup.toMap());
+
+    wheels.forEach((element) {
+      FirebaseFirestore.instance.collection('wheel').doc((element.id).toString()).set(element.toMap());
+    });
+    balance.forEach((element) {
+      FirebaseFirestore.instance.collection('balance').doc((element.id).toString()).set(element.toMap());
+    });
+    spring.forEach((element) {
+      FirebaseFirestore.instance.collection('spring').doc((element.id).toString()).set(element.toMap());
+    });
+    damper.forEach((element) {
+      FirebaseFirestore.instance.collection('damper').doc((element.id).toString()).set(element.toMap());
+    });
+  }
+
+   */
+
   Future<User?> signInWithEmailAndPassword() async {
     User? user;
-    try{
-      final String emailStr = "S" + _usernameController.text + "@studenti.univpm.it";
+    try {
+      final String emailStr =
+          "S" + _usernameController.text + "@studenti.univpm.it";
       final String password = _passwordController.text;
 
-      await Auth().signInWithEmailAndPassword(
-          email: emailStr,
-          password: password
-      );
+      //await creaSetup();
+
+      await Auth()
+          .signInWithEmailAndPassword(email: emailStr, password: password);
 
       user = Auth().currentUser;
     } on FirebaseAuthException catch (e) {
-        if (e.code == "user-not-found") {
-          setState(() {
-            errorMessage = "Nessun utente risulta registrato con le credenziali inserite.";
-          });
-        } else {
-          setState(() {
-            errorMessage = "Immettere matricola e password.";
-          });
-        }
+      if (e.code == "user-not-found") {
+        setState(() {
+          errorMessage =
+              "Nessun utente risulta registrato con le credenziali inserite.";
+        });
+      } else {
+        setState(() {
+          errorMessage = "Immettere matricola e password.";
+        });
+      }
     }
     return user;
   }
