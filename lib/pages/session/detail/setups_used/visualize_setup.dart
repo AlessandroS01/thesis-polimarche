@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/setup_model.dart';
-import 'package:polimarche/model/used_setup_model.dart';
+
 import '../../../setup/detail/setup_card.dart';
 
 class VisualizeSetup extends StatelessWidget {

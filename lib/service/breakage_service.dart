@@ -1,8 +1,5 @@
-import 'package:polimarche/model/used_setup_model.dart';
-
 import '../model/breakage_model.dart';
 import '../repos/breakage_repo.dart';
-import '../repos/used_setup_repo.dart';
 
 class BreakageService {
   final BreakageRepo _breakageRepo = BreakageRepo();

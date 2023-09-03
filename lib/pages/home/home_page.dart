@@ -17,11 +17,13 @@ class _HomePageState extends State<HomePage> {
   bool isSetupPressed = false;
   bool isTelemetryPressed = false;
 
+  final backgroundColor = Colors.grey.shade300;
+  late Member loggedMember;
+
   @override
   Widget build(BuildContext context) {
-    final loggedMember = AuthorizationProvider.of(context)!.loggedMember;
+    loggedMember = AuthorizationProvider.of(context)!.loggedMember;
 
-    final backgroundColor = Colors.grey.shade300;
 
     Offset distanceSession = isSessionPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceProblem = isProblemPressed ? Offset(5, 5) : Offset(18, 18);
@@ -170,6 +172,8 @@ class _HomePageState extends State<HomePage> {
       onPointerUp: (_) async {
         await Future.delayed(
             const Duration(milliseconds: 150)); // Wait for animation
+
+        Navigator.pushNamed(context, '/problem', arguments: loggedMember);
         setState(() => isProblemPressed = false); // Reset the state
       },
       onPointerDown: (_) => setState(() => isProblemPressed = true),

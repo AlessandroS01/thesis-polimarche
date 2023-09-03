@@ -5,8 +5,8 @@ import 'package:polimarche/model/member_model.dart';
 
 import '../../../model/setup_model.dart';
 import '../../../service/setup_service.dart';
-import 'setup_card.dart';
 import 'modify/modify_setup_page.dart';
+import 'setup_card.dart';
 
 class DetailSetup extends StatefulWidget {
   final Setup setup;

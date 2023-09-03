@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polimarche/pages/home/main_page.dart';
+import 'package:polimarche/pages/problem/main/problem_page.dart';
 import 'package:polimarche/pages/session/drawer/hidden_drawer_session.dart';
 import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
 
@@ -35,6 +36,11 @@ class AppWidget extends StatelessWidget {
           final Member loggedMember =
               ModalRoute.of(context)?.settings.arguments as Member;
           return HiddenDrawerSetup(loggedMember: loggedMember);
+        },
+        '/problem': (context) {
+          final Member loggedMember =
+              ModalRoute.of(context)?.settings.arguments as Member;
+          return ProblemPage(loggedMember: loggedMember);
         },
       },
     );

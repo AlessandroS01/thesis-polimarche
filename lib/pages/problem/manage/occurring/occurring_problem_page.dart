@@ -1,56 +1,62 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:polimarche/model/driver_model.dart';
 import 'package:polimarche/model/member_model.dart';
-import 'package:polimarche/pages/session/detail/setups_used/used_setup_list_item_card.dart';
-import 'package:polimarche/pages/session/detail/setups_used/visualize_setup.dart';
+import 'package:polimarche/model/occurring_problem_model.dart';
+import 'package:polimarche/model/setup_model.dart';
+import 'package:polimarche/model/solved_problem_model.dart';
+import 'package:polimarche/pages/problem/manage/occurring/occurring_problem_list_item_card.dart';
+import 'package:polimarche/pages/session/detail/participation/participation_list_item_card.dart';
+import 'package:polimarche/service/driver_service.dart';
+import 'package:polimarche/service/occurring_problem_service.dart';
+import 'package:polimarche/service/participation_service.dart';
 import 'package:polimarche/service/setup_service.dart';
-import 'package:polimarche/service/used_setup_service.dart';
+import 'package:polimarche/service/solved_problem_service.dart';
 
-import '../../../../model/setup_model.dart';
-import '../../../../model/used_setup_model.dart';
+import '../../../../model/participation_model.dart';
+import '../../../session/detail/setups_used/visualize_setup.dart';
 
-class UsedSetupDuringSessionPage extends StatefulWidget {
-  final int sessionId;
-  final Member loggedMember;
+class OccurringProblemPage extends StatefulWidget {
+  final int problemId;
 
-  const UsedSetupDuringSessionPage(
-      {super.key, required this.sessionId, required this.loggedMember});
+  const OccurringProblemPage({super.key, required this.problemId});
 
   @override
-  State<UsedSetupDuringSessionPage> createState() =>
-      _UsedSetupDuringSessionPageState();
+  State<OccurringProblemPage> createState() => _OccurringProblemPageState();
 }
 
-class _UsedSetupDuringSessionPageState
-    extends State<UsedSetupDuringSessionPage> {
+class _OccurringProblemPageState extends State<OccurringProblemPage> {
   final backgroundColor = Colors.grey.shade300;
   Offset distanceAdd = Offset(5, 5);
   double blurAdd = 12;
   bool isAddPressed = false;
-  bool isVisualizzaPressed = false;
+  bool isVisualizzaSetupPressed = false;
 
-  late final UsedSetupService _usedSetupService;
+  late final OccurringProblemService _occurringProblemService;
+  late final SolvedProblemService _solvedProblemService;
   late final SetupService _setupService;
-
-  late final int sessionId;
-  late final Member loggedMember;
-
-  late List<Setup> _listSetups;
-  late List<UsedSetup> _listUsedSetups;
-  late List<Setup> nonUsedSetups;
-  late int _newSetupUsedId;
 
   Future<void>? _dataLoading;
   bool _isDataLoading = false;
 
-  TextEditingController _controllerComment = TextEditingController();
+  late List<OccurringProblem> _occurringProblemList;
+  late List<SolvedProblem> _solvedProblemList;
+  late List<Setup> _setupList;
 
-  Future<void> _getUsedSetups() async {
-    _listUsedSetups =
-        await _usedSetupService.getUsedSetupsBySessionId(sessionId);
+  late List<Setup> _listSetupsNotFacingProblem;
+  late int _newSetupIdWithProblem;
 
-    _listSetups = await _setupService.getSetups();
+  TextEditingController _controllerDescription = TextEditingController();
+
+  Future<void> _getOccurringProblems() async {
+    _occurringProblemList = await _occurringProblemService
+        .getOccurringProblemsByProblemId(widget.problemId);
+
+    _solvedProblemList = await _solvedProblemService
+        .getSolvedProblemsByProblemId(widget.problemId);
+
+    _setupList = await _setupService.getSetups();
   }
 
   Future<void> _refreshState() async {
@@ -58,144 +64,119 @@ class _UsedSetupDuringSessionPageState
       _isDataLoading = true;
     });
 
-    await _getUsedSetups(); // Await here to ensure data is loaded
+    await _getOccurringProblems(); // Await here to ensure data is loaded
 
     setState(() {
       _isDataLoading = false;
     });
   }
 
-  Future<void> _findNonUsedSetups() async {
-    List<int> setupUsedIds =
-        _listUsedSetups.map((usedSetup) => usedSetup.setupId).toList();
+  Future<void> _findSetupsNotFacingProblem() async {
+    List<int> occurringProblemSetupIds = _occurringProblemList
+        .map((occurringProblem) => occurringProblem.setupId)
+        .toList();
+    List<int> solvedProblemSetupIds = _solvedProblemList
+        .map((solvedProblem) => solvedProblem.setupId)
+        .toList();
 
     setState(() {
-      nonUsedSetups = List.from(_listSetups);
+      _listSetupsNotFacingProblem = List.from(_setupList);
 
-      nonUsedSetups.removeWhere((setup) => setupUsedIds.contains(setup.id));
+      _listSetupsNotFacingProblem.removeWhere((setup) =>
+          occurringProblemSetupIds.contains(setup.id) ||
+          solvedProblemSetupIds.contains(setup.id));
 
-      if (nonUsedSetups.length != 0) {
-        _newSetupUsedId = nonUsedSetups.first.id;
+      if (_listSetupsNotFacingProblem.length != 0) {
+        _newSetupIdWithProblem = _listSetupsNotFacingProblem.first.id;
       }
     });
   }
 
-  Future<void> _addNewSetupUsed() async {
-    String newComment =
-        _controllerComment.text.isNotEmpty ? _controllerComment.text : "";
+  Future<void> _addNewOccurringProblem() async {
+    await _occurringProblemService.addNewOccurringProblem(
+        widget.problemId, _controllerDescription.text, _newSetupIdWithProblem);
 
-    await _usedSetupService.addNewUsedSetup(
-        sessionId, _newSetupUsedId, newComment);
-
-    _controllerComment.clear();
-
-    _refreshState();
-
-    showToast(
-        "Il setup è aggiunto alla lista dei setup utilizzati per la sessione corrente");
+    showToast("Il problema riscontrato su un nuovo setup è stato salvato");
+    _controllerDescription.clear();
 
     Navigator.pop(context);
+
+    _refreshState();
   }
 
   @override
   void initState() {
     super.initState();
-    sessionId = widget.sessionId;
-    loggedMember = widget.loggedMember;
-    _usedSetupService = UsedSetupService();
+
+    _occurringProblemService = OccurringProblemService();
+    _solvedProblemService = SolvedProblemService();
     _setupService = SetupService();
-    _dataLoading = _getUsedSetups();
+
+    _dataLoading = _getOccurringProblems();
   }
 
   @override
   Widget build(BuildContext context) {
-
     Offset distanceVisualizza =
-        isVisualizzaPressed ? Offset(5, 5) : Offset(8, 8);
-    double blurVisualizza = isVisualizzaPressed ? 5 : 10;
+        isVisualizzaSetupPressed ? Offset(5, 5) : Offset(8, 8);
+    double blurVisualizza = isVisualizzaSetupPressed ? 5 : 10;
 
-    return Scaffold(
-      appBar: _appBar(backgroundColor),
-      body: Container(
-          decoration: BoxDecoration(color: backgroundColor),
-          child: Column(
-            children: [
-              Expanded(
-                  child: RefreshIndicator(
-                onRefresh: _refreshState,
-                child: Container(
-                  child: NotificationListener<OverscrollIndicatorNotification>(
-                      onNotification:
-                          (OverscrollIndicatorNotification overscroll) {
-                        overscroll
-                            .disallowIndicator(); // Disable the overscroll glow effect
-                        return false;
+    return Container(
+        margin: EdgeInsets.only(top: 10),
+        decoration: BoxDecoration(color: backgroundColor),
+        child: Column(
+          children: [
+            Expanded(
+                child: RefreshIndicator(
+              onRefresh: _refreshState,
+              child: Container(
+                child: NotificationListener<OverscrollIndicatorNotification>(
+                    onNotification:
+                        (OverscrollIndicatorNotification overscroll) {
+                      overscroll
+                          .disallowIndicator(); // Disable the overscroll glow effect
+                      return false;
+                    },
+                    child: FutureBuilder(
+                      future: _dataLoading,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            _isDataLoading) {
+                          // Return a loading indicator if still waiting for data
+                          return Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ));
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('${snapshot.error}'),
+                          );
+                        } else {
+                          return ListView.builder(
+                              itemCount: _occurringProblemList.length,
+                              itemBuilder: (context, index) {
+                                final element = _occurringProblemList[index];
+                                return OccurringProblemListItem(
+                                  occurringProblem: element,
+                                  updateStateOccurringProblemPage:
+                                      _refreshState,
+                                  setup: _setupList.firstWhere(
+                                      (setup) => setup.id == element.setupId),
+                                );
+                              });
+                        }
                       },
-                      child: FutureBuilder(
-                          future: _dataLoading,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                    ConnectionState.waiting ||
-                                _isDataLoading) {
-                              // Return a loading indicator if still waiting for data
-                              return Center(
-                                  child: CircularProgressIndicator(
-                                color: Colors.black,
-                              ));
-                            } else if (snapshot.hasError) {
-                              return Center(
-                                child: Text('${snapshot.error}'),
-                              );
-                            } else {
-                              return ListView.builder(
-                                itemCount: _listUsedSetups.length,
-                                itemBuilder: (context, index) {
-                                  final element = _listUsedSetups[index];
-                                  return UsedSetupListItem(
-                                      loggedMember: loggedMember,
-                                      usedSetup: element,
-                                      setup: _listSetups.firstWhere((setup) =>
-                                          setup.id == element.setupId),
-                                      updateStateUsedSetupPage: _refreshState);
-                                },
-                              );
-                            }
-                          })),
-                ),
-              )),
-              loggedMember.ruolo == "Caporeparto" ||
-                      loggedMember.ruolo == "Manager"
-                  ? _newSetupUsedButton(distanceVisualizza, blurVisualizza)
-                  : Container()
-            ],
-          )),
-    );
+                    )),
+              ),
+            )),
+            _newOccurringProblemButton(distanceVisualizza, blurVisualizza)
+          ],
+        ));
   }
 
-  AppBar _appBar(Color backgroundColor) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: backgroundColor,
-      automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.close), // Change to the "X" icon
-          onPressed: () {
-            // Implement your desired action when the "X" icon is pressed
-            Navigator.pop(context); // Example action: Navigate back
-          },
-        )
-      ],
-      iconTheme: IconThemeData(color: Colors.black),
-      title: Text(
-        "Setup utilizzati",
-        style: TextStyle(color: Colors.black),
-      ),
-      centerTitle: true,
-    );
-  }
-
-  Align _newSetupUsedButton(Offset distanceVisualizza, double blurVisualizza) {
+  Align _newOccurringProblemButton(
+      Offset distanceVisualizza, double blurVisualizza) {
     return Align(
         alignment: Alignment.bottomRight,
         child: Padding(
@@ -205,17 +186,17 @@ class _UsedSetupDuringSessionPageState
                 setState(() => isAddPressed = true); // Reset the state
                 await Future.delayed(
                     const Duration(milliseconds: 200)); // Wait for animation
-
-                await _findNonUsedSetups();
-
-                if (nonUsedSetups.isEmpty) {
-                  showToast(
-                      "Tutti i setup sono stati utilizzati per questa sessione.");
-                } else {
-                  _addUsedSetupDialog(distanceVisualizza, blurVisualizza);
-                }
-
                 setState(() => isAddPressed = false); // Reset the state,
+
+                await _findSetupsNotFacingProblem();
+
+                if (_listSetupsNotFacingProblem.isEmpty) {
+                  showToast(
+                      "Su tutti i setup il problema è stato riscontrato o risolto");
+                } else {
+                  _addOccurringProblemDialog(
+                      distanceVisualizza, blurVisualizza);
+                }
               },
               child: AnimatedContainer(
                 padding: EdgeInsets.all(10),
@@ -244,15 +225,16 @@ class _UsedSetupDuringSessionPageState
             )));
   }
 
-  Future<dynamic> _addUsedSetupDialog(
+  Future<dynamic> _addOccurringProblemDialog(
       Offset distanceVisualizza, double blurVisualizza) {
     return showDialog(
         context: context,
         builder: (context) {
           return StatefulBuilder(
             builder: (context, setState) => AlertDialog(
-              title: const Text("NUOVO UTILIZZO"),
+              title: Center(child: const Text("NUOVA PARTECIPAZIONE")),
               content: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
@@ -265,8 +247,8 @@ class _UsedSetupDuringSessionPageState
                                 padding: EdgeInsets.all(10),
                                 borderRadius: BorderRadius.circular(10),
                                 dropdownColor: backgroundColor,
-                                value: _newSetupUsedId.toString(),
-                                items: nonUsedSetups
+                                value: _newSetupIdWithProblem.toString(),
+                                items: _listSetupsNotFacingProblem
                                     .map<DropdownMenuItem<String>>(
                                         (Setup value) {
                                   return DropdownMenuItem<String>(
@@ -277,7 +259,8 @@ class _UsedSetupDuringSessionPageState
                                 onChanged: (String? setupId) {
                                   if (setupId != null) {
                                     setState(() {
-                                      _newSetupUsedId = int.parse(setupId);
+                                      _newSetupIdWithProblem =
+                                          int.parse(setupId);
                                     });
                                   }
                                 }),
@@ -287,8 +270,8 @@ class _UsedSetupDuringSessionPageState
                       Expanded(
                           child: Listener(
                         onPointerDown: (_) async {
-                          setState(() =>
-                              isVisualizzaPressed = true); // Reset the state
+                          setState(() => isVisualizzaSetupPressed =
+                              true); // Reset the state
                           await Future.delayed(const Duration(
                               milliseconds: 200)); // Wait for animation
 
@@ -296,13 +279,13 @@ class _UsedSetupDuringSessionPageState
                             context,
                             MaterialPageRoute(
                               builder: (BuildContext context) => VisualizeSetup(
-                                  setup: _listSetups.firstWhere(
-                                      (setup) => setup.id == _newSetupUsedId)),
+                                  setup: _setupList.firstWhere((setup) =>
+                                      setup.id == _newSetupIdWithProblem)),
                             ),
                           );
 
-                          setState(() =>
-                              isVisualizzaPressed = false); // Reset the state,
+                          setState(() => isVisualizzaSetupPressed =
+                              false); // Reset the state,
                         },
                         child: AnimatedContainer(
                           padding:
@@ -311,7 +294,7 @@ class _UsedSetupDuringSessionPageState
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: isVisualizzaPressed
+                              boxShadow: isVisualizzaSetupPressed
                                   ? [
                                       BoxShadow(
                                           offset: distanceVisualizza,
@@ -345,10 +328,9 @@ class _UsedSetupDuringSessionPageState
                       height:
                           10), // Add some spacing between the text field and radio buttons
 
-                  Text("Commento"),
                   TextField(
-                    maxLines: 4,
-                    textAlign: TextAlign.left,
+                    maxLines: 3,
+                    textAlign: TextAlign.center,
                     keyboardType: TextInputType.text,
                     cursorColor: Colors.black,
                     style: const TextStyle(
@@ -358,10 +340,10 @@ class _UsedSetupDuringSessionPageState
                     decoration: InputDecoration(
                       counterText: '',
                       border: InputBorder.none,
-                      hintText: 'Commento',
+                      hintText: 'Descrizione problema riscontrato',
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
-                    controller: _controllerComment,
+                    controller: _controllerDescription,
                   )
                 ],
               ),
@@ -380,16 +362,17 @@ class _UsedSetupDuringSessionPageState
                   },
                 ),
                 TextButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
-                  ),
-                  child: Text(
-                    "CONFERMA",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  onPressed: _addNewSetupUsed,
-                ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.white),
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.transparent),
+                    ),
+                    child: Text(
+                      "CONFERMA",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: _addNewOccurringProblem,
+                )
               ],
             ),
           );

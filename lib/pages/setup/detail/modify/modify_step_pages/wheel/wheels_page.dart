@@ -1,4 +1,3 @@
-import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
@@ -6,7 +5,6 @@ import 'package:polimarche/service/wheel_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/wheel_model.dart';
-import '../../../../../../service/setup_service.dart';
 
 class WheelsPage extends StatefulWidget {
   const WheelsPage({super.key});
