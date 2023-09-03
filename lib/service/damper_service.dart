@@ -8,4 +8,8 @@ class DamperService {
     return await _damperRepo.getDampers();
   }
 
+  Future<int> addNewDampers(Damper damper) async{
+    return await _damperRepo.addNewDamper(damper);
+  }
+
 }

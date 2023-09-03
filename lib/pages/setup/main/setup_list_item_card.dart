@@ -8,11 +8,13 @@ import '../../../model/setup_model.dart';
 class CardSetupListItem extends StatefulWidget {
   final Setup setup;
   final Member loggedMember;
+  final Future<void> Function() updateStateSetupPage;
 
   const CardSetupListItem({
     Key? key,
     required this.setup,
     required this.loggedMember,
+    required this.updateStateSetupPage,
   }) : super(key: key);
 
   @override
@@ -25,14 +27,15 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
   final backgroundColor = Colors.grey.shade300;
   final Offset distance = Offset(5, 5);
   final double blur = 10;
+  late final Future<void> Function() updateStateSetupPage;
 
   late Setup setup;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setup = widget.setup;
+    updateStateSetupPage = widget.updateStateSetupPage;
   }
 
   @override
@@ -94,13 +97,9 @@ class _CardSetupListItemState extends State<CardSetupListItem> {
             context,
             MaterialPageRoute(
                 builder: (context) => DetailSetup(
-                      loggedMember: widget.loggedMember,
-                      setup: setup
-                    )));
+                    loggedMember: widget.loggedMember, setup: setup, updateStateSetupPage: updateStateSetupPage)));
 
         setState(() => isVisualizzaPressed = false); // Reset the state,
-
-
       },
       child: AnimatedContainer(
         padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),

@@ -11,9 +11,9 @@ class Balance {
     required this.peso,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(int id) {
     return {
-      'id': this.id,
+      'id': id,
       'posizione': this.posizione,
       'frenata': this.frenata,
       'peso': this.peso,

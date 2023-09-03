@@ -48,7 +48,6 @@ class _CardSessionListItemState extends State<CardSessionListItem> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     updateStateSessionPage = widget.updateStateSessionPage;
     session = widget.session;

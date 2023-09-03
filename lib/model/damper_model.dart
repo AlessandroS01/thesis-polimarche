@@ -15,9 +15,9 @@ class Damper {
     required this.hsc,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(int id) {
     return {
-      'id': this.id,
+      'id': id,
       'posizione': this.posizione,
       'lsr': this.lsr,
       'hsr': this.hsr,

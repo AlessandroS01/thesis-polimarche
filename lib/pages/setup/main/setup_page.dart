@@ -121,7 +121,8 @@ class _SetupPageState extends State<SetupPage> {
                               itemBuilder: (context, index) {
                                 final element = _filteredSetupList[index];
                                 return CardSetupListItem(
-                                    setup: element, loggedMember: loggedMember);
+                                    setup: element, loggedMember: loggedMember,
+                                    updateStateSetupPage: _refreshState);
                               },
                             );
                           }

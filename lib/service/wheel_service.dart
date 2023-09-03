@@ -9,4 +9,8 @@ class WheelService {
     return await _wheelRepo.getWheels();
   }
 
+  Future<int> addNewWheel(Wheel wheel) async {
+    return await _wheelRepo.addNewWheel(wheel);
+  }
+
 }

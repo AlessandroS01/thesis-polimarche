@@ -15,9 +15,9 @@ class Wheel {
     required this.pressione,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(int newId) {
     return {
-      'id': this.id,
+      'id': newId,
       'codifica': this.codifica,
       'posizione': this.posizione,
       'frontale': this.frontale,

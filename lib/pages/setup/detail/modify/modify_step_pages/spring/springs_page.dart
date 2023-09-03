@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/spring/spring_provider.dart';
+import 'package:polimarche/service/spring_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/spring_model.dart';
 
 class SpringsPage extends StatefulWidget {
-
-  const SpringsPage(
-      {super.key});
+  const SpringsPage({super.key});
 
   static List<Spring?> springOf(BuildContext context) {
     final springProvider = Provider.of<SpringProvider>(context, listen: false);
@@ -24,10 +23,45 @@ class SpringsPage extends StatefulWidget {
 
 class _SpringsPageState extends State<SpringsPage> {
   final Color backgroundColor = Colors.grey.shade300;
-  //late final SetupService setupService;
+  late final SpringService _springService;
+
+  Future<void>? _dataLoading;
+
+  late List<Spring> _springList;
+
+  Future<void> _getSpringParams() async {
+    _springList = await _springService.getSprings();
+
+    _initializeData();
+  }
+
+  void _initializeData() {
+    springProvider = Provider.of<SpringProvider>(context, listen: false);
+
+    // FRONT SPRING DATA
+    _useExistingParamsFront = springProvider.existingFront;
+    frontSpring = springProvider.front!;
+    frontSpringParams =
+        _springList.where((spring) => spring.posizione == "Ant").toList();
+    frontSpringIds = frontSpringParams.map((param) => param.id).toList();
+    _controllerFrontCodifica.text = frontSpring.codifica;
+    _controllerFrontAltezza.text = frontSpring.altezza.toString();
+    _controllerFrontPosArb.text = frontSpring.posizioneArb;
+    _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
+
+    // REAR SPRING DATA
+    _useExistingParamsRear = springProvider.existingRear;
+    rearSpring = springProvider.rear!;
+    rearSpringParams =
+        _springList.where((spring) => spring.posizione == "Post").toList();
+    rearSpringIds = rearSpringParams.map((param) => param.id).toList();
+    _controllerRearCodifica.text = rearSpring.codifica;
+    _controllerRearAltezza.text = rearSpring.altezza.toString();
+    _controllerRearPosArb.text = rearSpring.posizioneArb;
+    _controllerRearRigArb.text = rearSpring.rigidezzaArb;
+  }
 
   late SpringProvider springProvider;
-  bool _isDataInitialized = false;
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -73,7 +107,7 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        //frontSpring = setupService.findFrontSpringParams().first;
+        frontSpring = frontSpringParams.first;
 
         _controllerFrontCodifica.text = frontSpring.codifica;
         _controllerFrontAltezza.text = frontSpring.altezza.toString();
@@ -95,7 +129,6 @@ class _SpringsPageState extends State<SpringsPage> {
   }
 
   _checkNewValuesUsedFront(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -112,21 +145,19 @@ class _SpringsPageState extends State<SpringsPage> {
     }
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontAltezza.text) != null) {
-        var result = setupService.findFrontSpringFromExistingParams(
-            _controllerFrontCodifica.text, _controllerFrontAltezza.text,
-            _controllerFrontRigArb.text, _controllerFrontPosArb.text);
+        var result = findFrontSpringFromExistingParams(
+            _controllerFrontCodifica.text,
+            _controllerFrontAltezza.text,
+            _controllerFrontRigArb.text,
+            _controllerFrontPosArb.text);
 
         Spring spring;
 
-        if (result != false) {
+        if (result != null) {
           spring = result;
         } else {
           spring = Spring(
-              id: setupService.listSprings.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               posizione: "Ant",
               altezza: double.parse(_controllerFrontAltezza.text),
               codifica: _controllerFrontCodifica.text,
@@ -140,10 +171,7 @@ class _SpringsPageState extends State<SpringsPage> {
             "L'altezza della molla anteriore deve rappresentare un numero");
       }
     }
-
-     */
   }
-
 
   // REAR DATA
   late bool _useExistingParamsRear;
@@ -177,7 +205,7 @@ class _SpringsPageState extends State<SpringsPage> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        //rearSpring = setupService.findRearSpringParams().first;
+        rearSpring = rearSpringParams.first;
 
         _controllerRearCodifica.text = rearSpring.codifica;
         _controllerRearAltezza.text = rearSpring.altezza.toString();
@@ -199,7 +227,6 @@ class _SpringsPageState extends State<SpringsPage> {
   }
 
   _checkNewValuesUsedRear(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -216,21 +243,17 @@ class _SpringsPageState extends State<SpringsPage> {
     }
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearAltezza.text) != null) {
-        var result = setupService.findRearSpringFromExistingParams(
+        var result = findRearSpringFromExistingParams(
             _controllerRearCodifica.text, _controllerRearAltezza.text,
             _controllerRearRigArb.text, _controllerRearPosArb.text);
 
         Spring spring;
 
-        if (result != false) {
+        if (result != null) {
           spring = result;
         } else {
           spring = Spring(
-              id: setupService.listSprings.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               posizione: "Post",
               altezza: double.parse(_controllerRearAltezza.text),
               codifica: _controllerRearCodifica.text,
@@ -244,80 +267,60 @@ class _SpringsPageState extends State<SpringsPage> {
             "L'altezza della molla posteriori deve rappresentare un numero");
       }
     }
-
-     */
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    //setupService = widget.setupService;
+    _springService = SpringService();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      springProvider = Provider.of<SpringProvider>(context, listen: false);
-
-      // FRONT SPRING DATA
-      _useExistingParamsFront = springProvider.existingFront;
-      frontSpring = springProvider.front!;
-      //frontSpringParams = setupService.findFrontSpringParams();
-      frontSpringIds = frontSpringParams.map((param) => param.id).toList();
-      _controllerFrontCodifica.text = frontSpring.codifica;
-      _controllerFrontAltezza.text = frontSpring.altezza.toString();
-      _controllerFrontPosArb.text = frontSpring.posizioneArb;
-      _controllerFrontRigArb.text = frontSpring.rigidezzaArb;
-
-
-
-      // REAR SPRING DATA
-      _useExistingParamsRear = springProvider.existingRear;
-      rearSpring = springProvider.rear!;
-      //rearSpringParams = setupService.findRearSpringParams();
-      rearSpringIds = rearSpringParams.map((param) => param.id).toList();
-      _controllerRearCodifica.text = rearSpring.codifica;
-      _controllerRearAltezza.text = rearSpring.altezza.toString();
-      _controllerRearPosArb.text = rearSpring.posizioneArb;
-      _controllerRearRigArb.text = rearSpring.rigidezzaArb;
-
-      setState(() {
-        _isDataInitialized = true;
-      });
-    });
+    _dataLoading = _getSpringParams();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isDataInitialized
-        ? Expanded(
-            child: Container(
-            child: NotificationListener<OverscrollIndicatorNotification>(
-              onNotification: (OverscrollIndicatorNotification overscroll) {
-                overscroll
-                    .disallowIndicator(); // Disable the overscroll glow effect
-                return false;
-              },
-              child: ListView(children: [
-                // FRONT
-                _frontColumn(),
+    return FutureBuilder(
+      future: _dataLoading,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Return a loading indicator if still waiting for data
+            return Center(
+                child: CircularProgressIndicator(
+              color: Colors.black,
+            ));
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('${snapshot.error}'),
+            );
+          } else {
+            return Expanded(
+              child: Container(
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (OverscrollIndicatorNotification overscroll) {
+                  overscroll
+                      .disallowIndicator(); // Disable the overscroll glow effect
+                  return false;
+                },
+                child: ListView(children: [
+                  // FRONT
+                  _frontColumn(),
 
-                SizedBox(
-                  height: 100,
-                ),
+                  SizedBox(
+                    height: 100,
+                  ),
 
-                // REAR
-                _rearColumn(),
+                  // REAR
+                  _rearColumn(),
 
-                SizedBox(
-                  height: 50,
-                ),
-              ]),
-            ),
-          ))
-        : Expanded(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+                  SizedBox(
+                    height: 50,
+                  ),
+                ]),
+              ),
+            ));
+          }
+        }
+    );
   }
 
   Column _frontColumn() {
@@ -765,8 +768,6 @@ class _SpringsPageState extends State<SpringsPage> {
     );
   }
 
-
-
   Column _rearColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -1210,5 +1211,38 @@ class _SpringsPageState extends State<SpringsPage> {
         ],
       ),
     );
+  }
+
+  Spring? findExistingParams(String posizione, String codifica, String altezza,
+      String rigArb, String posArb) {
+    if (_springList
+        .where((spring) =>
+            spring.posizione == posizione &&
+            spring.codifica == codifica &&
+            spring.altezza == double.parse(altezza) &&
+            spring.rigidezzaArb == rigArb &&
+            spring.posizioneArb == posArb
+        )
+        .isNotEmpty) {
+      return _springList
+        .where((spring) =>
+            spring.posizione == posizione &&
+            spring.codifica == codifica &&
+            spring.altezza == double.parse(altezza) &&
+            spring.rigidezzaArb == rigArb &&
+            spring.posizioneArb == posArb
+        )
+        .first;
+    }
+    return null;
+  }
+
+  Spring? findFrontSpringFromExistingParams(
+      String codifica, String altezza, String rigArb, String posArb) {
+    return findExistingParams("Ant", codifica, altezza, rigArb, posArb);
+  }
+
+  Spring? findRearSpringFromExistingParams(String codifica, String altezza, String rigArb, String posArb) {
+    return findExistingParams("Post", codifica, altezza, rigArb, posArb);
   }
 }

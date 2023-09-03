@@ -8,4 +8,8 @@ class SpringService {
     return await _springRepo.getSprings();
   }
 
+  Future<int> addNewSpring(Spring spring) async{
+    return await _springRepo.addNewSpring(spring);
+  }
+
 }

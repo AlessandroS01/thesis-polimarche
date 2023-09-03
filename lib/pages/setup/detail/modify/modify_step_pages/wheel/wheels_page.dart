@@ -1,14 +1,15 @@
+import 'package:dartz/dartz_unsafe.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/pages/setup/detail/modify/modify_step_pages/wheel/wheel_provider.dart';
+import 'package:polimarche/service/wheel_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/wheel_model.dart';
+import '../../../../../../service/setup_service.dart';
 
 class WheelsPage extends StatefulWidget {
-
-  const WheelsPage(
-      {super.key});
+  const WheelsPage({super.key});
 
   static List<Wheel?> wheelsOf(BuildContext context) {
     final wheelProvider = Provider.of<WheelProvider>(context, listen: false);
@@ -29,10 +30,69 @@ class WheelsPage extends StatefulWidget {
 
 class _WheelsPageState extends State<WheelsPage> {
   final Color backgroundColor = Colors.grey.shade300;
-  //late final SetupService setupService;
+  late final WheelService _wheelService;
+
+  Future<void>? _dataLoading;
+
+  late List<Wheel> _wheelList;
+
+  Future<void> _getWheelsParams() async {
+    _wheelList = await _wheelService.getWheels();
+
+    _initializeData();
+  }
+
+  void _initializeData() {
+    // get the params from wheel provider
+    wheelProvider = Provider.of<WheelProvider>(context, listen: false);
+
+    // FRONT RIGHT WHEEL DATA
+    _useExistingParamsFrontRight = wheelProvider.existingFrontRight;
+    frontRightWheel = wheelProvider.frontRight!;
+    frontRightWheelParams =
+        _wheelList.where((wheel) => wheel.posizione == "Ant dx").toList();
+    frontRightWheelIds =
+        frontRightWheelParams.map((param) => param.id).toList();
+    _controllerFrontRightCodifica.text = frontRightWheel.codifica;
+    _controllerFrontRightPressure.text = frontRightWheel.pressione.toString();
+    _controllerFrontRightCamber.text = frontRightWheel.frontale;
+    _controllerFrontRightToe.text = frontRightWheel.superiore;
+
+    // FRONT LEFT WHEEL DATA
+    _useExistingParamsFrontLeft = wheelProvider.existingFrontLeft;
+    frontLeftWheel = wheelProvider.frontLeft!;
+    frontLeftWheelParams =
+        _wheelList.where((wheel) => wheel.posizione == "Ant sx").toList();
+    frontLeftWheelIds = frontLeftWheelParams.map((param) => param.id).toList();
+    _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
+    _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
+    _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
+    _controllerFrontLeftToe.text = frontLeftWheel.superiore;
+
+    // REAR RIGHT WHEEL DATA
+    _useExistingParamsRearRight = wheelProvider.existingRearRight;
+    rearRightWheel = wheelProvider.rearRight!;
+    rearRightWheelParams =
+        _wheelList.where((wheel) => wheel.posizione == "Post dx").toList();
+    rearRightWheelIds = rearRightWheelParams.map((param) => param.id).toList();
+    _controllerRearRightCodifica.text = rearRightWheel.codifica;
+    _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
+    _controllerRearRightCamber.text = rearRightWheel.frontale;
+    _controllerRearRightToe.text = rearRightWheel.superiore;
+
+    // REAR LEFT WHEEL DATA
+    _useExistingParamsRearLeft = wheelProvider.existingRearLeft;
+    rearLeftWheel = wheelProvider.rearLeft!;
+    rearLeftWheelParams =
+        _wheelList.where((wheel) => wheel.posizione == "Post sx").toList();
+    rearLeftWheelIds = rearLeftWheelParams.map((param) => param.id).toList();
+    _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
+    _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
+    _controllerRearLeftCamber.text = rearLeftWheel.frontale;
+    _controllerRearLeftToe.text = rearLeftWheel.superiore;
+  }
 
   late WheelProvider wheelProvider;
-  bool _isDataInitialized = false;
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -79,7 +139,7 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsFrontRight = newValue!;
       if (_useExistingParamsFrontRight) {
-       // frontRightWheel = setupService.findFrontRightWheelParams().first;
+        frontRightWheel = frontRightWheelParams.first;
 
         _controllerFrontRightCodifica.text = frontRightWheel.codifica;
         _controllerFrontRightPressure.text =
@@ -102,7 +162,6 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedFrontRight(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -122,7 +181,7 @@ class _WheelsPageState extends State<WheelsPage> {
 
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontRightPressure.text) != null) {
-        var result = setupService.findFrontRightFromExistingParams(
+        var result = findFrontRightFromExistingParams(
             _controllerFrontRightCodifica.text,
             _controllerFrontRightPressure.text,
             _controllerFrontRightCamber.text,
@@ -130,15 +189,11 @@ class _WheelsPageState extends State<WheelsPage> {
 
         Wheel wheel;
 
-        if (result != false) {
+        if (result != null) {
           wheel = result;
         } else {
           wheel = Wheel(
-              id: setupService.listWheels.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               codifica: _controllerFrontRightCodifica.text,
               posizione: "Ant dx",
               frontale: _controllerFrontRightCamber.text,
@@ -151,11 +206,7 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
-
-     */
   }
-
-
 
   // FRONT LEFT DATA
   late bool _useExistingParamsFrontLeft;
@@ -190,11 +241,10 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsFrontLeft = newValue!;
       if (_useExistingParamsFrontLeft) {
-        //frontLeftWheel = setupService.findFrontLeftWheelParams().first;
+        frontLeftWheel = frontLeftWheelParams.first;
 
         _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
-        _controllerFrontLeftPressure.text =
-            frontLeftWheel.pressione.toString();
+        _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
         _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
         _controllerFrontLeftToe.text = frontLeftWheel.superiore;
 
@@ -213,7 +263,6 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedFrontLeft(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -233,7 +282,7 @@ class _WheelsPageState extends State<WheelsPage> {
 
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontLeftPressure.text) != null) {
-        var result = setupService.findFrontLeftFromExistingParams(
+        var result = findFrontLeftFromExistingParams(
             _controllerFrontLeftCodifica.text,
             _controllerFrontLeftPressure.text,
             _controllerFrontLeftCamber.text,
@@ -241,15 +290,11 @@ class _WheelsPageState extends State<WheelsPage> {
 
         Wheel wheel;
 
-        if (result != false) {
+        if (result != null) {
           wheel = result;
         } else {
           wheel = Wheel(
-              id: setupService.listWheels.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               codifica: _controllerFrontLeftCodifica.text,
               posizione: "Ant sx",
               frontale: _controllerFrontLeftCamber.text,
@@ -262,8 +307,6 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
-
-     */
   }
 
   // REAR RIGHT DATA
@@ -299,11 +342,10 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsRearRight = newValue!;
       if (_useExistingParamsRearRight) {
-        //rearRightWheel = setupService.findRearRightWheelParams().first;
+        rearRightWheel = rearRightWheelParams.first;
 
         _controllerRearRightCodifica.text = rearRightWheel.codifica;
-        _controllerRearRightPressure.text =
-            rearRightWheel.pressione.toString();
+        _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
         _controllerRearRightCamber.text = rearRightWheel.frontale;
         _controllerRearRightToe.text = rearRightWheel.superiore;
 
@@ -322,7 +364,6 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedRearRight(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -342,7 +383,7 @@ class _WheelsPageState extends State<WheelsPage> {
 
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearRightPressure.text) != null) {
-        var result = setupService.findRearRightFromExistingParams(
+        var result = findRearRightFromExistingParams(
             _controllerRearRightCodifica.text,
             _controllerRearRightPressure.text,
             _controllerRearRightCamber.text,
@@ -350,17 +391,13 @@ class _WheelsPageState extends State<WheelsPage> {
 
         Wheel wheel;
 
-        if (result != false) {
+        if (result != null) {
           wheel = result;
         } else {
           wheel = Wheel(
-              id: setupService.listWheels.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               codifica: _controllerRearRightCodifica.text,
-              posizione: "Ant dx",
+              posizione: "Post dx",
               frontale: _controllerRearRightCamber.text,
               superiore: _controllerRearRightToe.text,
               pressione: double.parse(_controllerRearRightPressure.text));
@@ -371,10 +408,7 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
-
-     */
   }
-
 
   // REAR LEFT DATA
   late bool _useExistingParamsRearLeft;
@@ -398,8 +432,7 @@ class _WheelsPageState extends State<WheelsPage> {
       wheelProvider.existingRearLeft = true;
 
       _controllerRearLeftCodifica.text = rearLeftNewWheel.codifica;
-      _controllerRearLeftPressure.text =
-          rearLeftNewWheel.pressione.toString();
+      _controllerRearLeftPressure.text = rearLeftNewWheel.pressione.toString();
       _controllerRearLeftCamber.text = rearLeftNewWheel.frontale;
       _controllerRearLeftToe.text = rearLeftNewWheel.superiore;
     });
@@ -409,11 +442,10 @@ class _WheelsPageState extends State<WheelsPage> {
     setState(() {
       _useExistingParamsRearLeft = newValue!;
       if (_useExistingParamsRearLeft) {
-        //rearLeftWheel = setupService.findRearLeftWheelParams().first;
+        rearLeftWheel = rearLeftWheelParams.first;
 
         _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
-        _controllerRearLeftPressure.text =
-            rearLeftWheel.pressione.toString();
+        _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
         _controllerRearLeftCamber.text = rearLeftWheel.frontale;
         _controllerRearLeftToe.text = rearLeftWheel.superiore;
 
@@ -432,7 +464,6 @@ class _WheelsPageState extends State<WheelsPage> {
   }
 
   _checkNewValuesUsedRearLeft(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -452,7 +483,7 @@ class _WheelsPageState extends State<WheelsPage> {
 
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearLeftPressure.text) != null) {
-        var result = setupService.findRearLeftFromExistingParams(
+        var result = findRearLeftFromExistingParams(
             _controllerRearLeftCodifica.text,
             _controllerRearLeftPressure.text,
             _controllerRearLeftCamber.text,
@@ -460,17 +491,13 @@ class _WheelsPageState extends State<WheelsPage> {
 
         Wheel wheel;
 
-        if (result != false) {
+        if (result != null) {
           wheel = result;
         } else {
           wheel = Wheel(
-              id: setupService.listWheels.fold<int>(
-                      0,
-                      (maxValue, item) =>
-                          maxValue > item.id ? maxValue : item.id) +
-                  1,
+              id: 0,
               codifica: _controllerRearLeftCodifica.text,
-              posizione: "Ant sx",
+              posizione: "Post sx",
               frontale: _controllerRearLeftCamber.text,
               superiore: _controllerRearLeftToe.text,
               pressione: double.parse(_controllerRearLeftPressure.text));
@@ -481,75 +508,34 @@ class _WheelsPageState extends State<WheelsPage> {
         showToast("La pressione deve rappresentare un numero");
       }
     }
-
-     */
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    //setupService = widget.setupService;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      wheelProvider = Provider.of<WheelProvider>(context, listen: false);
-
-      // FRONT RIGHT WHEEL DATA
-      _useExistingParamsFrontRight = wheelProvider.existingFrontRight;
-      frontRightWheel = wheelProvider.frontRight!;
-      //frontRightWheelParams = setupService.findFrontRightWheelParams();
-      frontRightWheelIds =
-          frontRightWheelParams.map((param) => param.id).toList();
-      _controllerFrontRightCodifica.text = frontRightWheel.codifica;
-      _controllerFrontRightPressure.text = frontRightWheel.pressione.toString();
-      _controllerFrontRightCamber.text = frontRightWheel.frontale;
-      _controllerFrontRightToe.text = frontRightWheel.superiore;
-
-      // FRONT LEFT WHEEL DATA
-      _useExistingParamsFrontLeft = wheelProvider.existingFrontLeft;
-      frontLeftWheel = wheelProvider.frontLeft!;
-      //frontLeftWheelParams = setupService.findFrontLeftWheelParams();
-      frontLeftWheelIds =
-          frontLeftWheelParams.map((param) => param.id).toList();
-      _controllerFrontLeftCodifica.text = frontLeftWheel.codifica;
-      _controllerFrontLeftPressure.text = frontLeftWheel.pressione.toString();
-      _controllerFrontLeftCamber.text = frontLeftWheel.frontale;
-      _controllerFrontLeftToe.text = frontLeftWheel.superiore;
-
-      // REAR RIGHT WHEEL DATA
-      _useExistingParamsRearRight = wheelProvider.existingRearRight;
-      rearRightWheel = wheelProvider.rearRight!;
-      //rearRightWheelParams = setupService.findRearRightWheelParams();
-      rearRightWheelIds =
-          rearRightWheelParams.map((param) => param.id).toList();
-      _controllerRearRightCodifica.text = rearRightWheel.codifica;
-      _controllerRearRightPressure.text = rearRightWheel.pressione.toString();
-      _controllerRearRightCamber.text = rearRightWheel.frontale;
-      _controllerRearRightToe.text = rearRightWheel.superiore;
-
-      // REAR LEFT WHEEL DATA
-      _useExistingParamsRearLeft = wheelProvider.existingRearLeft;
-      rearLeftWheel = wheelProvider.rearLeft!;
-      //rearLeftWheelParams = setupService.findRearLeftWheelParams();
-      rearLeftWheelIds =
-          rearLeftWheelParams.map((param) => param.id).toList();
-      _controllerRearLeftCodifica.text = rearLeftWheel.codifica;
-      _controllerRearLeftPressure.text = rearLeftWheel.pressione.toString();
-      _controllerRearLeftCamber.text = rearLeftWheel.frontale;
-      _controllerRearLeftToe.text = rearLeftWheel.superiore;
-
-      setState(() {
-        _isDataInitialized = true;
-      });
-    });
+    _wheelService = WheelService();
+    _dataLoading = _getWheelsParams();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isDataInitialized
-        ? Expanded(
-            child: Container(
+    return FutureBuilder(
+      future: _dataLoading,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Return a loading indicator if still waiting for data
+          return Center(
+              child: CircularProgressIndicator(
+            color: Colors.black,
+          ));
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('${snapshot.error}'),
+          );
+        } else {
+          return Expanded(
+              child: Container(
             child: NotificationListener<OverscrollIndicatorNotification>(
               onNotification: (OverscrollIndicatorNotification overscroll) {
                 overscroll
@@ -583,12 +569,10 @@ class _WheelsPageState extends State<WheelsPage> {
                 ),
               ]),
             ),
-          ))
-        : Expanded(
-          child: Center(
-              child: CircularProgressIndicator(),
-            ),
-        );
+          ));
+        }
+      },
+    );
   }
 
   Column _frontRightColumn() {
@@ -1038,8 +1022,6 @@ class _WheelsPageState extends State<WheelsPage> {
     );
   }
 
-
-
   Column _frontLeftColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -1487,8 +1469,6 @@ class _WheelsPageState extends State<WheelsPage> {
     );
   }
 
-
-
   Column _rearRightColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Text(
@@ -1768,21 +1748,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Codifica',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightCodifica,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Codifica',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightCodifica,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
 
                     SizedBox(
@@ -1815,21 +1794,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Camber',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightCamber,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Camber',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightCamber,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
                   ],
                 ),
@@ -1863,21 +1841,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Pressione',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightPressure,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Pressione',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightPressure,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
 
                     SizedBox(
@@ -1910,21 +1887,20 @@ class _WheelsPageState extends State<WheelsPage> {
                             ],
                           ),
                           child: TextField(
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.text,
-                            cursorColor: Colors.black,
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'aleo',
-                                letterSpacing: 1),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Toe',
-                              hintStyle: TextStyle(color: Colors.grey),
-                            ),
-                            controller: _controllerRearRightToe,
-                            onChanged: _checkNewValuesUsedRearRight
-                          )),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.text,
+                              cursorColor: Colors.black,
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'aleo',
+                                  letterSpacing: 1),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Toe',
+                                hintStyle: TextStyle(color: Colors.grey),
+                              ),
+                              controller: _controllerRearRightToe,
+                              onChanged: _checkNewValuesUsedRearRight)),
                     ),
                   ],
                 ),
@@ -1935,8 +1911,6 @@ class _WheelsPageState extends State<WheelsPage> {
       ),
     );
   }
-
-
 
   Column _rearLeftColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -2383,5 +2357,48 @@ class _WheelsPageState extends State<WheelsPage> {
         ],
       ),
     );
+  }
+
+  Wheel? findExistingParams(String posizione, String codifica, String pressione,
+      String camber, String toe) {
+    if (_wheelList
+        .where((wheel) =>
+            wheel.posizione == posizione &&
+            wheel.codifica == codifica &&
+            wheel.pressione == double.parse(pressione) &&
+            wheel.frontale == camber &&
+            wheel.superiore == toe)
+        .isNotEmpty) {
+      return _wheelList
+          .where((wheel) =>
+              wheel.posizione == posizione &&
+              wheel.codifica == codifica &&
+              wheel.pressione == double.parse(pressione) &&
+              wheel.frontale == camber &&
+              wheel.superiore == toe)
+          .first;
+    }
+
+    return null;
+  }
+
+  Wheel? findFrontRightFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    return findExistingParams("Ant dx", codifica, pressione, camber, toe);
+  }
+
+  Wheel? findFrontLeftFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    return findExistingParams("Ant sx", codifica, pressione, camber, toe);
+  }
+
+  Wheel? findRearRightFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    return findExistingParams("Post dx", codifica, pressione, camber, toe);
+  }
+
+  Wheel? findRearLeftFromExistingParams(
+      String codifica, String pressione, String camber, String toe) {
+    return findExistingParams("Post sx", codifica, pressione, camber, toe);
   }
 }

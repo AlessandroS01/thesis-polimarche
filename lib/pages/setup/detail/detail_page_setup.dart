@@ -4,17 +4,20 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:polimarche/model/member_model.dart';
 
 import '../../../model/setup_model.dart';
+import '../../../service/setup_service.dart';
 import 'setup_card.dart';
 import 'modify/modify_setup_page.dart';
 
 class DetailSetup extends StatefulWidget {
   final Setup setup;
   final Member loggedMember;
+  final Future<void> Function() updateStateSetupPage;
 
   const DetailSetup({
     super.key,
     required this.setup,
     required this.loggedMember,
+    required this.updateStateSetupPage,
   });
 
   @override
@@ -24,34 +27,36 @@ class DetailSetup extends StatefulWidget {
 class _DetailSetupState extends State<DetailSetup> {
   final backgroundColor = Colors.grey.shade300;
   late final Member loggedMember;
-  late final Setup setup;
-  //late final SetupService setupService;
-
+  late Setup setup;
+  late final SetupService _setupService;
 
   bool isModifyButtonPressed = false;
 
-  void updateDetailSessionState() {
+  Future<void> _refreshState() async {
+    // update the card
+    Setup newSetup = await _setupService.getSetupById(setup.id);
+
     setState(() {
-      return;
+      setup = newSetup;
     });
+
+    // update the main page
+    await widget.updateStateSetupPage();
   }
 
   @override
   void initState() {
     super.initState();
-
+    _setupService = SetupService();
     loggedMember = widget.loggedMember;
     setup = widget.setup;
-    //setupService = widget.setupService;
   }
 
   @override
   Widget build(BuildContext context) {
-
     Offset distanceModify =
         isModifyButtonPressed ? Offset(5, 5) : Offset(18, 18);
     double blurModify = isModifyButtonPressed ? 5.0 : 30.0;
-
 
     return Scaffold(
       appBar: _appBar(backgroundColor),
@@ -70,17 +75,15 @@ class _DetailSetupState extends State<DetailSetup> {
             loggedMember.ruolo == "Manager" ||
                     loggedMember.ruolo == "Caporeparto"
                 ? Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _modifyButton(distanceModify, blurModify),
-                        ],
-                      ),
-                    )
-                : Expanded(
-                    child: Container()
-            )
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _modifyButton(distanceModify, blurModify),
+                      ],
+                    ),
+                  )
+                : Expanded(child: Container())
           ],
         ),
       ),
@@ -112,7 +115,6 @@ class _DetailSetupState extends State<DetailSetup> {
     );
   }
 
-
   Listener _modifyButton(
     Offset distanceComment,
     double blurComment,
@@ -124,17 +126,15 @@ class _DetailSetupState extends State<DetailSetup> {
         await Future.delayed(
             const Duration(milliseconds: 170)); // Wait for animation
 
-
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => ModifySetupPage(
               setup: setup,
-              updateStateDetailSetup: updateDetailSessionState,
-                ),
+              updateStateSetupPage: _refreshState,
+            ),
           ),
         );
-
 
         setState(() => isModifyButtonPressed = false);
       },
@@ -170,6 +170,4 @@ class _DetailSetupState extends State<DetailSetup> {
       ),
     );
   }
-
-
 }

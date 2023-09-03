@@ -15,9 +15,9 @@ class Spring {
     required this.altezza,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap(int id) {
     return {
-      'id': this.id,
+      'id': id,
       'posizione': this.posizione,
       'codifica': this.codifica,
       'posizioneArb': this.posizioneArb,

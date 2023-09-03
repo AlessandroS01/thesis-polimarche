@@ -46,21 +46,23 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
   // ALA METHOD
 
   _checkNewAla(String? text) {
-    generalInformationProvider.ala = _controllerAla.text;
+    if (text != null) {
+      generalInformationProvider.ala = _controllerAla.text;
+    }
   }
 
   // ALA DATA
   TextEditingController _controllerNote = TextEditingController();
 
   // ALA METHOD
-
   _checkNewNotes(String? text) {
-    generalInformationProvider.note = _controllerNote.text;
+    if (text != null) {
+      generalInformationProvider.note = _controllerNote.text;
+    }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,10 +70,10 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
           Provider.of<GeneralInformationProvider>(context, listen: false);
 
       // ALA
-      _controllerAla.text = generalInformationProvider.ala!;
+      _controllerAla.text = generalInformationProvider.ala;
 
       // NOTE
-      _controllerNote.text = generalInformationProvider.note!;
+      _controllerNote.text = generalInformationProvider.note;
 
       setState(() {
         _isDataInitialized = true;
@@ -170,7 +172,6 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
       ),
     );
   }
-
 
   Column _noteColumn() {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [

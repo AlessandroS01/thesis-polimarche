@@ -23,4 +23,26 @@ class WheelRepo {
 
     return wheels;
   }
+
+  Future<int> addNewWheel(Wheel wheel) async {
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firestore.collection('wheel').get();
+
+    int maxId = 0;
+    if (snapshot.size != 0) {
+      snapshot.docs.forEach((data) {
+        if (int.parse(data.id) > maxId) {
+           maxId = int.parse(data.id);
+        }
+      });
+    }
+
+    await _firestore
+        .collection('wheel')
+        .doc((maxId + 1).toString())
+        .set(wheel.toMap(maxId + 1));
+
+    return maxId + 1;
+  }
 }
