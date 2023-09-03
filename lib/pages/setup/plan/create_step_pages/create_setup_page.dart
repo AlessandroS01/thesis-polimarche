@@ -18,14 +18,18 @@ import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import '../../../../model/damper_model.dart';
 import '../../../../model/member_model.dart';
+import '../../../../service/balance_service.dart';
+import '../../../../service/damper_service.dart';
+import '../../../../service/setup_service.dart';
+import '../../../../service/spring_service.dart';
+import '../../../../service/wheel_service.dart';
 import 'balance/balance_provider_create.dart';
 import 'general_informations/general_information_provider_create.dart';
 
 class PlanSetupPage extends StatefulWidget {
   final Member loggedMember;
 
-  const PlanSetupPage(
-      {super.key, required this.loggedMember});
+  const PlanSetupPage({super.key, required this.loggedMember});
 
   @override
   State<PlanSetupPage> createState() => _PlanSetupPageState();
@@ -36,7 +40,9 @@ class _PlanSetupPageState extends State<PlanSetupPage>
   // GENERAL DATA
   late AnimationController _animationController;
   final backgroundColor = Colors.grey.shade300;
-  //late final SetupService setupService;
+  late final SetupService _setupService;
+
+  bool _isCreating = false;
 
   int _progress = 1;
   final _totalSteps = 5;
@@ -113,7 +119,6 @@ class _PlanSetupPageState extends State<PlanSetupPage>
   }
 
   void _tryPreviousStepFromGeneralInformationPage(List<String> infos) {
-
     if (infos[0].isNotEmpty) {
       if (infos[1].isNotEmpty) {
         setState(() {
@@ -281,7 +286,7 @@ class _PlanSetupPageState extends State<PlanSetupPage>
       vsync: this,
       duration: Duration(milliseconds: 300), // Adjust duration as needed
     );
-    //setupService = widget.setupService;
+    _setupService = SetupService();
 
     // PAGES
     _stepPages = [
@@ -314,8 +319,9 @@ class _PlanSetupPageState extends State<PlanSetupPage>
         ),
       ],
       child: Scaffold(
+        backgroundColor: backgroundColor,
         bottomNavigationBar: _bottomNavBar(),
-        body: Container(
+        body: !_isCreating ? Container(
           decoration: BoxDecoration(color: backgroundColor),
           child: Column(
             children: [
@@ -339,7 +345,11 @@ class _PlanSetupPageState extends State<PlanSetupPage>
               _stepPages[_progress - 1]
             ],
           ),
-        ),
+        ) : Center(
+          child: CircularProgressIndicator(
+            color: Colors.black,
+          ),
+        )
       ),
     );
   }
@@ -356,43 +366,47 @@ class _PlanSetupPageState extends State<PlanSetupPage>
             padding: const EdgeInsets.all(32),
             gap: 8,
             tabs: [
-              _progress > 1
-                  ? GButton(
-                      icon: Icons.arrow_back,
-                      onPressed: () {
-                        if (_progress == 2) {
-                          List<Balance?> balance =
-                              BalancePageCreate.balanceOf(context);
+              if (!_isCreating)
+                _progress > 1
+                    ? GButton(
+                        icon: Icons.arrow_back,
+                        onPressed: () {
+                          if (_progress == 2) {
+                            List<Balance?> balance =
+                                BalancePageCreate.balanceOf(context);
 
-                          _tryPreviousStepFromBalancePage(balance);
-                        }
+                            _tryPreviousStepFromBalancePage(balance);
+                          }
 
-                        if (_progress == 3) {
-                          List<Spring?> springs = SpringsPageCreate.springOf(context);
+                          if (_progress == 3) {
+                            List<Spring?> springs =
+                                SpringsPageCreate.springOf(context);
 
-                          _tryPreviousStepFromSpringPage(springs);
-                        }
+                            _tryPreviousStepFromSpringPage(springs);
+                          }
 
-                        if (_progress == 4) {
-                          List<Damper?> dampers = DampersPageCreate.damperOf(context);
+                          if (_progress == 4) {
+                            List<Damper?> dampers =
+                                DampersPageCreate.damperOf(context);
 
-                          _tryPreviousStepFromDamperPage(dampers);
-                        }
+                            _tryPreviousStepFromDamperPage(dampers);
+                          }
 
-                        if (_progress == 5) {
-                          List<String> infos = GeneralInformationPageCreate.stringOf(context);
+                          if (_progress == 5) {
+                            List<String> infos =
+                                GeneralInformationPageCreate.stringOf(context);
 
-                          _tryPreviousStepFromGeneralInformationPage(infos);
-                        }
-                      })
-                  : GButton(
-                      icon: Icons.flag_outlined,
-                      leading: Badge(
-                        backgroundColor: backgroundColor,
-                      )),
+                            _tryPreviousStepFromGeneralInformationPage(infos);
+                          }
+                        })
+                    : GButton(
+                        icon: Icons.flag_outlined,
+                        leading: Badge(
+                          backgroundColor: backgroundColor,
+                        )),
 
               // WHEEL
-              if (_progress != 5 && _progress == 1)
+              if (!_isCreating && _progress != 5 && _progress == 1)
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
@@ -402,41 +416,55 @@ class _PlanSetupPageState extends State<PlanSetupPage>
                     }),
 
               // BALANCE
-              if (_progress != 5 && _progress == 2)
+              if (!_isCreating && _progress != 5 && _progress == 2)
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Balance?> balance = BalancePageCreate.balanceOf(context);
+                      List<Balance?> balance =
+                          BalancePageCreate.balanceOf(context);
 
                       onBalanceFromPage(balance);
                     }),
-              if (_progress != 5 && _progress == 3)
+              if (!_isCreating && _progress != 5 && _progress == 3)
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Spring?> springs = SpringsPageCreate.springOf(context);
+                      List<Spring?> springs =
+                          SpringsPageCreate.springOf(context);
 
                       onSpringFromPage(springs);
                     }),
-              if (_progress != 5 && _progress == 4)
+              if (!_isCreating && _progress != 5 && _progress == 4)
                 GButton(
-                  icon: Icons.arrow_forward,
+                    icon: Icons.arrow_forward,
                     onPressed: () {
-                      List<Damper?> dampers = DampersPageCreate.damperOf(context);
+                      List<Damper?> dampers =
+                          DampersPageCreate.damperOf(context);
 
                       onDamperFromPage(dampers);
                     }),
-              if (_progress == 5)
+              if (!_isCreating && _progress == 5)
                 GButton(
                   icon: Icons.upload,
                   onPressed: () async {
+                    List<String> genInfos =
+                        GeneralInformationPageCreate.stringOf(context);
+                    onGeneralInformationFromPage(genInfos[0], genInfos[1]);
                     if (_animationController.isAnimating) {
                       return;
                     }
                     await _animationController.forward();
-                    List<String> genInfos = GeneralInformationPageCreate.stringOf(context);
-                    onGeneralInformationFromPage(genInfos[0], genInfos[1]);
-                    _createSetup();
+
+                    setState(() {
+                      _isCreating = true;
+                    });
+
+                    await _createSetup();
+
+                    setState(() {
+                      _isCreating = false;
+                    });
+
 
                     _animationController.reset();
                   },
@@ -446,42 +474,122 @@ class _PlanSetupPageState extends State<PlanSetupPage>
     });
   }
 
-
-  void _createSetup() {
-
+  Future<void> _createSetup() async {
     List<Wheel> wheels = [
       frontRightWheel,
       frontLeftWheel,
       rearRightWheel,
       rearLeftWheel
     ];
-    List<Balance> balance = [
-      frontBalance,
-      rearBalance
-    ];
-    List<Spring> springs = [
-      frontSpring,
-      rearSpring
-    ];
-    List<Damper> dampers = [
-      frontDamper,
-      rearDamper
-    ];
-    List<String> genInfos = [
-      ala,
-      note
-    ];
+    List<int> wheelIds = [0, 0, 0, 0];
+    List<Balance> balance = [frontBalance, rearBalance];
+    List<int> balanceIds = [0, 0];
+    List<Spring> springs = [frontSpring, rearSpring];
+    List<int> springIds = [0, 0];
+    List<Damper> dampers = [frontDamper, rearDamper];
+    List<int> damperIds = [0, 0];
 
-    print("object");
+    final WheelService _wheelService = WheelService();
+    final BalanceService _balanceService = BalanceService();
+    final SpringService _springService = SpringService();
+    final DamperService _damperService = DamperService();
 
-    //setupService.createSetup(wheels, balance, springs, dampers, genInfos);
+    await Future.forEach(wheels.asMap().entries,
+        (MapEntry<int, Wheel> entry) async {
+      final index = entry.key;
+      final wheel = entry.value;
+
+      if (wheel.id == 0) {
+        wheelIds[index] = await _wheelService.addNewWheel(wheel);
+      } else {
+        wheelIds[index] = wheel.id;
+      }
+    });
+
+    await Future.forEach(balance.asMap().entries,
+        (MapEntry<int, Balance> entry) async {
+      final index = entry.key;
+      final balance = entry.value;
+
+      if (balance.id == 0) {
+        balanceIds[index] = await _balanceService.addNewBalance(balance);
+      } else {
+        balanceIds[index] = balance.id;
+      }
+    });
+
+    await Future.forEach(springs.asMap().entries,
+        (MapEntry<int, Spring> entry) async {
+      final index = entry.key;
+      final spring = entry.value;
+
+      if (spring.id == 0) {
+        springIds[index] = await _springService.addNewSpring(spring);
+      } else {
+        springIds[index] = spring.id;
+      }
+    });
+
+    await Future.forEach(dampers.asMap().entries,
+        (MapEntry<int, Damper> entry) async {
+      final index = entry.key;
+      final damper = entry.value;
+
+      if (damper.id == 0) {
+        damperIds[index] = await _damperService.addNewDampers(damper);
+      } else {
+        damperIds[index] = damper.id;
+      }
+    });
+
+    final wheelsUsed = <Wheel>[];
+    wheels.asMap().forEach((index, wheel) {
+      wheelsUsed.add(Wheel(
+          id: wheelIds[index],
+          codifica: wheel.codifica,
+          posizione: wheel.posizione,
+          frontale: wheel.frontale,
+          superiore: wheel.superiore,
+          pressione: wheel.pressione));
+    });
+    final balanceUsed = <Balance>[];
+    balance.asMap().forEach((index, balance) {
+      balanceUsed.add(Balance(
+          id: balanceIds[index],
+          posizione: balance.posizione,
+          frenata: balance.frenata,
+          peso: balance.peso));
+    });
+    final springsUsed = <Spring>[];
+    springs.asMap().forEach((index, spring) {
+      springsUsed.add(Spring(
+          id: springIds[index],
+          posizione: spring.posizione,
+          codifica: spring.codifica,
+          posizioneArb: spring.posizioneArb,
+          rigidezzaArb: spring.rigidezzaArb,
+          altezza: spring.altezza));
+    });
+    final dampersUsed = <Damper>[];
+    dampers.asMap().forEach((index, damper) {
+      dampersUsed.add(Damper(
+          id: damperIds[index],
+          posizione: damper.posizione,
+          lsr: damper.lsr,
+          hsr: damper.hsr,
+          lsc: damper.lsc,
+          hsc: damper.hsc));
+    });
+    List<String> genInfosUsed = [ala, note];
+
+    await _setupService.createSetup(wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
+
+    showToast("Setup modificata con successo");
 
     showToast("Setup creato con successo");
 
-    Navigator.popAndPushNamed(context, '/setup', arguments: widget.loggedMember);
+    Navigator.popAndPushNamed(context, '/setup',
+        arguments: widget.loggedMember);
   }
 
-
 }
-
-

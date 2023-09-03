@@ -48,7 +48,9 @@ class _GeneralInformationPageCreateState
   // ALA METHOD
 
   _checkNewAla(String? text) {
-    generalInformationProvider.ala = _controllerAla.text;
+    if (text != null) {
+      generalInformationProvider.ala = _controllerAla.text;
+    }
   }
 
   // ALA DATA
@@ -57,7 +59,9 @@ class _GeneralInformationPageCreateState
   // ALA METHOD
 
   _checkNewNotes(String? text) {
-    generalInformationProvider.note = _controllerNote.text;
+    if (text != null) {
+      generalInformationProvider.note = _controllerNote.text;
+    }
   }
 
   @override
@@ -114,7 +118,9 @@ class _GeneralInformationPageCreateState
           ))
         : Expanded(
             child: Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
   }

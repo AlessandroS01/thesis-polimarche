@@ -4,6 +4,7 @@ import 'package:polimarche/pages/setup/plan/create_step_pages/balance/balance_pr
 import 'package:provider/provider.dart';
 
 import '../../../../../../model/balance_model.dart';
+import '../../../../../service/balance_service.dart';
 
 class BalancePageCreate extends StatefulWidget {
 
@@ -27,10 +28,46 @@ class BalancePageCreate extends StatefulWidget {
 
 class _BalancePageCreateState extends State<BalancePageCreate> {
   final Color backgroundColor = Colors.grey.shade300;
-  //late final SetupService setupService;
+  late final BalanceService _balanceService;
+
+  Future<void>? _dataLoading;
+
+  late List<Balance> _balanceList;
+
+  Future<void> _getBalanceParams() async {
+    _balanceList = await _balanceService.getBalances();
+
+    _initializeData();
+  }
+
+  void _initializeData() {
+    balanceProvider =
+          Provider.of<BalanceProviderCreate>(context, listen: false);
+
+      // FRONT BALANCE DATA
+      _useExistingParamsFront = balanceProvider.existingFront;
+      frontBalanceParams =
+        _balanceList.where((balance) => balance.posizione == "Ant").toList();
+      frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
+      if (balanceProvider.front != null) {
+        frontBalance = balanceProvider.front!;
+        _controllerFrontPeso.text = frontBalance.peso.toString();
+        _controllerFrontFrenata.text = frontBalance.frenata.toString();
+      }
+
+      // REAR BALANCE DATA
+      _useExistingParamsRear = balanceProvider.existingRear;
+      rearBalanceParams =
+        _balanceList.where((balance) => balance.posizione == "Post").toList();
+      rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
+      if (balanceProvider.rear != null) {
+        rearBalance = balanceProvider.rear!;
+        _controllerRearPeso.text = rearBalance.peso.toString();
+        _controllerRearFrenata.text = rearBalance.frenata.toString();
+      }
+  }
 
   late BalanceProviderCreate balanceProvider;
-  bool _isDataInitialized = false;
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -72,7 +109,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     setState(() {
       _useExistingParamsFront = newValue!;
       if (_useExistingParamsFront) {
-        //frontBalance = setupService.findFrontBalanceParams().first;
+        frontBalance = frontBalanceParams.first;
 
         _controllerFrontPeso.text = frontBalance.peso.toString();
         _controllerFrontFrenata.text = frontBalance.frenata.toString();
@@ -90,7 +127,6 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
   }
 
   _checkNewValuesUsedFront(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -108,20 +144,16 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerFrontFrenata.text) != null) {
         if (double.tryParse(_controllerFrontPeso.text) != null) {
-          var result = setupService.findFrontBalanceFromExistingParams(
+          var result = findFrontBalanceFromExistingParams(
               _controllerFrontPeso.text, _controllerFrontFrenata.text);
 
           Balance balance;
 
-          if (result != false) {
+          if (result != null) {
             balance = result;
           } else {
             balance = Balance(
-                id: setupService.listBalance.fold<int>(
-                        0,
-                        (maxValue, item) =>
-                            maxValue > item.id ? maxValue : item.id) +
-                    1,
+                id: 0,
                 posizione: "Ant",
                 peso: double.parse(_controllerFrontPeso.text),
                 frenata: double.parse(_controllerFrontFrenata.text));
@@ -136,8 +168,6 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
         showToast("La frenata anteriore deve rappresentare un numero");
       }
     }
-
-     */
   }
 
   // REAR DATA
@@ -168,7 +198,7 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     setState(() {
       _useExistingParamsRear = newValue!;
       if (_useExistingParamsRear) {
-        //rearBalance = setupService.findRearBalanceParams().first;
+        rearBalance = rearBalanceParams.first;
 
         _controllerRearPeso.text = rearBalance.peso.toString();
         _controllerRearFrenata.text = rearBalance.frenata.toString();
@@ -186,7 +216,6 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
   }
 
   _checkNewValuesUsedRear(String? text) {
-    /*
     bool allInputFieldsFilled = true;
 
     List<String> controllersTexts = [
@@ -205,19 +234,15 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
     if (allInputFieldsFilled) {
       if (double.tryParse(_controllerRearFrenata.text) != null) {
         if (double.tryParse(_controllerRearPeso.text) != null) {
-          var result = setupService.findRearBalanceFromExistingParams(
+          var result = findRearBalanceFromExistingParams(
               _controllerRearPeso.text, _controllerRearFrenata.text);
 
           Balance balance;
-          if (result != false) {
+          if (result != null) {
             balance = result;
           } else {
             balance = Balance(
-                id: setupService.listBalance.fold<int>(
-                        0,
-                        (maxValue, item) =>
-                            maxValue > item.id ? maxValue : item.id) +
-                    1,
+                id: 0,
                 posizione: "Post",
                 peso: double.parse(_controllerRearPeso.text),
                 frenata: double.parse(_controllerRearFrenata.text));
@@ -231,79 +256,59 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
         showToast("La frenata posteriore deve rappresentare un numero");
       }
     }
-
-     */
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    //setupService = widget.setupService;
+    _balanceService = BalanceService();
+    _dataLoading = _getBalanceParams();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      balanceProvider =
-          Provider.of<BalanceProviderCreate>(context, listen: false);
-
-      // FRONT BALANCE DATA
-      _useExistingParamsFront = balanceProvider.existingFront;
-      //frontBalanceParams = setupService.findFrontBalanceParams();
-      frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
-      if (balanceProvider.front != null) {
-        frontBalance = balanceProvider.front!;
-        _controllerFrontPeso.text = frontBalance.peso.toString();
-        _controllerFrontFrenata.text = frontBalance.frenata.toString();
-      }
-
-      // REAR BALANCE DATA
-      _useExistingParamsRear = balanceProvider.existingRear;
-      //rearBalanceParams = setupService.findRearBalanceParams();
-      rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
-      if (balanceProvider.rear != null) {
-        rearBalance = balanceProvider.rear!;
-        _controllerRearPeso.text = rearBalance.peso.toString();
-        _controllerRearFrenata.text = rearBalance.frenata.toString();
-      }
-
-      setState(() {
-        _isDataInitialized = true;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isDataInitialized
-        ? Expanded(
-            child: Container(
-            child: NotificationListener<OverscrollIndicatorNotification>(
-              onNotification: (OverscrollIndicatorNotification overscroll) {
-                overscroll
-                    .disallowIndicator(); // Disable the overscroll glow effect
-                return false;
-              },
-              child: ListView(children: [
-                // FRONT
-                _frontColumn(),
+    return FutureBuilder(
+        future: _dataLoading,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // Return a loading indicator if still waiting for data
+            return Center(
+                child: CircularProgressIndicator(
+              color: Colors.black,
+            ));
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('${snapshot.error}'),
+            );
+          } else {
+            return Expanded(
+                child: Container(
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (OverscrollIndicatorNotification overscroll) {
+                  overscroll
+                      .disallowIndicator(); // Disable the overscroll glow effect
+                  return false;
+                },
+                child: ListView(children: [
+                  // FRONT
+                  _frontColumn(),
 
-                SizedBox(
-                  height: 100,
-                ),
-                // REAR
-                _rearColumn(),
+                  SizedBox(
+                    height: 100,
+                  ),
+                  // REAR
+                  _rearColumn(),
 
-                SizedBox(
-                  height: 50,
-                ),
-              ]),
-            ),
-          ))
-        : Expanded(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+                  SizedBox(
+                    height: 50,
+                  ),
+                ]),
+              ),
+            ));
+          }
+        });
   }
 
   Column _frontColumn() {
@@ -800,5 +805,30 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
         ],
       ),
     );
+  }
+
+  Balance? findExistingParams(String posizione, String peso, String frenata) {
+    if (_balanceList
+        .where((balance) =>
+            balance.posizione == posizione &&
+            balance.frenata == double.parse(frenata) &&
+            balance.peso == double.parse(peso))
+        .isNotEmpty) {
+      return _balanceList
+          .where((balance) =>
+              balance.posizione == posizione &&
+              balance.frenata == double.parse(frenata) &&
+              balance.peso == double.parse(peso))
+          .first;
+    }
+    return null;
+  }
+
+  Balance? findFrontBalanceFromExistingParams(String peso, String frenata) {
+    return findExistingParams("Ant", peso, frenata);
+  }
+
+  Balance? findRearBalanceFromExistingParams(String peso, String frenata) {
+    return findExistingParams("Post", peso, frenata);
   }
 }

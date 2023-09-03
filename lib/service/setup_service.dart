@@ -30,4 +30,14 @@ class SetupService {
     await _setupRepo.modifySetup(
         id, wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
   }
+
+  Future<void> createSetup(
+      List<Wheel> wheelsUsed,
+      List<Balance> balanceUsed,
+      List<Spring> springsUsed,
+      List<Damper> dampersUsed,
+      List<String> genInfosUsed) async {
+    await _setupRepo.createSetup(
+        wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
+  }
 }

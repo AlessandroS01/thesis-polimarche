@@ -110,7 +110,9 @@ class _GeneralInformationPageState extends State<GeneralInformationPage> {
           ))
         : Expanded(
             child: Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
   }

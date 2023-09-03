@@ -40,7 +40,6 @@ class SetupRepo {
       List<Spring> springsUsed,
       List<Damper> dampersUsed,
       List<String> genInfosUsed) async {
-
     Setup newSetup = Setup(
         id: id,
         ala: genInfosUsed[0],
@@ -57,5 +56,45 @@ class SetupRepo {
         damperPost: dampersUsed[1]);
 
     _firestore.collection('setup').doc(id.toString()).update(newSetup.toMap());
+  }
+
+  Future<void> createSetup(
+      List<Wheel> wheelsUsed,
+      List<Balance> balanceUsed,
+      List<Spring> springsUsed,
+      List<Damper> dampersUsed,
+      List<String> genInfosUsed) async {
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firestore.collection('setup').get();
+
+    int maxId = 0;
+    if (snapshot.size != 0) {
+      snapshot.docs.forEach((data) {
+        if (int.parse(data.id) > maxId) {
+           maxId = int.parse(data.id);
+        }
+      });
+    }
+
+    Setup newSetup = Setup(
+        id: maxId + 1,
+        ala: genInfosUsed[0],
+        note: genInfosUsed[1],
+        wheelAntDx: wheelsUsed[0],
+        wheelAntSx: wheelsUsed[1],
+        wheelPostDx: wheelsUsed[2],
+        wheelPostSx: wheelsUsed[3],
+        balanceAnt: balanceUsed[0],
+        balancePost: balanceUsed[1],
+        springAnt: springsUsed[0],
+        springPost: springsUsed[1],
+        damperAnt: dampersUsed[0],
+        damperPost: dampersUsed[1]);
+
+    await _firestore
+        .collection('setup')
+        .doc((maxId + 1).toString())
+        .set(newSetup.toMap());
   }
 }
