@@ -7,7 +7,6 @@ import 'package:polimarche/model/sensor/temperature_model.dart';
 import 'package:polimarche/model/sensor/voltage_model.dart';
 import 'package:polimarche/pages/telemetry/sensor_type/hidden_drawer_telemetry.dart';
 import 'package:polimarche/pages/telemetry/visualize_session.dart';
-import 'package:polimarche/repos/used_setup_repo.dart';
 import 'package:polimarche/service/sensor/current_service.dart';
 import 'package:polimarche/service/sensor/load_service.dart';
 import 'package:polimarche/service/sensor/position_service.dart';

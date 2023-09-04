@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../model/occurring_problem_model.dart';
-import '../model/problem_model.dart';
 import '../model/solved_problem_model.dart';
 
 class SolvedProblemRepo {

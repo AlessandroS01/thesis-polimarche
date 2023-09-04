@@ -1,8 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:polimarche/repos/sensor/temperature_repo.dart';
-
 import '../../model/sensor/current_model.dart';
-import '../../model/sensor/temperature_model.dart';
 import '../../repos/sensor/current_repo.dart';
 
 class CurrentService {

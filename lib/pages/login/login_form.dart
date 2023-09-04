@@ -1,19 +1,9 @@
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/sensor/load_model.dart';
-import 'package:polimarche/model/sensor/position_model.dart';
 
 import '../../../model/member_model.dart';
 import '../../auth/auth.dart';
-import '../../model/sensor/current_model.dart';
-import '../../model/sensor/pressure_model.dart';
-import '../../model/sensor/speed_model.dart';
-import '../../model/sensor/temperature_model.dart';
-import '../../model/sensor/voltage_model.dart';
 import '../../service/member_service.dart';
 
 class LoginForm extends StatefulWidget {

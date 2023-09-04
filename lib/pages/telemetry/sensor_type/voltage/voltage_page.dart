@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -34,7 +33,7 @@ class _VoltagePageState extends State<VoltagePage> {
     return Scaffold(
         backgroundColor: backgroundColor,
         body: Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 20, 40),
+          margin: EdgeInsets.fromLTRB(40, 10, 40, 40),
           child: Column(
             children: [
               Center(

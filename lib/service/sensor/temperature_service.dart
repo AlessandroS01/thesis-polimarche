@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:polimarche/repos/sensor/temperature_repo.dart';
 
 import '../../model/sensor/temperature_model.dart';

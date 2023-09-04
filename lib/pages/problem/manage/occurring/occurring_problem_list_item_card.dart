@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:polimarche/model/driver_model.dart';
-import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/model/occurring_problem_model.dart';
-import 'package:polimarche/model/participation_model.dart';
 import 'package:polimarche/service/occurring_problem_service.dart';
 import 'package:polimarche/service/solved_problem_service.dart';
 

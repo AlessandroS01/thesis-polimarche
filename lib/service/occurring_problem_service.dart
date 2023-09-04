@@ -1,7 +1,5 @@
 import '../model/occurring_problem_model.dart';
-import '../model/problem_model.dart';
 import '../repos/occurring_problem_repo.dart';
-import '../repos/problem_repo.dart';
 
 class OccurringProblemService {
   final OccurringProblemRepo _occurringProblemRepo = OccurringProblemRepo();

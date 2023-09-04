@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:polimarche/model/sensor/current_model.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';

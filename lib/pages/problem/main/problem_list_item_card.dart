@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:polimarche/model/member_model.dart';
 import 'package:polimarche/pages/problem/manage/manage_problem_page.dart';
+
 import '../../../model/problem_model.dart';
 
 class CardProblemListItem extends StatefulWidget {

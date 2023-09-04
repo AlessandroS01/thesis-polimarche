@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:polimarche/model/sensor/current_model.dart';
 
-import '../../model/sensor/temperature_model.dart';
-
 class CurrentRepo {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
