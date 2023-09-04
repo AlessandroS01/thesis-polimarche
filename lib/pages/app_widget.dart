@@ -3,6 +3,7 @@ import 'package:polimarche/pages/home/main_page.dart';
 import 'package:polimarche/pages/problem/main/problem_page.dart';
 import 'package:polimarche/pages/session/drawer/hidden_drawer_session.dart';
 import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
+import 'package:polimarche/pages/telemetry/select_session_setup_page.dart';
 
 import '../model/member_model.dart';
 import 'loading.dart';
@@ -41,6 +42,9 @@ class AppWidget extends StatelessWidget {
           final Member loggedMember =
               ModalRoute.of(context)?.settings.arguments as Member;
           return ProblemPage(loggedMember: loggedMember);
+        },
+        '/telemetry': (context) {
+          return SelectSessionAndSetupPage();
         },
       },
     );

@@ -31,4 +31,20 @@ class UsedSetupRepo {
 
     _firestore.collection('used_setup').add(newUsedSetup.toMap());
   }
+
+  Future<List<UsedSetup>> getAllUsedSetups() async {
+    List<UsedSetup> usedSetups = [];
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firestore.collection('used_setup').get();
+
+    if (snapshot.size != 0) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return UsedSetup.fromMap(data);
+      }).toList();
+    }
+
+    return usedSetups;
+  }
 }

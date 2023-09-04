@@ -1,9 +1,19 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:polimarche/model/sensor/load_model.dart';
+import 'package:polimarche/model/sensor/position_model.dart';
 
 import '../../../model/member_model.dart';
 import '../../auth/auth.dart';
+import '../../model/sensor/current_model.dart';
+import '../../model/sensor/pressure_model.dart';
+import '../../model/sensor/speed_model.dart';
+import '../../model/sensor/temperature_model.dart';
+import '../../model/sensor/voltage_model.dart';
 import '../../service/member_service.dart';
 
 class LoginForm extends StatefulWidget {
@@ -30,123 +40,90 @@ class _LoginFormState extends State<LoginForm> {
       _isPasswordVisible = !_isPasswordVisible;
     });
   }
+  /*
+  Future<void> generateData() async {
+    var firestore = FirebaseFirestore.instance.collection('sensor_current');
 
-  /*Future<void> creaSetup() async {
-    List<Wheel> wheels = [
-      Wheel(
-        id: 1,
-        codifica: 'setup ant dxsdfsdfsdfsdfds',
-        posizione: 'Ant dx',
-        frontale: 'setup ant dx',
-        superiore: 'setup ant dx',
-        pressione: 2,
-      ),
-      Wheel(
-        id: 2,
-        codifica: 'setup ant sx',
-        posizione: 'Ant sx',
-        frontale: 'setup ant sx',
-        superiore: 'setup ant sx',
-        pressione: 11111.0000,
-      ),
-      Wheel(
-        id: 3,
-        codifica: 'setup post dx',
-        posizione: 'Post dx',
-        frontale: 'setup post dx',
-        superiore: 'setup post dx',
-        pressione: 123.4500,
-      ),
-      Wheel(
-        id: 4,
-        codifica: 'setup post sx',
-        posizione: 'Post sx',
-        frontale: 'setup post sx',
-        superiore: 'setup post sx',
-        pressione: 123.4500,
-      ),
-    ];
-    List<Balance> balance = [
-      Balance(
-        id: 1,
-        posizione: 'Ant',
-        frenata: 48.2,
-        peso: 53,
-      ),
-      Balance(
-        id: 2,
-        posizione: 'Post',
-        frenata: 51.8,
-        peso: 47,
-      ),
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Current(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            bpCurrent: Random().nextDouble() * 100,
+            lvBattery: Random().nextDouble() * 100,
+            waterPump: Random().nextDouble() * 100,
+            coolingFanSys: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
 
-    ];
-    List<Spring> spring = [
-      Spring(
-        id: 1,
-        posizione: 'Ant',
-        codifica: 'anteriiore',
-        posizioneArb: 'Ant',
-        rigidezzaArb: 'ABCD1234',
-        altezza: 30.0000,
-      ),
-      Spring(
-        id: 2,
-        posizione: 'Post',
-        codifica: 'reaasdr',
-        posizioneArb: 'Ant',
-        rigidezzaArb: 'ABCD1234',
-        altezza: 30.0000,
-      ),
-    ];
-    List<Damper> damper = [
-      Damper(
-        id: 1,
-        posizione: 'Ant',
-        lsr: 9.10,
-        hsr: 10.00,
-        lsc: 10.00,
-        hsc: 10.00,
-      ),
-      Damper(
-        id: 2,
-        posizione: 'Post',
-        lsr: 9.10,
-        hsr: 10.00,
-        lsc: 10.00,
-        hsc: 10.00,
-      ),
-    ];
-    Setup setup = Setup(
-      id: 1,
-      ala: 'ala',
-      note: 'note',
-      wheelAntDx: wheels[0],
-      wheelAntSx: wheels[1],
-      wheelPostDx: wheels[2],
-      wheelPostSx: wheels[3],
-      balanceAnt: balance[0],
-      balancePost: balance[1],
-      springAnt: spring[0],
-      springPost: spring[1],
-      damperAnt: damper[0],
-      damperPost: damper[1],
-    );
+    firestore = FirebaseFirestore.instance.collection('sensor_load');
 
-    FirebaseFirestore.instance.collection('setup').doc("2").set(setup.toMap());
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Load(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            steerTorque: Random().nextDouble() * 100,
+            pushFR: Random().nextDouble() * 100,
+            pushFL: Random().nextDouble() * 100,
+            pushRR: Random().nextDouble() * 100,
+            pushRL: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
 
-    wheels.forEach((element) {
-      FirebaseFirestore.instance.collection('wheel').doc((element.id).toString()).set(element.toMap());
-    });
-    balance.forEach((element) {
-      FirebaseFirestore.instance.collection('balance').doc((element.id).toString()).set(element.toMap());
-    });
-    spring.forEach((element) {
-      FirebaseFirestore.instance.collection('spring').doc((element.id).toString()).set(element.toMap());
-    });
-    damper.forEach((element) {
-      FirebaseFirestore.instance.collection('damper').doc((element.id).toString()).set(element.toMap());
-    });
+    firestore = FirebaseFirestore.instance.collection('sensor_position');
+
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Position(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            throttle: Random().nextDouble() * 100,
+            steeringAngle: Random().nextDouble() * 100,
+            suspensionFR: Random().nextDouble() * 100,
+            suspensionFL: Random().nextDouble() * 100,
+            suspensionRR: Random().nextDouble() * 100,
+            suspensionRL: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
+
+    firestore = FirebaseFirestore.instance.collection('sensor_pressure');
+
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Pressure(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            brakeF: Random().nextDouble() * 100,
+            brakeR: Random().nextDouble() * 100,
+            coolant: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
+
+    firestore = FirebaseFirestore.instance.collection('sensor_speed');
+
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Speed(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            wheelFR: Random().nextDouble() * 100,
+            wheelFL: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
+
+    firestore = FirebaseFirestore.instance.collection('sensor_voltage');
+
+    for (int i = 1; i <= 25; i++) {
+      await firestore.doc(i.toString()).set(Voltage(
+            id: i,
+            sessionId: 1,
+            setupId: 2,
+            lvBattery: Random().nextDouble() * 100,
+            source24v: Random().nextDouble() * 100,
+            source5v: Random().nextDouble() * 100,
+          ).toMap(i));
+    }
   }
 
    */
@@ -158,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
           "S" + _usernameController.text + "@studenti.univpm.it";
       final String password = _passwordController.text;
 
-      //await creaSetup();
+      //await generateData();
 
       await Auth()
           .signInWithEmailAndPassword(email: emailStr, password: password);
@@ -210,7 +187,7 @@ class _LoginFormState extends State<LoginForm> {
             const SizedBox(height: 50.0),
 
             // Login Button
-            _loginButton(context, backgroundColor),
+            _loginButton(context),
           ],
         )),
         Align(
@@ -228,7 +205,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Listener _loginButton(BuildContext context, Color backgroundColor) {
+  Listener _loginButton(BuildContext context) {
     return Listener(
       onPointerDown: (_) async {
         setState(() {

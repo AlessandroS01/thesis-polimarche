@@ -138,6 +138,9 @@ class _HomePageState extends State<HomePage> {
       onPointerUp: (_) async {
         await Future.delayed(
             const Duration(milliseconds: 150)); // Wait for animation
+
+        Navigator.pushNamed(context, '/telemetry');
+
         setState(() => isTelemetryPressed = false); // Reset the state
       },
       onPointerDown: (_) => setState(() => isTelemetryPressed = true),

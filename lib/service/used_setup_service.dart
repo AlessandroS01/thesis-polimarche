@@ -13,4 +13,8 @@ class UsedSetupService {
     await _usedSetupRepo.addNewUsedSetup(sessionId, newSetupUsedId, newComment);
   }
 
+  Future<List<UsedSetup>> getAllUsedSetups() async{
+    return await _usedSetupRepo.getAllUsedSetups();
+  }
+
 }
