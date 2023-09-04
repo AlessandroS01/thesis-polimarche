@@ -32,43 +32,34 @@ class _PressurePageState extends State<PressurePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: backgroundColor,
-        body: Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 20, 40),
-          child: Column(
-            children: [
-              Center(
-                child: SfCartesianChart(
-                  tooltipBehavior: _tooltipBehavior,
-                  legend:
-                      Legend(isVisible: true, position: LegendPosition.bottom),
-                  series: <ChartSeries>[
-                    StackedLineSeries<Pressure, int>(
-                        dataSource: chartData,
-                        xValueMapper: (Pressure press, _) => press.id,
-                        yValueMapper: (Pressure press, _) => press.brakeF,
-                        name: "Brake F",
-                        markerSettings: MarkerSettings(isVisible: true)),
-                    StackedLineSeries<Pressure, int>(
-                        dataSource: chartData,
-                        xValueMapper: (Pressure press, _) => press.id,
-                        yValueMapper: (Pressure press, _) => press.brakeR,
-                        name: "Brake R",
-                        markerSettings: MarkerSettings(isVisible: true)),
-                    StackedLineSeries<Pressure, int>(
-                        dataSource: chartData,
-                        xValueMapper: (Pressure press, _) => press.id,
-                        yValueMapper: (Pressure press, _) => press.coolant,
-                        name: "Coolant",
-                        markerSettings: MarkerSettings(isVisible: true)),
-                  ],
-                  zoomPanBehavior: ZoomPanBehavior(
-                    enablePinching: true, // Enable pinch zoom
-                    enableDoubleTapZooming: true, // Enable double-tap zooming
-                    enablePanning: true, // Enable panning/move behavior
-                  ),
-                ),
-              ),
-            ],
+        body: SfCartesianChart(
+          tooltipBehavior: _tooltipBehavior,
+          legend:
+              Legend(isVisible: true, position: LegendPosition.bottom),
+          series: <ChartSeries>[
+            StackedLineSeries<Pressure, int>(
+                dataSource: chartData,
+                xValueMapper: (Pressure press, _) => press.id,
+                yValueMapper: (Pressure press, _) => press.brakeF,
+                name: "Brake F",
+                markerSettings: MarkerSettings(isVisible: true)),
+            StackedLineSeries<Pressure, int>(
+                dataSource: chartData,
+                xValueMapper: (Pressure press, _) => press.id,
+                yValueMapper: (Pressure press, _) => press.brakeR,
+                name: "Brake R",
+                markerSettings: MarkerSettings(isVisible: true)),
+            StackedLineSeries<Pressure, int>(
+                dataSource: chartData,
+                xValueMapper: (Pressure press, _) => press.id,
+                yValueMapper: (Pressure press, _) => press.coolant,
+                name: "Coolant",
+                markerSettings: MarkerSettings(isVisible: true)),
+          ],
+          zoomPanBehavior: ZoomPanBehavior(
+            enablePinching: true, // Enable pinch zoom
+            enableDoubleTapZooming: true, // Enable double-tap zooming
+            enablePanning: true, // Enable panning/move behavior
           ),
         ));
   }
