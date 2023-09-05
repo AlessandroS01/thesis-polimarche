@@ -18,6 +18,8 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final TextEditingController _controllerPasswordRecovery = TextEditingController();
+
   late final Member loggedMember;
 
   String? errorMessage = '';
@@ -174,10 +176,26 @@ class _LoginFormState extends State<LoginForm> {
             // Password Field
             _passwordInput(backgroundColor),
 
-            const SizedBox(height: 50.0),
+            const SizedBox(height: 30.0),
 
             // Login Button
             _loginButton(context),
+
+            const SizedBox(height: 20,),
+            Listener(
+              onPointerDown: (_) {
+                _showDialogRecoverPassword();
+              },
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Text(
+                    "Recupera password",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+            ),
           ],
         )),
         Align(
@@ -227,12 +245,12 @@ class _LoginFormState extends State<LoginForm> {
                     //
                     BoxShadow(
                         color: Colors.grey.shade500,
-                        offset: const Offset(18, 18),
-                        blurRadius: 30),
+                        offset: const Offset(8, 8),
+                        blurRadius: 8),
                     BoxShadow(
                       color: Colors.white,
-                      offset: -const Offset(18, 18),
-                      blurRadius: 30,
+                      offset: -const Offset(8, 8),
+                      blurRadius: 8,
                     ),
                   ]),
         child: const Center(child: Text("Login")),
@@ -333,5 +351,83 @@ class _LoginFormState extends State<LoginForm> {
       textColor: Colors.white, // Text color of the toast message
       fontSize: 16.0, // Font size of the toast message
     );
+  }
+
+  Future _showDialogRecoverPassword() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              title: Center(child: const Text("RECUPERA PASSWORD")),
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Add some spacing between the text field and radio buttons
+
+                  TextField(
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    cursorColor: Colors.black,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'aleo',
+                        letterSpacing: 1),
+                    decoration: InputDecoration(
+                      counterText: '',
+                      border: InputBorder.none,
+                      hintText: 'Matricola',
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                    controller: _controllerPasswordRecovery,
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "CANCELLA",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  ),
+                  child: Text(
+                    "RECUPERA",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: _recoverPassword,
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> _recoverPassword() async {
+    if (_controllerPasswordRecovery.text.isNotEmpty) {
+      if (int.tryParse(_controllerPasswordRecovery.text) != null || int.parse(_controllerPasswordRecovery.text) > 0) {
+        String email = "s" + _controllerPasswordRecovery.text + "@studenti.univpm.it";
+        await Auth().sendPasswordResetEmail(email: email);
+        showToast("L'email di recupero è stata inviata");
+
+        Navigator.pop(context);
+      } else {
+        showToast("La matricola inserita non ha un formato valido");
+      }
+    } else {
+      showToast("Inserire la matricola");
+    }
   }
 }

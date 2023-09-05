@@ -11,9 +11,10 @@ class Member {
   final int telefono;
   final String ruolo;
   final String? reparto;
+  final String? uid;
 
   Member({required this.matricola, required this.nome, required this.cognome, required this.dob, required this.email,
-      required this.telefono, required this.ruolo, required this.reparto});
+      required this.telefono, required this.ruolo, required this.reparto, required this.uid});
 
 
   Map<String, dynamic> toMap() {
@@ -26,6 +27,7 @@ class Member {
       'telefono': this.telefono,
       'ruolo': this.ruolo,
       'reparto': this.reparto,
+      'uid': this.uid
     };
   }
 
@@ -39,6 +41,7 @@ class Member {
       telefono: map['telefono'] as int,
       ruolo: map['ruolo'] as String,
       reparto: map['reparto'] as String,
+      uid: map['uid'] as String,
     );
   }
 

@@ -15,10 +15,8 @@ class TemperaturePage extends StatefulWidget {
 class _TemperaturePageState extends State<TemperaturePage> {
   final backgroundColor = Colors.grey.shade300;
 
-  bool _visualizeMotorFirstData =
-      true; // igbt, motorOne, motorTwo, inverter, module
-  bool _visualizeMotorSecondaData =
-      false; // pdm, coolantInt, coolantOut, mcu, vcu
+  bool _visualizeMotorFirstData = true; // igbt, motorOne, motorTwo, inverter, module
+  bool _visualizeMotorSecondaData = false; // pdm, coolantInt, coolantOut, mcu, vcu
   bool _visualizeGenericData = false; // air, humidity
   bool _visualizeBrakeData = false; // brake
   bool _visualizeTyreData = false; // tyre

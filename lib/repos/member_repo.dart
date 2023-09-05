@@ -7,10 +7,9 @@ class MemberRepo {
   /// return [Member] saved in firebase with uid specified if exists or null
   Future<Member?> getMemberByUid(String uid) async {
     Member? member;
-    
-    QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore.collection('users')
-        .where('uid', isEqualTo: uid)
-        .get();
+
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await _firestore.collection('users').where('uid', isEqualTo: uid).get();
 
     if (snapshot.size != 0) {
       final data = snapshot.docs.first.data();
@@ -29,5 +28,43 @@ class MemberRepo {
 
       return Member.fromMap(data);
     }).toList();
+  }
+
+  Future<void> createNewMember(Member newMember) async {
+    String role = newMember.ruolo;
+
+    if (role == "Caporeparto") {
+      String workshopArea = newMember.reparto!;
+
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+          .collection('users')
+          .where('ruolo', isEqualTo: role)
+          .where('reparto', isEqualTo: workshopArea)
+          .get();
+
+      if (snapshot.size != 0) {
+        final id = snapshot.docs.first.id;
+        final data = snapshot.docs.first.data();
+        Member previousHeadDip = Member.fromMap(data);
+
+        Member updatePreviousHeadDip = Member(
+            matricola: previousHeadDip.matricola,
+            nome: previousHeadDip.nome,
+            cognome: previousHeadDip.cognome,
+            dob: previousHeadDip.dob,
+            email: previousHeadDip.email,
+            telefono: previousHeadDip.telefono,
+            ruolo: "Membro",
+            reparto: previousHeadDip.reparto,
+            uid: previousHeadDip.uid);
+
+        await _firestore
+            .collection('users')
+            .doc(id)
+            .set(updatePreviousHeadDip.toMap());
+      }
+    }
+
+    _firestore.collection('users').add(newMember.toMap());
   }
 }

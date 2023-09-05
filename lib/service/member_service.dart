@@ -14,4 +14,8 @@ class MemberService {
   Future<List<Member>> getMembers() async {
     return _memberRepo.getMembers();
   }
+
+  Future<void> createNewMember(Member newMember) async {
+    await _memberRepo.createNewMember(newMember);
+  }
 }
