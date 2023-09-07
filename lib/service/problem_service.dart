@@ -8,4 +8,8 @@ class ProblemService {
     return await _problemRepo.getProblems();
   }
 
+  Future<void> addNewProblem(String description) async {
+    await _problemRepo.addNewProblem(description);
+  }
+
 }

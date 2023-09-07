@@ -204,8 +204,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
               )),
               loggedMember.ruolo == "Caporeparto" ||
                       loggedMember.ruolo == "Manager"
-                  ? _newParticipationButton(
-                      backgroundColor, distanceAdd, blurAdd)
+                  ? _newParticipationButton(distanceAdd, blurAdd)
                   : Container()
             ],
           )),
@@ -235,8 +234,7 @@ class _ParticipationSessionPageState extends State<ParticipationSessionPage> {
     );
   }
 
-  Align _newParticipationButton(
-      Color backgroundColor, Offset distanceAdd, double blurAdd) {
+  Align _newParticipationButton(Offset distanceAdd, double blurAdd) {
     return Align(
         alignment: Alignment.bottomRight,
         child: Padding(
