@@ -133,7 +133,9 @@ class _DampersPageState extends State<DampersPage> {
 
     List<String> controllersTexts = [
       _controllerFrontLsr.text,
-      _controllerFrontHsr.text
+      _controllerFrontHsr.text,
+      _controllerFrontLsc.text,
+      _controllerFrontHsc.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -143,8 +145,12 @@ class _DampersPageState extends State<DampersPage> {
         allInputFieldsFilled = false;
       }
     }
+
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerFrontHsr.text) != null) {
+      if (double.tryParse(_controllerFrontLsr.text) != null &&
+          double.tryParse(_controllerFrontHsr.text) != null &&
+          double.tryParse(_controllerFrontLsc.text) != null &&
+          double.tryParse(_controllerFrontHsc.text) != null) {
         var result = findFrontDamperFromExistingParams(
             _controllerFrontLsr.text,
             _controllerFrontHsr.text,
@@ -168,8 +174,11 @@ class _DampersPageState extends State<DampersPage> {
         damperProvider.existingFront = false;
       } else {
         showToast(
-            "Hsr degli ammortizzatori anteriore deve rappresentare un numero");
+            "I vari valori devono rappresentare dei numeri");
+        damperProvider.front = null;
       }
+    } else {
+      damperProvider.front = null;
     }
   }
 
@@ -231,7 +240,9 @@ class _DampersPageState extends State<DampersPage> {
 
     List<String> controllersTexts = [
       _controllerRearLsr.text,
-      _controllerRearHsr.text
+      _controllerRearHsr.text,
+      _controllerRearLsc.text,
+      _controllerRearHsc.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -242,7 +253,10 @@ class _DampersPageState extends State<DampersPage> {
       }
     }
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerRearHsr.text) != null) {
+      if (double.tryParse(_controllerRearLsr.text) != null &&
+          double.tryParse(_controllerRearHsr.text) != null &&
+          double.tryParse(_controllerRearLsc.text) != null &&
+          double.tryParse(_controllerRearHsc.text) != null) {
         var result = findRearDamperFromExistingParams(
             _controllerRearLsr.text,
             _controllerRearHsr.text,
@@ -266,8 +280,11 @@ class _DampersPageState extends State<DampersPage> {
         damperProvider.existingRear = false;
       } else {
         showToast(
-            "Hsr degli ammortizzatori posteriori deve rappresentare un numero");
+            "I vari valori devono rappresentare dei numeri");
+        damperProvider.rear = null;
       }
+    } else {
+      damperProvider.rear = null;
     }
   }
 

@@ -7,7 +7,6 @@ import '../../../../../../model/damper_model.dart';
 import '../../../../../service/damper_service.dart';
 
 class DampersPageCreate extends StatefulWidget {
-
   const DampersPageCreate({super.key});
 
   static List<Damper?> damperOf(BuildContext context) {
@@ -38,34 +37,33 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
   }
 
   void _initializeData() {
-    damperProvider =
-          Provider.of<DamperProviderCreate>(context, listen: false);
+    damperProvider = Provider.of<DamperProviderCreate>(context, listen: false);
 
-      // FRONT Damper DATA
-      _useExistingParamsFront = damperProvider.existingFront;
-      frontDamperParams =
+    // FRONT Damper DATA
+    _useExistingParamsFront = damperProvider.existingFront;
+    frontDamperParams =
         _damperList.where((damper) => damper.posizione == "Ant").toList();
-      frontDamperIds = frontDamperParams.map((param) => param.id).toList();
-      if (damperProvider.front != null) {
-        frontDamper = damperProvider.front!;
-        _controllerFrontLsr.text = frontDamper.lsr.toString();
-        _controllerFrontHsr.text = frontDamper.hsr.toString();
-        _controllerFrontLsc.text = frontDamper.lsc.toString();
-        _controllerFrontHsc.text = frontDamper.hsc.toString();
-      }
+    frontDamperIds = frontDamperParams.map((param) => param.id).toList();
+    if (damperProvider.front != null) {
+      frontDamper = damperProvider.front!;
+      _controllerFrontLsr.text = frontDamper.lsr.toString();
+      _controllerFrontHsr.text = frontDamper.hsr.toString();
+      _controllerFrontLsc.text = frontDamper.lsc.toString();
+      _controllerFrontHsc.text = frontDamper.hsc.toString();
+    }
 
-      // REAR Damper DATA
-      _useExistingParamsRear = damperProvider.existingRear;
-      rearDamperParams =
+    // REAR Damper DATA
+    _useExistingParamsRear = damperProvider.existingRear;
+    rearDamperParams =
         _damperList.where((damper) => damper.posizione == "Post").toList();
-      rearDamperIds = rearDamperParams.map((param) => param.id).toList();
-      if (damperProvider.rear != null) {
-        rearDamper = damperProvider.rear!;
-        _controllerRearLsr.text = rearDamper.lsr.toString();
-        _controllerRearHsr.text = rearDamper.hsr.toString();
-        _controllerRearLsc.text = rearDamper.lsc.toString();
-        _controllerRearHsc.text = rearDamper.hsc.toString();
-      }
+    rearDamperIds = rearDamperParams.map((param) => param.id).toList();
+    if (damperProvider.rear != null) {
+      rearDamper = damperProvider.rear!;
+      _controllerRearLsr.text = rearDamper.lsr.toString();
+      _controllerRearHsr.text = rearDamper.hsr.toString();
+      _controllerRearLsc.text = rearDamper.lsc.toString();
+      _controllerRearHsc.text = rearDamper.hsc.toString();
+    }
   }
 
   late DamperProviderCreate damperProvider;
@@ -141,7 +139,9 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
 
     List<String> controllersTexts = [
       _controllerFrontLsr.text,
-      _controllerFrontHsr.text
+      _controllerFrontHsr.text,
+      _controllerFrontLsc.text,
+      _controllerFrontHsc.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -151,8 +151,12 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
         allInputFieldsFilled = false;
       }
     }
+
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerFrontHsr.text) != null) {
+      if (double.tryParse(_controllerFrontLsr.text) != null &&
+          double.tryParse(_controllerFrontHsr.text) != null &&
+          double.tryParse(_controllerFrontLsc.text) != null &&
+          double.tryParse(_controllerFrontHsc.text) != null) {
         var result = findFrontDamperFromExistingParams(
             _controllerFrontLsr.text,
             _controllerFrontHsr.text,
@@ -175,9 +179,11 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
         damperProvider.front = damper;
         damperProvider.existingFront = false;
       } else {
-        showToast(
-            "Hsr degli ammortizzatori anteriore deve rappresentare un numero");
+        showToast("I vari valori devono rappresentare dei numeri");
+        damperProvider.front = null;
       }
+    } else {
+      damperProvider.front = null;
     }
   }
 
@@ -239,7 +245,9 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
 
     List<String> controllersTexts = [
       _controllerRearLsr.text,
-      _controllerRearHsr.text
+      _controllerRearHsr.text,
+      _controllerRearLsc.text,
+      _controllerRearHsc.text
     ];
 
     final Iterator<String> iterator = controllersTexts.iterator;
@@ -250,7 +258,10 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
       }
     }
     if (allInputFieldsFilled) {
-      if (double.tryParse(_controllerRearHsr.text) != null) {
+      if (double.tryParse(_controllerRearLsr.text) != null &&
+          double.tryParse(_controllerRearHsr.text) != null &&
+          double.tryParse(_controllerRearLsc.text) != null &&
+          double.tryParse(_controllerRearHsc.text) != null) {
         var result = findRearDamperFromExistingParams(
             _controllerRearLsr.text,
             _controllerRearHsr.text,
@@ -274,8 +285,11 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
         damperProvider.existingRear = false;
       } else {
         showToast(
-            "Hsr degli ammortizzatori posteriori deve rappresentare un numero");
+            "I vari valori devono rappresentare dei numeri");
+        damperProvider.rear = null;
       }
+    } else {
+      damperProvider.rear = null;
     }
   }
 
@@ -285,7 +299,6 @@ class _DampersPageCreateState extends State<DampersPageCreate> {
 
     _damperService = DamperService();
     _dataLoading = _getDamperParams();
-
   }
 
   @override

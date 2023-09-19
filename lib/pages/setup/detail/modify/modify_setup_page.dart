@@ -664,6 +664,8 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
       Navigator.pop(context);
     } else {
+      List<Setup> setups = await _setupService.getSetups();
+
       List<Wheel> wheels = [
         frontRightWheel,
         frontLeftWheel,
@@ -771,12 +773,46 @@ class _ModifySetupPageState extends State<ModifySetupPage>
       });
       List<String> genInfosUsed = [ala, note];
 
-      await _setupService.createSetup(
-          wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
+      if (setups
+          .where((setupElement) =>
+              setupElement.wheelAntDx.id == wheelsUsed[0].id &&
+              setupElement.wheelAntSx.id == wheelsUsed[1].id &&
+              setupElement.wheelPostDx.id == wheelsUsed[2].id &&
+              setupElement.wheelPostSx.id == wheelsUsed[3].id &&
+              setupElement.balanceAnt.id == balanceUsed[0].id &&
+              setupElement.balancePost.id == balanceUsed[1].id &&
+              setupElement.springAnt.id == springsUsed[0].id &&
+              setupElement.springPost.id == springsUsed[1].id &&
+              setupElement.damperAnt.id == dampersUsed[0].id &&
+              setupElement.damperPost.id == dampersUsed[1].id &&
+              setupElement.note == note &&
+              setupElement.ala == ala)
+          .isNotEmpty) {
+        int setupId = setups
+            .where((setupElement) =>
+                setupElement.wheelAntDx.id == wheelsUsed[0].id &&
+                setupElement.wheelAntSx.id == wheelsUsed[1].id &&
+                setupElement.wheelPostDx.id == wheelsUsed[2].id &&
+                setupElement.wheelPostSx.id == wheelsUsed[3].id &&
+                setupElement.balanceAnt.id == balanceUsed[0].id &&
+                setupElement.balancePost.id == balanceUsed[1].id &&
+                setupElement.springAnt.id == springsUsed[0].id &&
+                setupElement.springPost.id == springsUsed[1].id &&
+                setupElement.damperAnt.id == dampersUsed[0].id &&
+                setupElement.damperPost.id == dampersUsed[1].id &&
+                setupElement.note == note &&
+                setupElement.ala == ala)
+            .first
+            .id;
+        showToast("Il setup creato coincide con il setup ${setupId}");
+      } else {
+        await _setupService.createSetup(
+            wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
 
-      showToast("Il nuovo setup modificato è stato creato");
+        showToast("Il nuovo setup modificato è stato creato");
 
-      Navigator.pop(context);
+        Navigator.pop(context);
+      }
     }
   }
 }

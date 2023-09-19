@@ -7,7 +7,6 @@ import '../../../../../../model/balance_model.dart';
 import '../../../../../service/balance_service.dart';
 
 class BalancePageCreate extends StatefulWidget {
-
   const BalancePageCreate({super.key});
 
   static List<Balance?> balanceOf(BuildContext context) {
@@ -42,29 +41,29 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
 
   void _initializeData() {
     balanceProvider =
-          Provider.of<BalanceProviderCreate>(context, listen: false);
+        Provider.of<BalanceProviderCreate>(context, listen: false);
 
-      // FRONT BALANCE DATA
-      _useExistingParamsFront = balanceProvider.existingFront;
-      frontBalanceParams =
+    // FRONT BALANCE DATA
+    _useExistingParamsFront = balanceProvider.existingFront;
+    frontBalanceParams =
         _balanceList.where((balance) => balance.posizione == "Ant").toList();
-      frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
-      if (balanceProvider.front != null) {
-        frontBalance = balanceProvider.front!;
-        _controllerFrontPeso.text = frontBalance.peso.toString();
-        _controllerFrontFrenata.text = frontBalance.frenata.toString();
-      }
+    frontBalanceIds = frontBalanceParams.map((param) => param.id).toList();
+    if (balanceProvider.front != null) {
+      frontBalance = balanceProvider.front!;
+      _controllerFrontPeso.text = frontBalance.peso.toString();
+      _controllerFrontFrenata.text = frontBalance.frenata.toString();
+    }
 
-      // REAR BALANCE DATA
-      _useExistingParamsRear = balanceProvider.existingRear;
-      rearBalanceParams =
+    // REAR BALANCE DATA
+    _useExistingParamsRear = balanceProvider.existingRear;
+    rearBalanceParams =
         _balanceList.where((balance) => balance.posizione == "Post").toList();
-      rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
-      if (balanceProvider.rear != null) {
-        rearBalance = balanceProvider.rear!;
-        _controllerRearPeso.text = rearBalance.peso.toString();
-        _controllerRearFrenata.text = rearBalance.frenata.toString();
-      }
+    rearBalanceIds = rearBalanceParams.map((param) => param.id).toList();
+    if (balanceProvider.rear != null) {
+      rearBalance = balanceProvider.rear!;
+      _controllerRearPeso.text = rearBalance.peso.toString();
+      _controllerRearFrenata.text = rearBalance.frenata.toString();
+    }
   }
 
   late BalanceProviderCreate balanceProvider;
@@ -162,10 +161,14 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
           balanceProvider.existingFront = false;
         } else {
           showToast("Il peso anteriore deve rappresentare un numero");
+          balanceProvider.front = null;
         }
       } else {
         showToast("La frenata anteriore deve rappresentare un numero");
+        balanceProvider.front = null;
       }
+    } else {
+      balanceProvider.front = null;
     }
   }
 
@@ -250,10 +253,14 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
           balanceProvider.existingRear = false;
         } else {
           showToast("Il peso posteriore deve rappresentare un numero");
+          balanceProvider.rear = null;
         }
       } else {
         showToast("La frenata posteriore deve rappresentare un numero");
+        balanceProvider.rear = null;
       }
+    } else {
+      balanceProvider.rear = null;
     }
   }
 
@@ -263,7 +270,6 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
 
     _balanceService = BalanceService();
     _dataLoading = _getBalanceParams();
-
   }
 
   @override

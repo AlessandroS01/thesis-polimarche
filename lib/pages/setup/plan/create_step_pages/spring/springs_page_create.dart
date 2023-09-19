@@ -176,7 +176,10 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
       } else {
         showToast(
             "L'altezza della molla anteriore deve rappresentare un numero");
+        springProvider.front = null;
       }
+    } else {
+      springProvider.front = null;
     }
   }
 
@@ -274,7 +277,10 @@ class _SpringsPageCreateState extends State<SpringsPageCreate> {
       } else {
         showToast(
             "L'altezza della molla posteriori deve rappresentare un numero");
+        springProvider.rear = null;
       }
+    } else {
+      springProvider.rear = null;
     }
   }
 

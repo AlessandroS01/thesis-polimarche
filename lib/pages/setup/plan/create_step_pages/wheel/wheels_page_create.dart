@@ -214,7 +214,10 @@ class _WheelsPageCreateState extends State<WheelsPageCreate> {
         wheelProvider.existingFrontRight = false;
       } else {
         showToast("La pressione deve rappresentare un numero");
+        wheelProvider.frontRight = null;
       }
+    } else {
+      wheelProvider.frontRight = null;
     }
   }
 
@@ -315,7 +318,10 @@ class _WheelsPageCreateState extends State<WheelsPageCreate> {
         wheelProvider.existingFrontLeft = false;
       } else {
         showToast("La pressione deve rappresentare un numero");
+        wheelProvider.frontLeft = null;
       }
+    } else {
+      wheelProvider.frontLeft = null;
     }
   }
 
@@ -416,9 +422,11 @@ class _WheelsPageCreateState extends State<WheelsPageCreate> {
         wheelProvider.existingRearRight = false;
       } else {
         showToast("La pressione deve rappresentare un numero");
+        wheelProvider.rearRight = null;
       }
+    } else {
+      wheelProvider.rearRight = null;
     }
-
   }
 
   // REAR LEFT DATA
@@ -517,7 +525,10 @@ class _WheelsPageCreateState extends State<WheelsPageCreate> {
         wheelProvider.existingRearLeft = false;
       } else {
         showToast("La pressione deve rappresentare un numero");
+        wheelProvider.rearLeft = null;
       }
+    } else {
+      wheelProvider.rearLeft = null;
     }
   }
 

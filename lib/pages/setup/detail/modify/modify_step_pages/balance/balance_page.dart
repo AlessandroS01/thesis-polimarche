@@ -156,10 +156,14 @@ class _BalancePageState extends State<BalancePage> {
           balanceProvider.existingFront = false;
         } else {
           showToast("Il peso anteriore deve rappresentare un numero");
+          balanceProvider.front = null;
         }
       } else {
         showToast("La frenata anteriore deve rappresentare un numero");
+        balanceProvider.front = null;
       }
+    } else {
+      balanceProvider.front = null;
     }
   }
 
@@ -244,10 +248,14 @@ class _BalancePageState extends State<BalancePage> {
           balanceProvider.existingRear = false;
         } else {
           showToast("Il peso posteriore deve rappresentare un numero");
+          balanceProvider.rear = null;
         }
       } else {
         showToast("La frenata posteriore deve rappresentare un numero");
+        balanceProvider.rear = null;
       }
+    } else {
+      balanceProvider.rear = null;
     }
   }
 

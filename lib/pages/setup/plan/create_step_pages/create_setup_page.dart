@@ -18,6 +18,7 @@ import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 import '../../../../model/damper_model.dart';
 import '../../../../model/member_model.dart';
+import '../../../../model/setup_model.dart';
 import '../../../../service/balance_service.dart';
 import '../../../../service/damper_service.dart';
 import '../../../../service/setup_service.dart';
@@ -319,38 +320,40 @@ class _PlanSetupPageState extends State<PlanSetupPage>
         ),
       ],
       child: Scaffold(
-        backgroundColor: backgroundColor,
-        bottomNavigationBar: _bottomNavBar(),
-        body: !_isCreating ? Container(
-          decoration: BoxDecoration(color: backgroundColor),
-          child: Column(
-            children: [
-              Container(
-                  margin: EdgeInsets.all(20),
-                  child: StepProgressIndicator(
-                    totalSteps: _totalSteps,
-                    currentStep: _progress,
-                    roundedEdges: Radius.circular(15),
-                    size: 13,
-                    unselectedColor: Colors.grey.shade500,
-                    selectedColor: Colors.black,
-                  )),
-              Center(
-                child: Text(
-                  "${_stepsName[_progress - 1]}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(height: 20),
-              _stepPages[_progress - 1]
-            ],
-          ),
-        ) : Center(
-          child: CircularProgressIndicator(
-            color: Colors.black,
-          ),
-        )
-      ),
+          backgroundColor: backgroundColor,
+          bottomNavigationBar: _bottomNavBar(),
+          body: !_isCreating
+              ? Container(
+                  decoration: BoxDecoration(color: backgroundColor),
+                  child: Column(
+                    children: [
+                      Container(
+                          margin: EdgeInsets.all(20),
+                          child: StepProgressIndicator(
+                            totalSteps: _totalSteps,
+                            currentStep: _progress,
+                            roundedEdges: Radius.circular(15),
+                            size: 13,
+                            unselectedColor: Colors.grey.shade500,
+                            selectedColor: Colors.black,
+                          )),
+                      Center(
+                        child: Text(
+                          "${_stepsName[_progress - 1]}",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      _stepPages[_progress - 1]
+                    ],
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                )),
     );
   }
 
@@ -465,7 +468,6 @@ class _PlanSetupPageState extends State<PlanSetupPage>
                       _isCreating = false;
                     });
 
-
                     _animationController.reset();
                   },
                 ),
@@ -475,6 +477,8 @@ class _PlanSetupPageState extends State<PlanSetupPage>
   }
 
   Future<void> _createSetup() async {
+    List<Setup> setups = await _setupService.getSetups();
+
     List<Wheel> wheels = [
       frontRightWheel,
       frontLeftWheel,
@@ -582,12 +586,46 @@ class _PlanSetupPageState extends State<PlanSetupPage>
     });
     List<String> genInfosUsed = [ala, note];
 
-    await _setupService.createSetup(wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
+    if (setups
+        .where((setupElement) =>
+            setupElement.wheelAntDx.id == wheelsUsed[0].id &&
+            setupElement.wheelAntSx.id == wheelsUsed[1].id &&
+            setupElement.wheelPostDx.id == wheelsUsed[2].id &&
+            setupElement.wheelPostSx.id == wheelsUsed[3].id &&
+            setupElement.balanceAnt.id == balanceUsed[0].id &&
+            setupElement.balancePost.id == balanceUsed[1].id &&
+            setupElement.springAnt.id == springsUsed[0].id &&
+            setupElement.springPost.id == springsUsed[1].id &&
+            setupElement.damperAnt.id == dampersUsed[0].id &&
+            setupElement.damperPost.id == dampersUsed[1].id &&
+            setupElement.note == note &&
+            setupElement.ala == ala)
+        .isNotEmpty) {
+      int setupId = setups
+          .where((setupElement) =>
+              setupElement.wheelAntDx.id == wheelsUsed[0].id &&
+              setupElement.wheelAntSx.id == wheelsUsed[1].id &&
+              setupElement.wheelPostDx.id == wheelsUsed[2].id &&
+              setupElement.wheelPostSx.id == wheelsUsed[3].id &&
+              setupElement.balanceAnt.id == balanceUsed[0].id &&
+              setupElement.balancePost.id == balanceUsed[1].id &&
+              setupElement.springAnt.id == springsUsed[0].id &&
+              setupElement.springPost.id == springsUsed[1].id &&
+              setupElement.damperAnt.id == dampersUsed[0].id &&
+              setupElement.damperPost.id == dampersUsed[1].id &&
+              setupElement.note == note &&
+              setupElement.ala == ala)
+          .first
+          .id;
+      showToast("Il setup creato coincide con il setup ${setupId}");
+    } else {
+      await _setupService.createSetup(
+          wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
 
-    showToast("Setup creato con successo");
+      showToast("Setup creato con successo");
 
-    Navigator.popAndPushNamed(context, '/setup',
-        arguments: widget.loggedMember);
+      Navigator.popAndPushNamed(context, '/setup',
+          arguments: widget.loggedMember);
+    }
   }
-
 }
