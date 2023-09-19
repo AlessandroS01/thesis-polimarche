@@ -1098,7 +1098,7 @@ class _PlanSessionPageState extends State<PlanSessionPage>
                     },
                   )
                 : GButton(
-                    icon: Icons.upload,
+                    icon: Icons.save_alt,
                     onPressed: () async {
                       if (_animationController.isAnimating) {
                         return;

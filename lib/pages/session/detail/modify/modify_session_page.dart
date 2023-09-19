@@ -1105,7 +1105,7 @@ class _ModifySessionPageState extends State<ModifySessionPage> with TickerProvid
                   )
                 : GButton(
 
-                    icon: Icons.upload,
+                    icon: Icons.save_alt,
                     onPressed: () async {
                       if (_animationController.isAnimating) {
                         return;

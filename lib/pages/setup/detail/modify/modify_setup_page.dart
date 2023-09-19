@@ -353,39 +353,41 @@ class _ModifySetupPageState extends State<ModifySetupPage>
         ),
       ],
       child: Scaffold(
-        backgroundColor: backgroundColor,
-        appBar: _appBar(backgroundColor),
-        bottomNavigationBar: _bottomNavBar(),
-        body: !_isModifying ? Container(
-          decoration: BoxDecoration(color: backgroundColor),
-          child: Column(
-            children: [
-              Container(
-                  margin: EdgeInsets.all(20),
-                  child: StepProgressIndicator(
-                    totalSteps: _totalSteps,
-                    currentStep: _progress,
-                    roundedEdges: Radius.circular(15),
-                    size: 13,
-                    unselectedColor: Colors.grey.shade500,
-                    selectedColor: Colors.black,
-                  )),
-              Center(
-                child: Text(
-                  "${_stepsName[_progress - 1]}",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              SizedBox(height: 20),
-              _stepPages[_progress - 1]
-            ],
-          ),
-        ) : Center(
-          child: CircularProgressIndicator(
-            color: Colors.black,
-          ),
-        )
-      ),
+          backgroundColor: backgroundColor,
+          appBar: _appBar(backgroundColor),
+          bottomNavigationBar: _bottomNavBar(),
+          body: !_isModifying
+              ? Container(
+                  decoration: BoxDecoration(color: backgroundColor),
+                  child: Column(
+                    children: [
+                      Container(
+                          margin: EdgeInsets.all(20),
+                          child: StepProgressIndicator(
+                            totalSteps: _totalSteps,
+                            currentStep: _progress,
+                            roundedEdges: Radius.circular(15),
+                            size: 13,
+                            unselectedColor: Colors.grey.shade500,
+                            selectedColor: Colors.black,
+                          )),
+                      Center(
+                        child: Text(
+                          "${_stepsName[_progress - 1]}",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      _stepPages[_progress - 1]
+                    ],
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                  ),
+                )),
     );
   }
 
@@ -401,41 +403,44 @@ class _ModifySetupPageState extends State<ModifySetupPage>
             padding: const EdgeInsets.all(32),
             gap: 8,
             tabs: [
-              if(!_isModifying) _progress > 1
-                  ? GButton(
-                      icon: Icons.arrow_back,
-                      onPressed: () {
-                        if (_progress == 2) {
-                          List<Balance?> balance =
-                              BalancePage.balanceOf(context);
+              if (!_isModifying)
+                _progress > 1
+                    ? GButton(
+                        icon: Icons.arrow_back,
+                        onPressed: () {
+                          if (_progress == 2) {
+                            List<Balance?> balance =
+                                BalancePage.balanceOf(context);
 
-                          _tryPreviousStepFromBalancePage(balance);
-                        }
+                            _tryPreviousStepFromBalancePage(balance);
+                          }
 
-                        if (_progress == 3) {
-                          List<Spring?> springs = SpringsPage.springOf(context);
+                          if (_progress == 3) {
+                            List<Spring?> springs =
+                                SpringsPage.springOf(context);
 
-                          _tryPreviousStepFromSpringPage(springs);
-                        }
+                            _tryPreviousStepFromSpringPage(springs);
+                          }
 
-                        if (_progress == 4) {
-                          List<Damper?> dampers = DampersPage.damperOf(context);
+                          if (_progress == 4) {
+                            List<Damper?> dampers =
+                                DampersPage.damperOf(context);
 
-                          _tryPreviousStepFromDamperPage(dampers);
-                        }
+                            _tryPreviousStepFromDamperPage(dampers);
+                          }
 
-                        if (_progress == 5) {
-                          List<String> infos =
-                              GeneralInformationPage.stringOf(context);
+                          if (_progress == 5) {
+                            List<String> infos =
+                                GeneralInformationPage.stringOf(context);
 
-                          _tryPreviousStepFromGeneralInformationPage(infos);
-                        }
-                      })
-                  : GButton(
-                      icon: Icons.flag_outlined,
-                      leading: Badge(
-                        backgroundColor: backgroundColor,
-                      )),
+                            _tryPreviousStepFromGeneralInformationPage(infos);
+                          }
+                        })
+                    : GButton(
+                        icon: Icons.flag_outlined,
+                        leading: Badge(
+                          backgroundColor: backgroundColor,
+                        )),
 
               // WHEEL
               if (!_isModifying && _progress != 5 && _progress == 1)
@@ -464,7 +469,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
                       onSpringFromPage(springs);
                     }),
-              if (!_isModifying &&  _progress != 5 && _progress == 4)
+              if (!_isModifying && _progress != 5 && _progress == 4)
                 GButton(
                     icon: Icons.arrow_forward,
                     onPressed: () {
@@ -472,9 +477,9 @@ class _ModifySetupPageState extends State<ModifySetupPage>
 
                       onDamperFromPage(dampers);
                     }),
-              if (!_isModifying &&  _progress == 5)
+              if (!_isModifying && _progress == 5)
                 GButton(
-                  icon: Icons.upload,
+                  icon: Icons.save_alt,
                   onPressed: () async {
                     List<String> genInfos =
                         GeneralInformationPage.stringOf(context);
@@ -526,6 +531,7 @@ class _ModifySetupPageState extends State<ModifySetupPage>
   }
 
   Future<void> _modifySetup() async {
+    /*
     List<Wheel> wheels = [
       frontRightWheel,
       frontLeftWheel,
@@ -640,5 +646,137 @@ class _ModifySetupPageState extends State<ModifySetupPage>
     await updateStateDetailSetup();
 
     Navigator.pop(context);
+    */
+
+    if (setup.wheelAntDx == frontRightWheel &&
+        setup.wheelAntSx == frontLeftWheel &&
+        setup.wheelPostDx == rearRightWheel &&
+        setup.wheelPostSx == rearLeftWheel &&
+        setup.balanceAnt == frontBalance &&
+        setup.balancePost == rearBalance &&
+        setup.springAnt == frontSpring &&
+        setup.springPost == rearSpring &&
+        setup.damperAnt == frontDamper &&
+        setup.damperPost == rearDamper &&
+        setup.note == note &&
+        setup.ala == ala) {
+      showToast("Il setup definito è uguale a quello selezionato");
+
+      Navigator.pop(context);
+    } else {
+      List<Wheel> wheels = [
+        frontRightWheel,
+        frontLeftWheel,
+        rearRightWheel,
+        rearLeftWheel
+      ];
+      List<int> wheelIds = [0, 0, 0, 0];
+      List<Balance> balance = [frontBalance, rearBalance];
+      List<int> balanceIds = [0, 0];
+      List<Spring> springs = [frontSpring, rearSpring];
+      List<int> springIds = [0, 0];
+      List<Damper> dampers = [frontDamper, rearDamper];
+      List<int> damperIds = [0, 0];
+
+      final WheelService _wheelService = WheelService();
+      final BalanceService _balanceService = BalanceService();
+      final SpringService _springService = SpringService();
+      final DamperService _damperService = DamperService();
+
+      await Future.forEach(wheels.asMap().entries,
+          (MapEntry<int, Wheel> entry) async {
+        final index = entry.key;
+        final wheel = entry.value;
+
+        if (wheel.id == 0) {
+          wheelIds[index] = await _wheelService.addNewWheel(wheel);
+        } else {
+          wheelIds[index] = wheel.id;
+        }
+      });
+
+      await Future.forEach(balance.asMap().entries,
+          (MapEntry<int, Balance> entry) async {
+        final index = entry.key;
+        final balance = entry.value;
+
+        if (balance.id == 0) {
+          balanceIds[index] = await _balanceService.addNewBalance(balance);
+        } else {
+          balanceIds[index] = balance.id;
+        }
+      });
+
+      await Future.forEach(springs.asMap().entries,
+          (MapEntry<int, Spring> entry) async {
+        final index = entry.key;
+        final spring = entry.value;
+
+        if (spring.id == 0) {
+          springIds[index] = await _springService.addNewSpring(spring);
+        } else {
+          springIds[index] = spring.id;
+        }
+      });
+
+      await Future.forEach(dampers.asMap().entries,
+          (MapEntry<int, Damper> entry) async {
+        final index = entry.key;
+        final damper = entry.value;
+
+        if (damper.id == 0) {
+          damperIds[index] = await _damperService.addNewDampers(damper);
+        } else {
+          damperIds[index] = damper.id;
+        }
+      });
+
+      final wheelsUsed = <Wheel>[];
+      wheels.asMap().forEach((index, wheel) {
+        wheelsUsed.add(Wheel(
+            id: wheelIds[index],
+            codifica: wheel.codifica,
+            posizione: wheel.posizione,
+            frontale: wheel.frontale,
+            superiore: wheel.superiore,
+            pressione: wheel.pressione));
+      });
+      final balanceUsed = <Balance>[];
+      balance.asMap().forEach((index, balance) {
+        balanceUsed.add(Balance(
+            id: balanceIds[index],
+            posizione: balance.posizione,
+            frenata: balance.frenata,
+            peso: balance.peso));
+      });
+      final springsUsed = <Spring>[];
+      springs.asMap().forEach((index, spring) {
+        springsUsed.add(Spring(
+            id: springIds[index],
+            posizione: spring.posizione,
+            codifica: spring.codifica,
+            posizioneArb: spring.posizioneArb,
+            rigidezzaArb: spring.rigidezzaArb,
+            altezza: spring.altezza));
+      });
+      final dampersUsed = <Damper>[];
+      dampers.asMap().forEach((index, damper) {
+        dampersUsed.add(Damper(
+            id: damperIds[index],
+            posizione: damper.posizione,
+            lsr: damper.lsr,
+            hsr: damper.hsr,
+            lsc: damper.lsc,
+            hsc: damper.hsc));
+      });
+      List<String> genInfosUsed = [ala, note];
+
+      await _setupService.createSetup(
+          wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
+
+      showToast("Il nuovo setup modificato è stato creato");
+
+      Navigator.pop(context);
+    }
   }
 }

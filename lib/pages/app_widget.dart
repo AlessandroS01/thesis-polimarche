@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polimarche/pages/home/main_page.dart';
+import 'package:polimarche/pages/new_member/new_member_page.dart';
 import 'package:polimarche/pages/problem/main/problem_page.dart';
 import 'package:polimarche/pages/session/drawer/hidden_drawer_session.dart';
 import 'package:polimarche/pages/setup/drawer/hidden_drawer_setup.dart';
@@ -45,6 +46,9 @@ class AppWidget extends StatelessWidget {
         },
         '/telemetry': (context) {
           return SelectSessionAndSetupPage();
+        },
+        '/member': (context) {
+          return NewMemberPage();
         },
       },
     );

@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   bool isProblemPressed = false;
   bool isSetupPressed = false;
   bool isTelemetryPressed = false;
+  bool isMemberPressed = false;
 
   final backgroundColor = Colors.grey.shade300;
   late Member loggedMember;
@@ -24,10 +25,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     loggedMember = AuthorizationProvider.of(context)!.loggedMember;
 
-
     Offset distanceSession = isSessionPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceProblem = isProblemPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceSetup = isSetupPressed ? Offset(5, 5) : Offset(18, 18);
+    Offset distanceMember = isMemberPressed ? Offset(5, 5) : Offset(18, 18);
     Offset distanceTelemetry =
         isTelemetryPressed ? Offset(5, 5) : Offset(18, 18);
 
@@ -35,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     double blurProblem = isProblemPressed ? 5.0 : 30.0;
     double blurSetup = isSetupPressed ? 5.0 : 30.0;
     double blurTelemetry = isTelemetryPressed ? 5.0 : 30.0;
+    double blurMember = isMemberPressed ? 5.0 : 30.0;
 
     return AuthorizationProvider(
       loggedMember: loggedMember,
@@ -84,20 +86,30 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       _telemetryButton(
                           backgroundColor, distanceTelemetry, blurTelemetry),
-                      _setupButton(backgroundColor, distanceSetup, blurSetup, loggedMember),
+                      _setupButton(backgroundColor, distanceSetup, blurSetup,
+                          loggedMember),
                     ],
                   )
                 ],
               ),
             ),
+            loggedMember.ruolo == "Manager"
+                ? Expanded(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _newMemberButton(distanceMember, blurMember),
+                    Container()
+                  ],
+                ))
+                : Container()
           ],
         ),
       ),
     );
   }
 
-  Listener _setupButton(
-      Color backgroundColor, Offset distanceSetup, double blurSetup, Member loggedMember) {
+  Listener _setupButton(Color backgroundColor, Offset distanceSetup,
+      double blurSetup, Member loggedMember) {
     return Listener(
       onPointerUp: (_) async {
         await Future.delayed(
@@ -238,6 +250,42 @@ class _HomePageState extends State<HomePage> {
                   inset: isSessionPressed),
             ]),
         child: const Center(child: Text("Sessioni")),
+      ),
+    );
+  }
+
+  Listener _newMemberButton(Offset distanceMember,
+      double blurMember) {
+    return Listener(
+      onPointerUp: (_) async {
+        await Future.delayed(
+            const Duration(milliseconds: 150)); // Wait for animation
+
+        Navigator.pushNamed(context, '/member');
+        setState(() => isMemberPressed = false); // Reset the state
+      },
+      onPointerDown: (_) => setState(() => isMemberPressed = true),
+      child: AnimatedContainer(
+        width: 130,
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.all(30),
+        decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              //
+              BoxShadow(
+                  color: Colors.grey.shade500,
+                  offset: distanceMember,
+                  blurRadius: blurMember,
+                  inset: isMemberPressed),
+              BoxShadow(
+                  color: Colors.white,
+                  offset: -distanceMember,
+                  blurRadius: blurMember,
+                  inset: isMemberPressed),
+            ]),
+        child: const Center(child: Text("Membro")),
       ),
     );
   }

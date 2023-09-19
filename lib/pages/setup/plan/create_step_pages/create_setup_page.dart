@@ -445,7 +445,7 @@ class _PlanSetupPageState extends State<PlanSetupPage>
                     }),
               if (!_isCreating && _progress == 5)
                 GButton(
-                  icon: Icons.upload,
+                  icon: Icons.save_alt,
                   onPressed: () async {
                     List<String> genInfos =
                         GeneralInformationPageCreate.stringOf(context);
@@ -583,8 +583,6 @@ class _PlanSetupPageState extends State<PlanSetupPage>
     List<String> genInfosUsed = [ala, note];
 
     await _setupService.createSetup(wheelsUsed, balanceUsed, springsUsed, dampersUsed, genInfosUsed);
-
-    showToast("Setup modificata con successo");
 
     showToast("Setup creato con successo");
 

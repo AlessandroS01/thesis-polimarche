@@ -158,7 +158,6 @@ class _BalancePageCreateState extends State<BalancePageCreate> {
                 peso: double.parse(_controllerFrontPeso.text),
                 frenata: double.parse(_controllerFrontFrenata.text));
           }
-          print("object");
           balanceProvider.front = balance;
           balanceProvider.existingFront = false;
         } else {

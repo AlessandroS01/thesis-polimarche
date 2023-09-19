@@ -24,8 +24,9 @@ class _TeamPageState extends State<TeamPage> {
     "Aereodinamica",
     "Dinamica",
     "Battery pack",
-    "Marketing",
-    "Elettronica"
+    "Elettronica",
+    "Controlli",
+    "Statica"
   ];
   Future<void>? _dataLoading;
   bool _isDataLoading = false;
@@ -204,10 +205,12 @@ class _TeamPageState extends State<TeamPage> {
                                     driver.membro.matricola ==
                                         element.matricola)
                                 .toList();
-                            if (driver.length == 0) { // MEMBER NOT DRIVER
+                            if (driver.length == 0) {
+                              // MEMBER NOT DRIVER
                               return CardMemberListItem(
                                   member: element, driver: null);
-                            } else { // MEMBER ALSO DRIVER
+                            } else {
+                              // MEMBER ALSO DRIVER
                               return CardMemberListItem(
                                   member: element, driver: driver.first);
                             }
@@ -258,7 +261,21 @@ class _TeamPageState extends State<TeamPage> {
                             inset: isDriverPressed),
                       ]
                     : []),
-            child: SvgPicture.asset("assets/icon/driver.svg"),
+            child: Column(
+              children: [
+                SvgPicture.asset("assets/icon/driver.svg"),
+                SizedBox(height: 5),
+                !isDriverPressed
+                    ? Text(
+                      "Clicca per visualizzare i piloti",
+                      style: TextStyle(fontSize: 10),
+                    )
+                    : Text(
+                      "Clicca per visualizzare il team",
+                      style: TextStyle(fontSize: 10),
+                    )
+              ],
+            ),
           ),
         ),
       ),

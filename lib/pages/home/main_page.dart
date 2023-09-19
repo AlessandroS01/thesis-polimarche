@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:polimarche/inherited_widgets/authorization_provider.dart';
-import 'package:polimarche/pages/home/new_member/new_member_page.dart';
 import 'package:polimarche/pages/home/team/team_page.dart';
 
 import '../../auth/auth.dart';
@@ -32,21 +31,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     loggedMember = widget.loggedMember;
 
-    if (loggedMember.ruolo == "Manager") {
-      pagesName = [
-        "Benvenuto",
-        "Nuovo membro",
-        "Team",
-        "Agenda"
-      ];
-
-      pages = [
-        HomePage(),
-        NewMemberPage(),
-        TeamPage(),
-        AgendaPage(loggedMember: widget.loggedMember)
-      ];
-    } else {
       pagesName = [
         "Benvenuto",
         "Team",
@@ -58,7 +42,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         TeamPage(),
         AgendaPage(loggedMember: widget.loggedMember)
       ];
-    }
   }
 
   @override
@@ -95,24 +78,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               _currentIndex = index;
             });
           },
-          tabs: loggedMember.ruolo == "Manager" ? [
-            GButton(
-              icon: Icons.home,
-              text: "Home",
-            ),
-            GButton(
-              icon: Icons.person_add_alt_1,
-              text: "Membro",
-            ),
-            GButton(
-              icon: Icons.groups_2,
-              text: "Team",
-            ),
-            GButton(
-              icon: Icons.calendar_today_outlined,
-              text: "Agenda",
-            ),
-          ] : [
+          tabs: [
             GButton(
               icon: Icons.home,
               text: "Home",

@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -202,8 +200,9 @@ class _NewMemberPageState extends State<NewMemberPage>
     "Aereodinamica",
     "Dinamica",
     "Battery pack",
-    "Marketing",
-    "Elettronica"
+    "Elettronica",
+    "Controlli",
+    "Statica"
   ];
 
   @override
@@ -234,6 +233,7 @@ class _NewMemberPageState extends State<NewMemberPage>
     double blurDate = isDateButtonPressed ? 5.0 : 30.0;
 
     return Scaffold(
+      appBar: _appBar(backgroundColor),
       backgroundColor: backgroundColor,
       bottomNavigationBar: _bottomNavBar(),
       body: _isDataLoading
@@ -260,7 +260,7 @@ class _NewMemberPageState extends State<NewMemberPage>
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 40),
                 _progress == 1 // FIRST STEP
                     ? _firstStep(distanceDate, blurDate)
                     : _secondStep(),
@@ -643,13 +643,12 @@ class _NewMemberPageState extends State<NewMemberPage>
     return Container(
       color: backgroundColor,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
         child: GNav(
           iconSize: 30,
-          backgroundColor: backgroundColor,
+          backgroundColor: Colors.grey.shade300,
           color: Colors.black,
           activeColor: Colors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15),
           gap: 8,
           tabs: [
             _progress > 1 && !_isDataLoading
@@ -690,7 +689,7 @@ class _NewMemberPageState extends State<NewMemberPage>
                   )
                 : !_isDataLoading
                     ? GButton(
-                        icon: Icons.upload,
+                        icon: Icons.save_alt,
                         onPressed: () async {
                           if (_animationController.isAnimating) {
                             return;
@@ -722,6 +721,29 @@ class _NewMemberPageState extends State<NewMemberPage>
           ],
         ),
       ),
+    );
+  }
+
+  AppBar _appBar(Color backgroundColor) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: backgroundColor,
+      automaticallyImplyLeading: false,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.close), // Change to the "X" icon
+          onPressed: () {
+            // Implement your desired action when the "X" icon is pressed
+            Navigator.pop(context); // Example action: Navigate back
+          },
+        )
+      ],
+      iconTheme: IconThemeData(color: Colors.black),
+      title: Text(
+        "Nuovo membro",
+        style: TextStyle(color: Colors.black),
+      ),
+      centerTitle: true,
     );
   }
 }
