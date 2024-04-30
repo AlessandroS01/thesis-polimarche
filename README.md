@@ -1,4 +1,4 @@
-# polimarche
+# Polimarche
 
 
 The goal of the work is represented by the development of a mobile application that efficiently manages the entire team of the Polimarche Racing Team, a team from the Polytechnic University of the Marche region that competes in the international Formula SAE championship.
